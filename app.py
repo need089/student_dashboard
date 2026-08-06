@@ -1330,30 +1330,44 @@ elif menu == "การทำนายผลการเรียนรู้":
     st.caption("ประเมินประสิทธิภาพโมเดล และทำนายระดับผลการเรียนสำหรับผู้เรียนรายบุคคล")
     st.markdown("---")
 
+    # =========================================================
+    # 🛠️ 1. เตรียมข้อมูล และ Encode แบบปลอดภัย
+    # =========================================================
     model_df = df.copy()
-
     encoders = {}
-    feature_cols = [c for c in model_df.columns if c != "Class"]
+    
+    # ลบคอลัมน์ที่ไม่เกี่ยวหรือเป็น ID ออก
+    drop_cols = ["Class", "Student_ID", "Name", "StudentName", "id"]
+    feature_cols = [c for c in model_df.columns if c not in drop_cols]
 
+    # Encode เฉพาะคอลัมน์ที่เป็นข้อความ
     for col in model_df.columns:
-        if model_df[col].dtype == "object":
+        if model_df[col].dtype == "object" or model_df[col].dtype.name == "category":
             le = LabelEncoder()
-            model_df[col] = le.fit_transform(model_df[col].astype(str))
+            model_df[col] = le.fit_transform(model_df[col].astype(str).fillna("Unknown"))
             encoders[col] = le
 
     X = model_df[feature_cols]
     y = model_df["Class"]
 
+    # บังคับให้เป็นตัวเลข และเติมค่าว่างด้วย 0
+    X = X.apply(pd.to_numeric, errors='coerce').fillna(0)
+
+    # Split ข้อมูล
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
 
+    # Fit Model
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
     pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, pred)
 
+    # =========================================================
+    # 📊 2. สร้าง Tabs
+    # =========================================================
     tab1, tab2 = st.tabs(["📊 ประสิทธิภาพโมเดล (Model Performance)", "🔮 ทำนายผลการเรียนผู้เรียนใหม่ (Live Prediction)"])
 
     with tab1:
@@ -1388,7 +1402,7 @@ elif menu == "การทำนายผลการเรียนรู้":
                     font=dict(family="Plus Jakarta Sans, sans-serif"),
                     template="plotly_white"
                 )
-                st.plotly_chart(fig_cm, use_container_width=True, config={"displayModeBar": False})
+                st.plotly_chart(fig_cm, use_container_width=True)
 
         with st.container(border=True):
             importance = pd.DataFrame({
@@ -1410,7 +1424,7 @@ elif menu == "การทำนายผลการเรียนรู้":
                 height=380,
                 font=dict(family="Plus Jakarta Sans, sans-serif")
             )
-            st.plotly_chart(fig_imp, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig_imp, use_container_width=True)
 
     with tab2:
         with st.container(border=True):
@@ -1422,12 +1436,12 @@ elif menu == "การทำนายผลการเรียนรู้":
 
                 with col_f1:
                     st.markdown("**👤 ข้อมูลทั่วไป**")
-                    input_gender = st.selectbox("Gender (เพศ)", df["gender"].unique())
-                    input_national = st.selectbox("NationalITy (สัญชาติ)", df["NationalITy"].unique())
-                    input_place = st.selectbox("PlaceofBirth (สถานที่เกิด)", df["PlaceofBirth"].unique())
-                    input_stage = st.selectbox("StageID (ระดับชั้น)", df["StageID"].unique())
-                    input_grade = st.selectbox("GradeID (ชั้นปี)", df["GradeID"].unique())
-                    input_section = st.selectbox("SectionID (ห้องเรียน)", df["SectionID"].unique())
+                    input_gender = st.selectbox("Gender (เพศ)", df["gender"].unique() if "gender" in df else ["M", "F"])
+                    input_national = st.selectbox("NationalITy (สัญชาติ)", df["NationalITy"].unique() if "NationalITy" in df else ["KW"])
+                    input_place = st.selectbox("PlaceofBirth (สถานที่เกิด)", df["PlaceofBirth"].unique() if "PlaceofBirth" in df else ["KuwaIT"])
+                    input_stage = st.selectbox("StageID (ระดับชั้น)", df["StageID"].unique() if "StageID" in df else ["lowerlevel"])
+                    input_grade = st.selectbox("GradeID (ชั้นปี)", df["GradeID"].unique() if "GradeID" in df else ["G-04"])
+                    input_section = st.selectbox("SectionID (ห้องเรียน)", df["SectionID"].unique() if "SectionID" in df else ["A"])
 
                 with col_f2:
                     st.markdown("**📚 พฤติกรรมการเรียน**")
@@ -1435,15 +1449,15 @@ elif menu == "การทำนายผลการเรียนรู้":
                     input_resources = st.number_input("Visited Resources (การเข้าดูสื่อ)", min_value=0, max_value=100, value=50)
                     input_announcements = st.number_input("Announcements View (การดูประกาศ)", min_value=0, max_value=100, value=20)
                     input_discussion = st.number_input("Discussion (การพูดคุยแลกเปลี่ยน)", min_value=0, max_value=100, value=15)
-                    input_topic = st.selectbox("Topic (วิชาเรียน)", df["Topic"].unique())
+                    input_topic = st.selectbox("Topic (วิชาเรียน)", df["Topic"].unique() if "Topic" in df else ["IT"])
 
                 with col_f3:
                     st.markdown("**👨‍👩‍👧 ข้อมูลการขาดเรียน & ผู้ปกครอง**")
-                    input_semester = st.selectbox("Semester (ภาคเรียน)", df["Semester"].unique())
-                    input_relation = st.selectbox("Relation (ผู้ดูแลหลัก)", df["Relation"].unique())
-                    input_absence = st.selectbox("StudentAbsenceDays (วันขาดเรียน)", df["StudentAbsenceDays"].unique())
-                    input_parent_sat = st.selectbox("ParentschoolSatisfaction (ความพึงพอใจผู้ปกครอง)", df["ParentschoolSatisfaction"].unique())
-                    input_parent_survey = st.selectbox("ParentAnsweringSurvey (การตอบแบบสอบถาม)", df["ParentAnsweringSurvey"].unique())
+                    input_semester = st.selectbox("Semester (ภาคเรียน)", df["Semester"].unique() if "Semester" in df else ["F"])
+                    input_relation = st.selectbox("Relation (ผู้ดูแลหลัก)", df["Relation"].unique() if "Relation" in df else ["Father"])
+                    input_absence = st.selectbox("StudentAbsenceDays (วันขาดเรียน)", df["StudentAbsenceDays"].unique() if "StudentAbsenceDays" in df else ["Under-7"])
+                    input_parent_sat = st.selectbox("ParentschoolSatisfaction (ความพึงพอใจผู้ปกครอง)", df["ParentschoolSatisfaction"].unique() if "ParentschoolSatisfaction" in df else ["Good"])
+                    input_parent_survey = st.selectbox("ParentAnsweringSurvey (การตอบแบบสอบถาม)", df["ParentAnsweringSurvey"].unique() if "ParentAnsweringSurvey" in df else ["Yes"])
 
                 submit_button = st.form_submit_button("🔮 ประมวลผลการทำนาย (Predict Performance)", use_container_width=True)
 
@@ -1468,18 +1482,31 @@ elif menu == "การทำนายผลการเรียนรู้":
                 }
 
                 input_data = pd.DataFrame([input_dict])
+                
+                # กรองเอาเฉพาะคอลัมน์ที่มีใน feature_cols
+                for col in feature_cols:
+                    if col not in input_data.columns:
+                        input_data[col] = 0
+
                 input_data = input_data[feature_cols]
 
+                # Encode ข้อมูลอินพุตใหม่
                 for col in input_data.columns:
                     if col in encoders:
                         try:
                             input_data[col] = encoders[col].transform(input_data[col].astype(str))
-                        except ValueError:
+                        except Exception:
                             input_data[col] = 0
+
+                input_data = input_data.apply(pd.to_numeric, errors='coerce').fillna(0)
 
                 prediction_encoded = model.predict(input_data)[0]
                 probabilities = model.predict_proba(input_data)[0]
-                predicted_class = encoders["Class"].inverse_transform([prediction_encoded])[0]
+                
+                if "Class" in encoders:
+                    predicted_class = encoders["Class"].inverse_transform([prediction_encoded])[0]
+                else:
+                    predicted_class = str(prediction_encoded)
 
                 st.markdown("---")
                 st.markdown("### 🎯 ผลการทำนาย (Prediction Result)")
@@ -1487,16 +1514,17 @@ elif menu == "การทำนายผลการเรียนรู้":
                 res_col1, res_col2 = st.columns([1, 2])
 
                 with res_col1:
-                    if predicted_class == "H":
+                    if predicted_class in ["H", 2]:
                         st.success("🎉 **ระดับผลการเรียนคาดการณ์: High (H)**")
-                    elif predicted_class == "M":
+                    elif predicted_class in ["M", 1]:
                         st.warning("⚡ **ระดับผลการเรียนคาดการณ์: Medium (M)**")
                     else:
                         st.error("🚨 **ระดับผลการเรียนคาดการณ์: Low (L)**")
 
                 with res_col2:
+                    class_labels = encoders["Class"].classes_ if "Class" in encoders else ["L", "M", "H"]
                     prob_df = pd.DataFrame({
-                        "Class": encoders["Class"].classes_,
+                        "Class": class_labels,
                         "Probability": probabilities
                     })
                     fig_prob = px.bar(
@@ -1511,4 +1539,4 @@ elif menu == "การทำนายผลการเรียนรู้":
                         template="plotly_white"
                     )
                     fig_prob.update_layout(height=180, showlegend=False)
-                    st.plotly_chart(fig_prob, use_container_width=True, config={"displayModeBar": False})
+                    st.plotly_chart(fig_prob, use_container_width=True)
