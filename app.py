@@ -262,6 +262,27 @@ if menu == "ภาพรวม":
 
     st.title("📌 Overview")
     st.caption("ภาพรวมทั้งหมดของผู้เรียน")
+    st.markdown(
+        """
+        <div style="
+            background-color: #F0F9FF;
+            border: 1px solid #BAE6FD;
+            border-left: 5px solid #0284C7;
+            border-radius: 8px;
+            padding: 15px 18px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: #0C4A6E;
+            line-height: 1.6;
+            font-size: 14.5px;
+        ">
+            🎓 แดชบอร์ดนี้เป็นระบบสารสนเทศเพื่อวิเคราะห์และติดตาม <strong>ผลสัมฤทธิ์ทางการเรียนและพฤติกรรมการเรียนรู้ของผู้เรียน (xAPI Education Data Analysis)</strong> 
+            จัดทำขึ้นเพื่อให้ผู้สอน ผู้บริหาร และผู้ที่เกี่ยวข้อง สามารถมองเห็นภาพรวมสถิติต่างๆ ของผู้เรียน ได้แก่ สัดส่วนเพศ สัญชาติ ระดับชั้นการศึกษา 
+            ตลอดจนการเชื่อมโยงข้อมูลพฤติกรรมในห้องเรียน การเข้าเรียน และการมีส่วนร่วมของผู้ปกครอง เพื่อนำไปสู่การวางแผนพัฒนาและช่วยเหลือผู้เรียนได้อย่างมีประสิทธิภาพ
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     st.markdown("---")
 
     # ==========================================
@@ -270,9 +291,6 @@ if menu == "ภาพรวม":
     total_students = len(filtered_df)
     male_count = len(filtered_df[filtered_df["gender"] == "M"])
     female_count = len(filtered_df[filtered_df["gender"] == "F"])
-
-    above7_count = len(filtered_df[filtered_df["StudentAbsenceDays"] == "Above-7"])
-    absence_avg_pct = (above7_count / total_students * 100) if total_students > 0 else 0
 
     st.markdown("""
         <style>
@@ -351,36 +369,47 @@ if menu == "ภาพรวม":
         </div>
     """, unsafe_allow_html=True)
     # ----------------------------------------------------------------
-    # 📦 ROW 1: GENDER DISTRIBUTION (แบ่งแถวด้วย Container มีเส้นขอบ)
+    # 📦 ROW 1: GENDER DISTRIBUTION / NATIONALITY
     # ----------------------------------------------------------------
-    with st.container(border=True):
-        chart1, chart2 = st.columns(2)
-        
-        with chart1:
+
+    chart1, chart2 = st.columns(2, gap="medium")
+    # ================================================================
+    # 📦 กรอบที่ 1 : สัดส่วนของผู้เรียน
+    # ================================================================
+    with chart1:
+        with st.container(border=True, height=720):
             st.markdown(
                 """
                 <div style='text-align: left; margin-bottom: 10px;'>
-                    <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700;'>👤 สัดส่วนของผู้เรียน</h3>
-                    <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>ผู้เรียนจำแนกตามเพศ</p>
+                    <h3 style='color: #1E293B;margin: 0;font-size: 20px;font-weight: 700;'>
+                    👤 สัดส่วนของผู้เรียน</h3>
+                    <p style='color: #64748B;font-size: 14px;margin: 2px 0 0 0;'>
+                        ผู้เรียนจำแนกตามเพศ</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+            # ========================================================
+            # 📊 นับจำนวนผู้เรียนตามเพศ
+            # ========================================================
 
             gender_count = (
                 filtered_df["gender"]
                 .value_counts()
                 .reset_index()
             )
-            gender_count.columns = ["Gender", "Count"]
-
+            gender_count.columns = [
+                "Gender",
+                "Count"
+            ]
             gender_count["Gender"] = gender_count["Gender"].replace({
                 "M": "เพศชาย",
                 "F": "เพศหญิง"
             })
-
             total_gender_students = gender_count["Count"].sum()
-
+            # ========================================================
+            # 🥧 สร้างกราฟวงกลม
+            # ========================================================
             fig_gender = px.pie(
                 gender_count,
                 values="Count",
@@ -392,413 +421,1165 @@ if menu == "ภาพรวม":
                     "เพศหญิง": "#FF6B9A"
                 }
             )
-
+            # ========================================================
+            # 🎨 ปรับแต่งกราฟวงกลม
+            # ========================================================
             fig_gender.update_traces(
                 textposition="inside",
                 texttemplate="<b>%{percent}</b><br>%{value:,} คน",
-                textfont=dict(size=14, color="white", family="Arial"),
-                hovertemplate="<b>%{label}</b><br>จำนวน : %{value:,}<br>สัดส่วน : %{percent}<extra></extra>",
-                marker=dict(line=dict(color="white", width=3))
+                textfont=dict(
+                    size=14,
+                    color="white",
+                    family="Arial"
+                ),
+                hovertemplate=
+                    "<b>%{label}</b><br>" +
+                    "จำนวน : %{value:,}<br>" +
+                    "สัดส่วน : %{percent}" +
+                    "<extra></extra>",
+                    marker=dict(
+                        line=dict(
+                        color="white",
+                        width=3
+                    )
+                )
             )
-
+            # ========================================================
+            # ⚙️ ตั้งค่ารูปแบบกราฟ
+            # ========================================================
             fig_gender.update_layout(
                 annotations=[
                     dict(
-                        x=0.5, y=0.5,
-                        text=f"<span style='color:#64748B; font-size:12px;'>จำนวนนักเรียนทั้งหมด</span><br><br>"
-                             f"<b style='font-size:22px; color:#1E293B;'>{total_gender_students:,} คน</b>",
+                        x=0.5,
+                        y=0.5,
+                        text=
+                            f"<span style='color:#64748B; font-size:12px;'>"
+                            f"จำนวนนักเรียนทั้งหมด"
+                            f"</span><br><br>"
+                            f"<b style='font-size:22px; color:#1E293B;'>"
+                            f"{total_gender_students:,} คน"
+                            f"</b>",
                         showarrow=False
                     )
                 ],
                 showlegend=True,
                 legend=dict(
-                    orientation="h", y=-0.05, x=0.5, xanchor="center", font=dict(size=13)
+                    orientation="h",
+                    y=-0.05,
+                    x=0.5,
+                    xanchor="center",
+                    font=dict(size=13)
                 ),
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                margin=dict(l=10, r=10, t=10, b=30),
-                height=380
+                margin=dict(
+                    l=10,
+                    r=10,
+                    t=10,
+                    b=30
+                ),
+                height=500
             )
-
-            st.plotly_chart(fig_gender, use_container_width=True, config={"displayModeBar": False})
-
-        with chart2:
-            males = len(filtered_df[filtered_df["gender"] == "M"])
-            females = len(filtered_df[filtered_df["gender"] == "F"])
-            total_curr_gender = males + females
-            male_pct = (males / total_curr_gender * 100) if total_curr_gender > 0 else 0
-            female_pct = (females / total_curr_gender * 100) if total_curr_gender > 0 else 0
-
-            st.markdown(
-                f"""
-                <div style='background-color: #DBEAFE; color: #1E40AF; text-align: center; 
-                            padding: 6px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; font-size: 14px;'>
-                    สรุปภาพรวมเพศ
-                </div>
-                
-                <div style='background-color: #EFF6FF; border-radius: 10px; padding: 10px; margin-bottom: 8px;'>
-                    <div style='display: flex; align-items: center;'>
-                        <div style='background-color: #4F8EF7; color: white; width: 38px; height: 38px;
-                                    border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-                                    font-size: 18px; margin-right: 10px;'>👨</div>
-                        <div>
-                            <div style='color: #1E293B; font-weight: bold; font-size: 14px;'>เพศชาย</div>
-                            <div style='color: #4F8EF7; font-size: 20px; font-weight: bold;'>{males:,}
-                              <span style='font-size: 13px; font-weight: normal; color: #475569;'>คน ({male_pct:.1f}%)</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style='background-color: #FFF1F2; border-radius: 10px; padding: 10px; margin-bottom: 8px;'>
-                    <div style='display: flex; align-items: center;'>
-                        <div style='background-color: #FF6B9A; color: white; width: 38px; height: 38px;
-                                    border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-                                    font-size: 18px; margin-right: 10px;'>👩</div>
-                        <div>
-                            <div style='color: #1E293B; font-weight: bold; font-size: 14px;'>เพศหญิง</div>
-                            <div style='color: #FF6B9A; font-size: 20px; font-weight: bold;'>{females:,} 
-                                <span style='font-size: 13px; font-weight: normal; color: #475569;'>คน ({female_pct:.1f}%)</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style='background-color: #DCFCE7; border: 1px solid #BBF7D0; border-radius: 10px; padding: 10px;'>
-                    <div style='display: flex; align-items: center;'>
-                        <div style='background-color: #064E3B; width: 38px; height: 38px; border-radius: 50%; 
-                                    display: flex; align-items: center; justify-content: center; 
-                                    margin-right: 10px;'>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15C10.9391 15 9.92172 15.4214 9.17157 16.1716C8.42143 16.9217 8 17.9391 8 19V21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div style='color: #1E293B; font-weight: bold; font-size: 14px;'>รวมทั้งหมด</div>
-                            <div style='color: #059669; font-size: 20px; font-weight: bold;'>{total_curr_gender:,} 
-                                <span style='font-size: 13px; font-weight: normal; color: #475569;'>คน (100.0%)</span></div>
-                        </div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
+            # ========================================================
+            # 📈 แสดงกราฟ
+            # ========================================================
+            st.plotly_chart(
+                fig_gender,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
             )
-    # ------------------------------------------------------------------------
-    # 📦 ROW 2: SEMESTER DISTRIBUTION (แบ่งแถวด้วย Container มีเส้นขอบ)
-    # ------------------------------------------------------------------------
-    with st.container(border=True):
-        chart3, chart4 = st.columns(2)
+            # ========================================================
+            # 📊 คำนวณข้อมูลสำหรับข้อสังเกตเชิงสถิติ
+            # ========================================================
+            male_count = gender_count.loc[
+                gender_count["Gender"] == "เพศชาย",
+                "Count"
+            ].sum()
+            female_count = gender_count.loc[
+                gender_count["Gender"] == "เพศหญิง",
+                "Count"
+            ].sum()
+            male_percent = (
+                male_count / total_gender_students * 100
+                if total_gender_students > 0
+                else 0
+            )
+            female_percent = (
+                female_count / total_gender_students * 100
+                if total_gender_students > 0
+                else 0
+            )
+            # ========================================================
+            # 🏆 หาเพศที่มีจำนวนผู้เรียนมากที่สุด
+            # ========================================================
+            if male_count >= female_count:
+                main_gender = "เพศชาย"
+                main_gender_percent = male_percent
+            else:
+                main_gender = "เพศหญิง"
+                main_gender_percent = female_percent
+            # ========================================================
+            # 💡 ข้อสังเกตเชิงสถิติ
+            # ========================================================
+            if total_gender_students > 0:
+                st.markdown(
+                    f"""
+                    <div style="
+                        position: relative;
+                        top: -15px;
+                        margin-bottom: -15px;
+                        background-color: #F8FAFC;
+                        border: 1px solid #E2E8F0;
+                        border-left: 4px solid #3B82F6;
+                        border-radius: 8px;
+                        padding: 10px 12px;
+                        font-size: 13px;
+                        color: #334155;
+                        line-height: 1.6;
+                    ">
+                        💡 <strong>ข้อสังเกตเชิงสถิติ:</strong>
+                        จากผู้เรียนทั้งหมด<strong>{total_gender_students:,} คน</strong>
+                        พบว่าเป็นเพศชาย<strong>{male_count:,} คน ({male_percent:.1f}%)</strong>
+                        และเพศหญิง<strong>{female_count:,} คน ({female_percent:.1f}%)</strong>
+                        โดยผู้เรียนส่วนใหญ่เป็น<strong>{main_gender}</strong>คิดเป็นสัดส่วน
+                        <strong>{main_gender_percent:.1f}%</strong>ของผู้เรียนทั้งหมด
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-        with chart3:
+    # ================================================================
+    # 📦 กรอบที่ 2 : สัญชาติของผู้เรียนทั้งหมด
+    # ================================================================
+    with chart2:
+        with st.container(border=True, height=720):
+
             st.markdown(
                 """
                 <div style='text-align: left; margin-bottom: 10px;'>
-                    <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700;'>📅 จำนวนนักเรียน</h3>
-                    <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>จำแนกตามภาคเรียน</p>
+                    <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;'>
+                        🌍 สัญชาติของผู้เรียนทั้งหมด
+                    </h3>
+                    <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>
+                        วิเคราะห์สัดส่วนการกระจายตัวของนักเรียนจำแนกตามประเทศสัญชาติทั้งหมด</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
-            semester_count = (
-                filtered_df["Semester"]
+            # ========================================================
+            # นับจำนวนผู้เรียนแต่ละสัญชาติ
+            # ========================================================
+            nationality_count = (
+                filtered_df["NationalITy"]
                 .value_counts()
                 .reset_index()
             )
-            semester_count.columns = ["Semester", "Count"]
 
-            semester_count["Semester"] = semester_count["Semester"].replace({
-                "F": "ภาคเรียนที่ 1",
-                "S": "ภาคเรียนที่ 2"
-            })
-
-            total_semester_students = semester_count["Count"].sum()
-
-            semester1 = semester_count.loc[
-                semester_count["Semester"] == "ภาคเรียนที่ 1", "Count"
-            ].sum()
-
-            semester2 = semester_count.loc[
-                semester_count["Semester"] == "ภาคเรียนที่ 2", "Count"
-            ].sum()
-
-            percent1 = (semester1 / total_semester_students * 100) if total_semester_students > 0 else 0
-            percent2 = (semester2 / total_semester_students * 100) if total_semester_students > 0 else 0
-
-            fig_semester = px.pie(
-                semester_count,
-                values="Count",
-                names="Semester",
-                hole=0.68,
-                color="Semester",
-                color_discrete_map={
-                    "ภาคเรียนที่ 1": "#3B82F6",
-                    "ภาคเรียนที่ 2": "#8B5CF6"
-                }
+            nationality_count.columns = [
+                "Nationality",
+                "Count"
+            ]
+            nationality_labels = {
+                "KW": "คูเวต",
+                "lebanon": "เลบานอน",
+                "Egypt": "อียิปต์",
+                "SaudiArabia": "ซาอุดีอาระเบีย",
+                "USA": "สหรัฐอเมริกา",
+                "Jordan": "จอร์แดน",
+                "Iran": "อิหร่าน",
+                "Tunis": "ตูนิเซีย",
+                "Morocco": "โมร็อกโก",
+                "Iraq": "อิรัก",
+                "Syria": "ซีเรีย",
+                "Palestine": "ปาเลสไตน์",
+                "Lybia": "ลิเบีย",
+                "venzuela":"เวเนซุเอลา"
+            }
+            nationality_count["Nationality"] = (
+                nationality_count["Nationality"]
+                .map(nationality_labels)
+                .fillna(nationality_count["Nationality"])
             )
 
-            fig_semester.update_traces(
-                textposition="inside",
-                texttemplate="<b>%{percent}</b>",
-                textfont=dict(size=16, color="white"),
-                marker=dict(line=dict(color="white", width=3)),
-                hovertemplate="<b>%{label}</b><br>จำนวน : %{value:,} คน<br>คิดเป็น : %{percent}<extra></extra>"
+            # ========================================================
+            # คำนวณเปอร์เซ็นต์
+            # ========================================================
+            nationality_count["Percent"] = (
+                nationality_count["Count"] / total_students * 100
+                if total_students > 0
+                else 0
             )
-
-            fig_semester.update_layout(
-                height=350,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                margin=dict(l=10, r=10, t=10, b=20),
-                legend=dict(
-                    orientation="h", y=-0.05, x=0.5, xanchor="center", font=dict(size=13)
-                ),
-                annotations=[
-                    dict(
-                        x=0.5, y=0.5,
-                        text=f"<span style='color:#64748B; font-size:12px;'>รวมทั้งหมด</span><br><br>"
-                             f"<b style='font-size:22px; color:#1E293B;'>{total_semester_students:,} คน</b>",
-                        showarrow=False
-                    )
-                ]
+            # ========================================================
+            # เรียงจากมากไปน้อย
+            # ========================================================
+            nationality_count = (
+                nationality_count
+                .sort_values(
+                    by="Count",
+                    ascending=False
+                )
+                .reset_index(drop=True)
             )
-
-            st.plotly_chart(fig_semester, use_container_width=True, config={"displayModeBar": False})
-
-        with chart4:
-            major_semester = "ภาคเรียนที่ 1" if semester1 >= semester2 else "ภาคเรียนที่ 2"
-            major_percent = max(percent1, percent2)
+            # ========================================================
+            # จำนวนประเทศทั้งหมด
+            # ========================================================
+            total_countries = len(nationality_count)
 
             st.markdown(
                 f"""
-                <div style='display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 8px;'>
-                    <div style='background-color: #EFF6FF; border-radius: 10px; padding: 12px;'>
-                        <div style='display: flex; align-items: center;'>
-                            <div style='background-color: #3B82F6; color: white; width: 38px; height: 38px; 
-                                        border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-                                        font-size: 18px; margin-right: 10px;'>📘</div>
-                            <div>
-                                <div style='color: #1E293B; font-weight: bold; font-size: 14px;'>ภาคเรียนที่ 1</div>
-                                <div style='color: #2563EB; font-size: 20px; font-weight: bold;'>{semester1:,} <span style='font-size: 13px; 
-                                            font-weight: normal; color: #475569;'>คน ({percent1:.1f}%)</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style='background-color: #F5F3FF; border-radius: 10px; padding: 12px;'>
-                        <div style='display: flex; align-items: center;'>
-                            <div style='background-color: #8B5CF6; color: white; width: 38px; height: 38px; border-radius: 50%; 
-                                        display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 10px;'>📙</div>
-                            <div>
-                                <div style='color: #1E293B; font-weight: bold; font-size: 14px;'>ภาคเรียนที่ 2</div>
-                                <div style='color: #7C3AED; font-size: 20px; font-weight: bold;'>{semester2:,} <span style='font-size: 13px; 
-                                            font-weight: normal; color: #475569;'>คน ({percent2:.1f}%)</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style='position: relative; top: -15px; margin-bottom: -15px;
-                                background-color:#F8FAFC; border:1px solid #BFDBFE; border-left:4px solid #3B82F6;
-                                padding:10px 12px; border-radius:8px; font-size:13px; color:#334155;'>
-                        <b>💡 ข้อสังเกต:</b> ผู้เรียนส่วนใหญ่อยู่ใน <b>{major_semester}</b> คิดเป็น <b>{major_percent:.1f}%</b>
-                    </div>
+                <div style='background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+                            border-radius: 10px;
+                            padding: 6px 12px;
+                            text-align: center;
+                            margin-bottom: 10px;'>
+                    <span style='color: #1E40AF;
+                                 font-size: 12px;
+                                font-weight: 600;'>
+                            ความหลากหลายทางสัญชาติ</span>|
+                    <b style='color: #1D4ED8;
+                              font-size: 15px;'>
+                        {total_countries:,} ประเทศ</b>
                 </div>
                 """,
-                unsafe_allow_html=True,
+                unsafe_allow_html=True
+            )
+            # ========================================================
+            # กำหนดความสูงของกราฟ
+            # ========================================================
+            dynamic_height = 500
+            # ========================================================
+            # สร้างกราฟแท่งแนวนอน
+            # ========================================================
+
+            fig_nat = px.bar(
+                nationality_count,
+                x="Count",
+                y="Nationality",
+                orientation="h",
+                text="Count",
+                color="Count",
+                color_continuous_scale=[
+                    [0.00, "#F5D0FE"],
+                    [0.25, "#E9A8F0"],
+                    [0.50, "#D77AE5"],
+                    [0.75, "#B84FCF"],
+                    [1.00, "#9333A8"]
+                ],
+                custom_data=["Percent"]
+
+            )
+            # ========================================================
+            # ปรับรูปแบบแท่งกราฟ
+            # ========================================================
+            fig_nat.update_traces(
+                texttemplate="<b>%{x:,} คน</b> (%{customdata[0]:.1f}%)",
+                textposition="outside",
+                textfont=dict(
+                    size=12,
+                    color="#334155"
+                ),
+
+                marker=dict(
+                    line=dict(width=0),
+                    cornerradius=6
+                ),
+
+                hovertemplate=
+                    "<b>🌐 ประเทศ:</b> %{y}<br>" +
+                    "<b>👥 จำนวน:</b> %{x:,} คน<br>" +
+                    "<b>📊 คิดเป็น:</b> %{customdata[0]:.2f}% ของทั้งหมด" +
+                    "<extra></extra>"
+            )
+            # ========================================================
+            # หาค่าสูงสุด
+            # ========================================================
+            max_count = (
+                nationality_count["Count"].max()
+                if not nationality_count.empty
+                else 100
+            )
+            # ========================================================
+            # ตั้งค่ารูปแบบกราฟ
+            # ========================================================
+            fig_nat.update_layout(
+                template="plotly_white",
+                height=dynamic_height,
+                showlegend=False,
+                coloraxis_showscale=False,
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                margin=dict(
+                    l=10,
+                    r=120,
+                    t=10,
+                    b=10
+                ),
+                # ----------------------------------------------------
+                # มากที่สุดอยู่ด้านบน
+                # ----------------------------------------------------
+                yaxis=dict(
+                    categoryorder="total ascending",
+                    title="",
+                    tickfont=dict(
+                        size=13,
+                        color="#1E293B",
+                        family="Arial"
+                    ),
+                    showline=False
+                ),
+                # ----------------------------------------------------
+                # แกน X
+                # ----------------------------------------------------
+                xaxis=dict(
+                    title="จำนวนนักเรียน (คน)",
+                    title_font=dict(
+                        size=12,
+                        color="#64748B"
+                    ),
+                    gridcolor="#F1F5F9",
+                    zeroline=False,
+                    range=[
+                        0,
+                        max_count * 1.40
+                    ]
+                )
+            )   
+            # ========================================================
+            # แสดงกราฟ
+            # ========================================================
+            st.plotly_chart(
+                fig_nat,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
+            )
+            # ========================================================
+            # ข้อสังเกตเชิงสถิติ
+            # ========================================================
+            if not nationality_count.empty:
+                top_nat = nationality_count.iloc[0]["Nationality"]
+                top_count = nationality_count.iloc[0]["Count"]
+                top_pct = nationality_count.iloc[0]["Percent"]
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        position: relative;
+                        top: -15px;
+                        margin-bottom: -15px;
+                        background-color: #FAF5FF;
+                        border: 1px solid #E9D5FF;
+                        border-left: 4px solid #9333A8;
+                        border-radius: 8px;
+                        padding: 10px 12px;
+                        font-size: 13px;
+                        color: #334155;
+                        line-height: 1.6;
+                    ">
+                    💡 <strong>ข้อสังเกตเชิงสถิติ:</strong>
+                        ผู้เรียนส่วนใหญ่เป็นสัญชาติ
+                        <strong>{top_nat}</strong>
+                        ครองสัดส่วนสูงสุดถึง
+                        <strong>{top_count:,} คน ({top_pct:.1f}%)</strong>
+                        จากทั้งหมด {total_students:,} คน
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+    # ------------------------------------------------------------------------
+    # 📦 ROW 2: STUDENT DISTRIBUTION BY STAGE / GRADE
+    # ------------------------------------------------------------------------
+
+    chart3, chart4 = st.columns(2, gap="medium")
+
+    # ========================================================================
+    # 📦 กรอบที่ 1 : จำนวนนักเรียนตามช่วงชั้น
+    # ========================================================================
+    with chart3:
+        with st.container(border=True, height=600):
+            st.markdown(
+                """
+                <div style='text-align: left; margin-bottom: 10px;'>
+                    <h3 style='
+                        color: #1E293B;
+                        margin: 0;
+                        font-size: 20px;
+                        font-weight: 700;
+                    '>
+                        🏫 จำนวนนักเรียนตามช่วงชั้น</h3>
+                    <p style='
+                        color: #64748B;
+                        font-size: 14px;
+                        margin: 2px 0 0 0;
+                    '>
+                        วิเคราะห์จำนวนผู้เรียนจำแนกตามช่วงชั้นการศึกษา
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ================================================================
+            # 📊 นับจำนวนตามช่วงชั้น
+            # ================================================================
+            stage_count = (
+                filtered_df["StageID"]
+                .value_counts()
+                .reset_index()
+            )
+            stage_count.columns = [
+                "Stage",
+                "Count"
+            ]
+            # ================================================================
+            # 🔄 เปลี่ยนชื่อช่วงชั้น
+            # ================================================================
+            stage_count["Stage"] = stage_count["Stage"].replace({
+                "lowerlevel": "ระดับประถมศึกษา",
+                "MiddleSchool": "ระดับมัธยมศึกษาตอนต้น",
+                "HighSchool": "ระดับมัธยมศึกษาตอนปลาย"
+            })
+            # ================================================================
+            # 🔢 เรียงช่วงชั้นตามลำดับการศึกษา
+            # ================================================================
+            stage_order = [
+                "ระดับประถมศึกษา",
+                "ระดับมัธยมศึกษาตอนต้น",
+                "ระดับมัธยมศึกษาตอนปลาย"
+            ]
+            stage_count["Stage"] = pd.Categorical(
+                stage_count["Stage"],
+                categories=stage_order,
+                ordered=True
+            )
+            stage_count = stage_count.sort_values(
+                "Stage"
+                ).reset_index(drop=True)
+            # ================================================================
+            # 📊 จำนวนผู้เรียนทั้งหมด
+            # ================================================================
+            total_stage_students = stage_count["Count"].sum()
+
+            # ================================================================
+            # 📊 คำนวณเปอร์เซ็นต์
+            # ================================================================
+            stage_count["Percent"] = (
+                stage_count["Count"]
+                / total_stage_students
+                * 100
+                if total_stage_students > 0
+                else 0
+            )
+            # ================================================================
+            # 📈 สร้างกราฟ
+            # ================================================================
+            fig_stage = px.bar(
+                stage_count,
+                x="Stage",
+                y="Count",
+                text="Count",
+                color="Count",
+                color_continuous_scale=[
+                    [0.0, "#93C5FD"],   # อ่อนสุด แต่ยังเป็นฟ้า
+                    [0.5, "#3B82F6"],   # กลาง
+                    [1.0, "#1E3A8A"]    # เข้มสุด
+                ],
+                custom_data=["Percent"],
+                category_orders={
+                    "Stage": stage_order
+                }
+            )
+            # ================================================================
+            # 🎨 ปรับกราฟ
+            # ================================================================
+            fig_stage.update_traces(
+                texttemplate=
+                    "<b>%{y:,} คน</b><br>"
+                    "(%{customdata[0]:.1f}%)",
+                textposition="outside",
+                textfont=dict(
+                    size=12,
+                    color="#334155"
+                ),
+                marker=dict(
+                    line=dict(width=0),
+                    cornerradius=6
+                ),
+                hovertemplate=
+                    "<b>🏫 ช่วงชั้น:</b> %{x}<br>" +
+                    "<b>👥 จำนวน:</b> %{y:,} คน<br>" +
+                    "<b>📊 คิดเป็น:</b> " +
+                    "%{customdata[0]:.2f}% ของทั้งหมด" +
+                    "<extra></extra>"
+            )
+            max_stage_count = (
+                stage_count["Count"].max()
+                if not stage_count.empty
+                else 100
+            )
+            # ================================================================
+            # ⚙️ ตั้งค่ากราฟ
+            # ================================================================
+            fig_stage.update_layout(
+                height=400,
+                template="plotly_white",
+                showlegend=False,
+                coloraxis_showscale=False,
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                margin=dict(
+                    l=20,
+                    r=50,
+                    t=20,
+                    b=70
+                ),
+                xaxis=dict(
+                    title="ช่วงชั้น",
+                    title_font=dict(
+                        size=13,
+                        color="#64748B"
+                    ),
+                    tickfont=dict(
+                        size=12,
+                        color="#1E293B"
+                    ),
+                    showgrid=False
+                ),
+                yaxis=dict(
+                    title="จำนวนนักเรียน (คน)",
+                    title_font=dict(
+                        size=13,
+                        color="#64748B"
+                    ),
+                    gridcolor="#F1F5F9",
+                    zeroline=False,
+                    range=[
+                        0,
+                        max_stage_count * 1.30
+                    ]
+                )
+            )
+            st.plotly_chart(
+                fig_stage,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
+            )
+            # ================================================================
+            # 💡 ข้อสังเกต
+            # ================================================================
+            if not stage_count.empty:
+                top_stage_row = stage_count.loc[
+                    stage_count["Count"].idxmax()
+                ]
+                top_stage = top_stage_row["Stage"]
+                top_stage_count = top_stage_row["Count"]
+                top_stage_percent = top_stage_row["Percent"]
+            else:
+                top_stage = "-"
+                top_stage_count = 0
+                top_stage_percent = 0
+
+            st.markdown(
+                f"""
+                <div style="
+                    position: relative;
+                    top: -15px;
+                    margin-bottom: -15px;
+                    background-color: #F8FAFC;
+                    border: 1px solid #E2E8F0;
+                    border-left: 4px solid #3B82F6;
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    font-size: 13px;
+                    color: #334155;
+                    line-height: 1.6;
+                ">
+                    💡 <strong>ข้อสังเกตเชิงสถิติ:</strong>
+                    ผู้เรียนส่วนใหญ่อยู่ใน<strong>{top_stage}</strong>
+                    จำนวน<strong>{top_stage_count:,} คน({top_stage_percent:.1f}%)</strong>
+                    จากผู้เรียนทั้งหมด<strong>{total_stage_students:,} คน</strong>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+    # ========================================================================
+    # 📦 กรอบที่ 2 : จำนวนนักเรียนตามระดับชั้น
+    # ========================================================================
+    with chart4:
+        with st.container(border=True, height=600):
+            st.markdown(
+                """
+                <div style='text-align: left; margin-bottom: 10px;'>
+                    <h3 style='
+                        color: #1E293B;
+                        margin: 0;
+                        font-size: 20px;
+                        font-weight: 700;
+                    '>
+                        🎓 จำนวนนักเรียนตามระดับชั้น</h3>
+                    <p style='
+                        color: #64748B;
+                        font-size: 14px;
+                        margin: 2px 0 0 0;
+                    '>
+                        วิเคราะห์จำนวนผู้เรียนจำแนกตามระดับชั้น</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ================================================================
+            # 📊 นับจำนวนตามระดับชั้น
+            # ================================================================
+            grade_count = (
+                filtered_df["GradeID"]
+                .value_counts()
+                .reset_index()
+            )
+            grade_count.columns = [
+                "Grade",
+                "Count"
+            ]
+            # ================================================================
+            # 🔽 เรียงระดับชั้น
+            # ================================================================
+            grade_order = [
+                "G-01",
+                "G-02",
+                "G-03",
+                "G-04",
+                "G-05",
+                "G-06",
+                "G-07",
+                "G-08",
+                "G-09",
+                "G-10",
+                "G-11",
+                "G-12"
+            ]
+            grade_count["Grade"] = pd.Categorical(
+                grade_count["Grade"],
+                categories=grade_order,
+                ordered=True
+            )
+            grade_count = (
+                grade_count
+                .sort_values("Grade")
+                .reset_index(drop=True)
+            )
+            # ================================================================
+            # 📊 จำนวนทั้งหมด
+            # ================================================================
+            total_grade_students = grade_count["Count"].sum()
+
+            grade_count["Percent"] = (
+                grade_count["Count"]
+                / total_grade_students
+                * 100
+                if total_grade_students > 0
+                else 0
+            )
+            # ================================================================
+            # 🏷️ ชื่อระดับชั้น
+            # ================================================================
+            grade_labels= {
+                "G-01": "ป.1",
+                "G-02": "ป.2",
+                "G-03": "ป.3",
+                "G-04": "ป.4",
+                "G-05": "ป.5",
+                "G-06": "ป.6",
+                "G-07": "ม.1",
+                "G-08": "ม.2",
+                "G-09": "ม.3",
+                "G-10": "ม.4",
+                "G-11": "ม.5",
+                "G-12": "ม.6"
+            }
+            grade_count["GradeLabel"] = (
+                grade_count["Grade"]
+                .astype(str)
+                .map(grade_labels)
+            )
+            # ================================================================
+            # 📈 สร้างกราฟ
+            # ================================================================
+            fig_grade = px.bar(
+                grade_count,
+                x="GradeLabel",
+                y="Count",
+                text="Count",
+                color="GradeLabel",
+                custom_data=["Percent"],
+                category_orders={
+                        "GradeLabel": [
+                        "ชั้นประถมศึกษาปีที่ 1",
+                        "ชั้นประถมศึกษาปีที่ 2",
+                        "ชั้นประถมศึกษาปีที่ 3",
+                        "ชั้นประถมศึกษาปีที่ 4",
+                        "ชั้นประถมศึกษาปีที่ 5",
+                        "ชั้นประถมศึกษาปีที่ 6",
+                        "ชั้นมัธยมศึกษาปีที่ 1",
+                        "ชั้นมัธยมศึกษาปีที่ 2",
+                        "ชั้นมัธยมศึกษาปีที่ 3",
+                        "ชั้นมัธยมศึกษาปีที่ 4",
+                        "ชั้นมัธยมศึกษาปีที่ 5",
+                        "ชั้นมัธยมศึกษาปีที่ 6"
+                    ]
+                },
+                color_discrete_sequence=[
+                        "#DCFCE7",
+                        "#BBF7D0",
+                        "#86EFAC",
+                        "#4ADE80",
+                        "#22C55E",
+                        "#16A34A",
+                        "#15803D",
+                        "#166534",
+                        "#14532D",
+                        "#124C2A",
+                        "#0F4224",
+                        "#0B351D"
+                ]
+            )
+            fig_grade.update_traces(
+                texttemplate=
+                    "<b>%{y:,} คน</b><br>"
+                    "(%{customdata[0]:.1f}%)",
+                textposition="outside",
+                textfont=dict(
+                    size=11,
+                    color="#334155"
+                ),
+                marker=dict(
+                    line=dict(width=0),
+                    cornerradius=6
+                ),
+                hovertemplate=
+                    "<b>🎓 ระดับชั้น:</b> %{x}<br>" +
+                    "<b>👥 จำนวน:</b> %{y:,} คน<br>" +
+                    "<b>📊 คิดเป็น:</b> " +
+                    "%{customdata[0]:.2f}% ของทั้งหมด" +
+                    "<extra></extra>"
+            )
+            max_grade_count = (
+                grade_count["Count"].max()
+                if not grade_count.empty
+                else 100
+            )
+            fig_grade.update_layout(
+                height=400,
+                template="plotly_white",
+                showlegend=False,
+                coloraxis_showscale=False,
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                margin=dict(
+                    l=20,
+                    r=50,
+                    t=20,
+                    b=70
+                ),
+                xaxis=dict(
+                    title="ระดับชั้น",
+                    title_font=dict(
+                        size=13,
+                        color="#64748B"
+                    ),
+                    tickfont=dict(
+                        size=11,
+                        color="#1E293B"
+                    ),
+                    showgrid=False
+                ),
+                yaxis=dict(
+                    title="จำนวนนักเรียน (คน)",
+                    title_font=dict(
+                        size=13,
+                        color="#64748B"
+                    ),
+                    gridcolor="#F1F5F9",
+                    zeroline=False,
+                    range=[
+                        0,
+                        max_grade_count * 1.30
+                    ]
+                )
+            )
+            st.plotly_chart(
+                fig_grade,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
+            )
+            # ================================================================
+            # 💡 ข้อสังเกต
+            # ================================================================
+            if not grade_count.empty:
+                top_grade_row = grade_count.loc[
+                    grade_count["Count"].idxmax()
+                ]
+                top_grade = top_grade_row["GradeLabel"]
+                top_grade_count = top_grade_row["Count"]
+                top_grade_percent = top_grade_row["Percent"]
+            else:
+                top_grade = "-"
+                top_grade_count = 0
+                top_grade_percent = 0
+            st.markdown(
+                f"""
+                <div style="
+                    position: relative;
+                    top: -15px;
+                    margin-bottom: -15px;
+                    background-color: #F8FAFC;
+                    border: 1px solid #E2E8F0;
+                    border-left: 4px solid #3B82F6;
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    font-size: 13px;
+                    color: #334155;
+                    line-height: 1.6;
+                ">
+                    💡 <strong>ข้อสังเกตเชิงสถิติ:</strong>
+                    ผู้เรียนส่วนใหญ่อยู่ใน<strong>{top_grade}</strong>
+                    จำนวน<strong>{top_grade_count:,} คน({top_grade_percent:.1f}%)</strong>
+                    จากผู้เรียนทั้งหมด<strong>{total_grade_students:,} คน</strong>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
     # ------------------------------------------------------------------------
-    # 📦 ROW 3: STAGE DISTRIBUTION (แบ่งแถวด้วย Container มีเส้นขอบ)
+    # 📦 ROW 3: SEMESTER DISTRIBUTION
     # ------------------------------------------------------------------------
-    with st.container(border=True):
+
+    with st.container(border=True, height=520):
         st.markdown(
             """
             <div style='text-align: left; margin-bottom: 10px;'>
-                <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700;'>🏫 นักเรียนตามระดับชั้น</h3>
-                <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>แสดงจำนวนผู้เรียนในแต่ละชั้น</p>
+                <h3 style='
+                    color: #1E293B;
+                    margin: 0;
+                    font-size: 20px;
+                    font-weight: 700;
+                '>
+                    📅 จำนวนนักเรียนตามภาคเรียน</h3>
+                <p style='
+                    color: #64748B;
+                    font-size: 14px;
+                    margin: 2px 0 0 0;
+                '>
+                    วิเคราะห์การกระจายตัวของผู้เรียนจำแนกตามภาคเรียน
+                </p>
             </div>
             """,
             unsafe_allow_html=True
         )
-        
-        stage_count = (
-            filtered_df["StageID"]
+        # ================================================================
+        # 📊 เตรียมข้อมูลภาคเรียน
+        # ================================================================
+        semester_count = (
+            filtered_df["Semester"]
             .value_counts()
             .reset_index()
         )
-
-        stage_count.columns = ["Stage", "Count"]
-        stage_count["Stage"] = stage_count["Stage"].replace({
-            "lowerlevel": "ประถมศึกษา",
-            "MiddleSchool": "มัธยมศึกษาตอนต้น",
-            "HighSchool": "มัธยมศึกษาตอนปลาย"
+        semester_count.columns = [
+            "Semester",
+            "Count"
+        ]
+        # ================================================================
+        # 🔄 แปลงรหัสภาคเรียน
+        # ================================================================
+        semester_count["Semester"] = semester_count["Semester"].replace({
+            "F": "ภาคเรียนที่ 1",
+            "S": "ภาคเรียนที่ 2"
         })
-        
-        fig_stage = px.bar(
-            stage_count,
-            x="Stage",
-            y="Count",
-            color="Stage",
-            text="Count",
-            color_discrete_map={
-                "ประถมศึกษา": "#BFDBFE",
-                "มัธยมศึกษาตอนต้น": "#A7F3D0",
-                "มัธยมศึกษาตอนปลาย": "#FDE68A"
-            },
+        # ================================================================
+        # 🔢 ป้องกันข้อมูลผิดประเภท / NaN
+        # ================================================================
+        semester_count["Count"] = pd.to_numeric(
+            semester_count["Count"],
+            errors="coerce"
+        ).fillna(0)
+        # ================================================================
+        # 📊 จำนวนนักเรียนทั้งหมด
+        # ================================================================
+        total_semester_students = semester_count["Count"].sum()
+        # ================================================================
+        # 📘 จำนวนนักเรียนภาคเรียนที่ 1
+        # ================================================================
+        semester1_count = semester_count.loc[
+            semester_count["Semester"] == "ภาคเรียนที่ 1",
+            "Count"
+        ].sum()
+        # ================================================================
+        # 📙 จำนวนนักเรียนภาคเรียนที่ 2
+        # ================================================================
+        semester2_count = semester_count.loc[
+            semester_count["Semester"] == "ภาคเรียนที่ 2",
+            "Count"
+        ].sum()
+        # ================================================================
+        # 📈 คำนวณเปอร์เซ็นต์
+        # ================================================================
+        if total_semester_students > 0:
+            semester1_percent = (
+                semester1_count
+                / total_semester_students
+                * 100
+            )
+            semester2_percent = (
+                semester2_count
+                / total_semester_students
+                * 100
+            )
+        else:
+            semester1_percent = 0
+            semester2_percent = 0
+        # ================================================================
+        # 📊 เพิ่มเปอร์เซ็นต์ลงใน DataFrame
+        # ================================================================
+        if total_semester_students > 0:
+            semester_count["Percent"] = (
+                semester_count["Count"]
+                / total_semester_students
+                * 100
+            ).fillna(0)
+        else:
+            semester_count["Percent"] = 0
+        # ป้องกันค่า NaN / Inf ใน Percent
+        semester_count["Percent"] = pd.to_numeric(
+            semester_count["Percent"],
+            errors="coerce"
+        ).fillna(0)
+        # ================================================================
+        # 🏆 หาภาคเรียนที่มีนักเรียนมากที่สุด
+        # ================================================================
+        if semester1_count >= semester2_count:
+            top_semester = "ภาคเรียนที่ 1"
+            top_semester_count = semester1_count
+            top_semester_percent = semester1_percent
+        else:
+            top_semester = "ภาคเรียนที่ 2"
+            top_semester_count = semester2_count
+            top_semester_percent = semester2_percent
+        # ================================================================
+        # 📦 แบ่งพื้นที่ : กราฟ / สรุปข้อมูล
+        # ================================================================
+        semester_chart_col, semester_summary_col = st.columns(
+            [2, 1],
+            gap="large"
         )
+        # ====================================================================
+        # 📊 ฝั่งซ้าย : กราฟวงกลม
+        # ====================================================================
+        with semester_chart_col:
+            fig_semester = px.pie(
+                semester_count,
+                values="Count",
+                names="Semester",
+                hole=0.60,
+                color="Semester",
+                color_discrete_map={
+                    "ภาคเรียนที่ 1": "#3B82F6",
+                    "ภาคเรียนที่ 2": "#8B5CF6"
+                },
+            )
+            # ================================================================
+            # 🎨 รูปแบบกราฟ
+            # ================================================================
+            fig_semester.update_traces(
+                textposition="inside",
+                texttemplate=
+                    "<b>%{percent}</b><br>"
+                    "%{value:,} คน",
+                textfont=dict(
+                    size=15,
+                    color="white"
+                ),
+                marker=dict(
+                    line=dict(
+                        color="white",
+                        width=3
+                    )
+                ),
+                hovertemplate=
+                    "<b>📅 %{label}</b><br>" +
+                    "<b>👥 จำนวน:</b> %{value:,} คน<br>" +
+                    "<b>📊 คิดเป็น:</b> %{percent}<br>" +
+                    "<extra></extra>"
+            )
+            # ================================================================
+            # ⚙️ ตั้งค่ากราฟ
+            # ================================================================
+            fig_semester.update_layout(        
+                height=400,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                margin=dict(
+                    l=10,
+                    r=10,
+                    t=10,
+                    b=40
+                ),
+                legend=dict(
+                    orientation="h",
+                    y=-0.05,
+                    x=0.5,
+                    xanchor="center",
+                    font=dict(size=13)
+                ),
+                annotations=[
+                    dict(
+                        x=0.5,
+                        y=0.5,
+                        text=
+                            f"<span style='"
+                            f"color:#64748B;"
+                            f"font-size:12px;'>"
+                            f"นักเรียนทั้งหมด"
+                            f"</span><br><br>"
+                            f"<b style='"
+                            f"font-size:24px;"
+                            f"color:#1E293B;'>"
+                            f"{total_semester_students:,} คน"
+                            f"</b>",
+                        showarrow=False
+                    )
+                ]
+            )
+            # ================================================================
+            # 📊 แสดงกราฟ
+            # ================================================================
 
-        max_stage_val = stage_count["Count"].max() if not stage_count.empty else 100
-        
-        fig_stage.update_layout(
-                    height=380,
-                    xaxis_title="ระดับการศึกษา",
-                    yaxis_title="จำนวนนักเรียน",
-                    showlegend=False,
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    yaxis=dict(
-                        gridcolor="#E2E8F0", 
-                        zeroline=False,
-                        range=[0, max_stage_val * 1.25]  # ✨ ขยายเพดานแกน Y เพิ่มขึ้น 25% เพื่อเว้นที่ให้ตัวเลข
-                    ),
-                    xaxis=dict(linecolor="#CBD5E1"),
-                    margin=dict(l=10, r=10, t=40, b=10) # ✨ เพิ่ม margin ขอบบนเป็น 40
-        )
-
-        st.plotly_chart(fig_stage, use_container_width=True, config={"displayModeBar": False})
-
-        if not stage_count.empty:
-            most_stage = stage_count.iloc[0]["Stage"]
-            most_count = stage_count.iloc[0]["Count"]
-
+            st.plotly_chart(
+                fig_semester,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
+            )
+        # ====================================================================
+        # 📋 ฝั่งขวา : สรุปข้อมูล
+        # ====================================================================
+        with semester_summary_col:
+            st.markdown(
+                """
+                <div style='
+                    color:#1E293B;
+                    font-size:16px;
+                    font-weight:700;
+                    margin-bottom:12px;
+                '>
+                    📊 สรุปข้อมูล
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ================================================================
+            # 📘 ภาคเรียนที่ 1
+            # ================================================================
             st.markdown(
                 f"""
-                <div style='position: relative; top: -15px; margin-bottom: -15px;
-                            background-color:#F8FAFC; border:1px solid #BFDBFE; border-left:4px solid #3B82F6;
-                            padding:10px 12px; border-radius:8px; font-size:13px; color:#334155;'>
-                    <b>💡 ข้อสังเกต:</b> ระดับการศึกษาที่มีนักเรียนมากที่สุดคือ <b>{most_stage}</b> จำนวน <b>{most_count:,}</b> คน
+                <div style='
+                    background:#EFF6FF;
+                    border-radius:10px;
+                    padding:14px;
+                    margin-bottom:10px;
+                '>
+                    <div style='
+                        color:#1E293B;
+                        font-size:13px;
+                        font-weight:600;
+                    '>
+                        📘 ภาคเรียนที่ 1
+                    </div>
+                    <div style='
+                        color:#2563EB;
+                        font-size:22px;
+                        font-weight:700;
+                        margin-top:3px;
+                    '>
+                        {semester1_count:,.0f} คน
+                    </div>
+                    <div style='
+                        color:#64748B;
+                        font-size:12px;
+                    '>
+                        คิดเป็น {semester1_percent:.1f}%
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ================================================================
+            # 📙 ภาคเรียนที่ 2
+            # ================================================================
+            st.markdown(
+                f"""
+                <div style='
+                    background:#F5F3FF;
+                    border-radius:10px;
+                    padding:14px;
+                    margin-bottom:10px;
+                '>
+                    <div style='
+                        color:#1E293B;
+                        font-size:13px;
+                        font-weight:600;
+                    '>
+                        📙 ภาคเรียนที่ 2
+                    </div>
+                    <div style='
+                        color:#7C3AED;
+                        font-size:22px;
+                        font-weight:700;
+                        margin-top:3px;
+                    '>
+                        {semester2_count:,.0f} คน
+                    </div>
+                    <div style='
+                        color:#64748B;
+                        font-size:12px;
+                    '>
+                        คิดเป็น {semester2_percent:.1f}%
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ================================================================
+            # 💡 ข้อสังเกตเชิงสถิติ
+            # ================================================================
+            st.markdown(
+                f"""
+                <div style='
+                    background-color:#F8FAFC;
+                    border:1px solid #E2E8F0;
+                    border-left:4px solid #3B82F6;
+                    border-radius:8px;
+                    padding:12px;
+                    font-size:13px;
+                    color:#334155;
+                    line-height:1.7;
+                    margin-top:10px;
+                '>
+                    💡 <strong>ข้อสังเกตเชิงสถิติ:</strong>
+                    ผู้เรียนส่วนใหญ่อยู่ใน<strong>{top_semester}</strong>
+                    จำนวน<strong>{top_semester_count:,.0f} คน
+                    ({top_semester_percent:.1f}%)</strong>
+                    จากผู้เรียนทั้งหมด<strong>{total_semester_students:,.0f} คน</strong>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
     
     # ------------------------------------------------------------------------
-    # 📦 ROW 5: TOP NATIONALITY (แบ่งแถวด้วย Container มีเส้นขอบ)
-    # ------------------------------------------------------------------------
-    with st.container(border=True):
-        st.markdown(
-            """
-            <div style='text-align: left; margin-bottom: 10px;'>
-                <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;'>
-                    🌍 สัญชาติของผู้เรียนทั้งหมด
-                </h3>
-                <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>
-                    วิเคราะห์สัดส่วนการกระจายตัวของนักเรียนจำแนกตามประเทศสัญชาติทั้งหมด
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        nationality_count = (
-            filtered_df["NationalITy"]
-            .value_counts()
-            .reset_index()
-        )
-        nationality_count.columns = ["Nationality", "Count"]
-        
-        nationality_count["Percent"] = (nationality_count["Count"] / total_students * 100) if total_students > 0 else 0
-
-        ctrl_col1, ctrl_col2 = st.columns([2, 3])
-
-        with ctrl_col1:
-            sort_order = st.selectbox(
-                "↕️ การเรียงลำดับ:",
-                options=["มากไปน้อย", "น้อยไปมาก"],
-                index=0,
-                key="nat_sort"
-            )
-
-        with ctrl_col2:
-            total_countries = len(nationality_count)
-            st.markdown(
-                f"""
-                <div style='background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); 
-                            border-radius: 10px; padding: 6px 12px; text-align: center;'>
-                    <span style='color: #1E40AF; font-size: 12px; font-weight: 600;'>ความหลากหลายทางสัญชาติ</span> | 
-                    <b style='color: #1D4ED8; font-size: 15px;'>{total_countries:,} ประเทศ</b>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        is_ascending = True if sort_order == "น้อยไปมาก" else False
-        category_order_setting = "total ascending" if not is_ascending else "total descending"
-
-        dynamic_height = max(380, len(nationality_count) * 36)
-
-        fig_nat = px.bar(
-            nationality_count,
-            x="Count",
-            y="Nationality",
-            orientation="h",
-            text="Count",
-            color="Count",
-            color_continuous_scale="Cividis",
-            custom_data=["Percent"]
-        )
-
-        fig_nat.update_traces(
-            texttemplate="<b>%{x:,} คน</b> (%{customdata[0]:.1f}%)",
-            textposition="outside",
-            textfont=dict(size=12, color="#334155"),
-            marker=dict(line=dict(width=0), cornerradius=6),
-            hovertemplate="<b>🌐 ประเทศ:</b> %{y}<br>" +
-                          "<b>👥 จำนวน:</b> %{x:,} คน<br>" +
-                          "<b>📊 คิดเป็น:</b> %{customdata[0]:.2f}% ของทั้งหมด<extra></extra>"
-        )
-
-        max_count = nationality_count["Count"].max() if not nationality_count.empty else 100
-
-        fig_nat.update_layout(
-            template="plotly_white",
-            height=dynamic_height,
-            showlegend=False,
-            coloraxis_showscale=False,
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            margin=dict(l=10, r=80, t=10, b=10),
-            yaxis=dict(
-                categoryorder=category_order_setting, 
-                title="",
-                tickfont=dict(size=13, color="#1E293B", family="Arial"),
-                showline=False
-            ),
-            xaxis=dict(
-                title="จำนวนนักเรียน (คน)",
-                title_font=dict(size=12, color="#64748B"),
-                gridcolor="#F1F5F9",
-                zeroline=False,
-                range=[0, max_count * 1.28]
-            )
-        )
-
-        st.plotly_chart(fig_nat, use_container_width=True, config={"displayModeBar": False})
-
-        if not nationality_count.empty:
-            top_nat = nationality_count.iloc[0]["Nationality"]
-            top_count = nationality_count.iloc[0]["Count"]
-            top_pct = nationality_count.iloc[0]["Percent"]
-
-            st.markdown(
-                f"""
-                <div style='position: relative; top: -15px; margin-bottom: -15px;
-                            background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6;
-                            border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #334155;'>
-                    💡 <b>ข้อสังเกตเชิงสถิติ:</b> ผู้เรียนส่วนใหญ่เป็นสัญชาติ <b>{top_nat}</b> 
-                    ครองสัดส่วนสูงสุดถึง <b>{top_count:,} คน ({top_pct:.1f}%)</b> จากทั้งหมด {total_students:,} คน
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    # ------------------------------------------------------------------------
-    # 📦 ROW 6: SEARCH & DATA TABLE (แบ่งแถวด้วย Container มีเส้นขอบ)
+    # 📦 ROW 5: SEARCH & DATA TABLE (แบ่งแถวด้วย Container มีเส้นขอบ)
     # ------------------------------------------------------------------------
     with st.container(border=True):
         st.markdown(
@@ -879,6 +1660,11 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                 color: #0A2540;
                 margin-top: 2px;
             }
+            .kpi-text-sub {
+                font-size: 0.75rem;
+                color: #64748B;
+                font-weight: 500;
+            }
             /* บังคับขอบของ st.container ให้เป็นเส้นสีน้ำเงินเข้ม ขอบมน และมีเงา */
             div[data-testid="stVerticalBlockBorderWrapper"] > div {
                 border: 1.5px solid #1E3A5F !important;
@@ -890,15 +1676,28 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
     """, unsafe_allow_html=True)
 
     # --- ส่วน Header ---
-    st.markdown("<h1 style='color: #0A2540; margin-bottom: 0px; font-weight: bold;'>Academic performance</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #475569; font-size: 1.1rem; margin-top: 0px; margin-bottom: 20px;'>ผลสัมฤทธิ์ทางการเรียน</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: #0A2540; margin-bottom: 0px; font-weight: bold;'>Academic Performance</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #475569; font-size: 1.1rem; margin-top: 0px; margin-bottom: 20px;'>ผลสัมฤทธิ์ทางการเรียนของนักเรียน</p>", unsafe_allow_html=True)
 
-    # --- คำนวณค่าตัวเลขสำหรับ KPI ---
+    # --- คำนวณค่าตัวเลขและเปอร์เซ็นต์สำหรับ KPI ---
     total_students = len(filtered_df)
-    class_counts = filtered_df["Class"].value_counts()
+    class_counts = filtered_df["Class"].value_counts() if not filtered_df.empty else {}
+    
     high_count = class_counts.get("H", 0)
     mid_count = class_counts.get("M", 0)
     low_count = class_counts.get("L", 0)
+
+    # คำนวณ % สัดส่วนเพื่อบอกบริบทที่ชัดเจน
+    high_pct = (high_count / total_students * 100) if total_students > 0 else 0
+    mid_pct = (mid_count / total_students * 100) if total_students > 0 else 0
+    low_pct = (low_count / total_students * 100) if total_students > 0 else 0
+
+    # --- ดึงบริบทจาก Filter ที่เลือกจริงใน Sidebar ---
+    stage_disp = stage_map.get(selected_stage, selected_stage)
+    sem_disp = semester_map.get(selected_semester, selected_semester)
+    gen_disp = gender_map.get(selected_gender, selected_gender)
+
+    context_str = f"ระดับชั้น: {stage_disp} | ภาคเรียน: {sem_disp} | เพศ: {gen_disp}"
 
     # --- 1. KPI Cards ด้านบน (4 การ์ด) ---
     col1, col2, col3, col4 = st.columns(4)
@@ -910,6 +1709,7 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                 <div>
                     <div class='kpi-text-title'>นักเรียนทั้งหมด</div>
                     <div class='kpi-text-value'>{total_students:,} คน</div>
+                    <div class='kpi-text-sub'>กลุ่มเป้าหมายการวิเคราะห์</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -919,8 +1719,9 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #E0F2FE;'>🏃</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียน<br>ระดับสูง</div>
+                    <div class='kpi-text-title'>ผลการเรียนระดับสูง (High)</div>
                     <div class='kpi-text-value'>{high_count:,} คน</div>
+                    <div class='kpi-text-sub'>คิดเป็น <b>{high_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -930,8 +1731,9 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #FCE7F3;'>🙋‍♀️</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียน<br>ระดับปานกลาง</div>
+                    <div class='kpi-text-title'>ผลการเรียนปานกลาง (Medium)</div>
                     <div class='kpi-text-value'>{mid_count:,} คน</div>
+                    <div class='kpi-text-sub'>คิดเป็น <b>{mid_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -941,121 +1743,278 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #FEF3C7;'>🙋‍♂️</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียน<br>ระดับต่ำ</div>
+                    <div class='kpi-text-title'>ผลการเรียนระดับต่ำ (Low)</div>
                     <div class='kpi-text-value'>{low_count:,} คน</div>
+                    <div class='kpi-text-sub'>คิดเป็น <b>{low_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
-    # --- 2. โซนกราฟกลาง (Donut Chart & Bar Chart) ---
-    col_left, col_right = st.columns(2)
+    # =====================================================
+    # 2. โซนกลาง ( Donut Chart )
+    # =====================================================
+    with st.container(border=True):
+        st.markdown("""
+            <h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การกระจายผลสัมฤทธิ์ทางการเรียน</h3>
+            <p style='color: #64748B; font-size: 0.8rem; margin-top: 2px; margin-bottom: 10px;'>
+                สัดส่วนจำแนกตามกลุ่มผลสัมฤทธิ์ (High / Medium / Low) • <i>เกณฑ์: H (70-100%), M (40-69%), L (&lt;40%)</i>
+            </p>
+        """, unsafe_allow_html=True)
+        
+        if "Class" in filtered_df.columns and not filtered_df.empty:
+            total_students = len(filtered_df)
+        
+            # 1. คำนวณจำนวนนักเรียนและ % แต่ละกลุ่มแบบ Dynamic
+            counts = filtered_df["Class"].value_counts()
+            count_h = counts.get("H", 0)
+            count_m = counts.get("M", 0)
+            count_l = counts.get("L", 0)
+        
+            pct_h = (count_h / total_students * 100) if total_students > 0 else 0
+            pct_m = (count_m / total_students * 100) if total_students > 0 else 0
+            pct_l = (count_l / total_students * 100) if total_students > 0 else 0
 
-    with col_left:
-        with st.container(border=True):
-            st.markdown("<h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การกระจายผลสัมฤทธิ์ทางการเรียน</h3>", unsafe_allow_html=True)
-            
+            # Map ชื่อและจำนวนคนเข้า Legend
+            class_map = {
+                "H": f"ระดับสูง (H): {count_h:,} คน ({pct_h:.1f}%)",
+                "M": f"ระดับปานกลาง (M): {count_m:,} คน ({pct_m:.1f}%)",
+                "L": f"ระดับต่ำ (L): {count_l:,} คน ({pct_l:.1f}%)"
+            }
+        
+            filtered_df["Class_Legend"] = filtered_df["Class"].map(class_map)
+
+            # 2. สร้าง Donut Chart
             fig_donut = px.pie(
-                filtered_df,
-                names="Class",
-                hole=0.55,
+                filtered_df, names="Class_Legend", hole=0.55,
                 color="Class",
                 category_orders={"Class": ["H", "M", "L"]},
                 color_discrete_map={"H": "#86EFAC", "M": "#FDE047", "L": "#F87171"}
             )
-            
+        
             fig_donut.update_traces(
-                textposition="inside",
-                textinfo="percent"
+                textposition="inside", 
+                textinfo="percent",
+                hovertemplate="<b>%{label}</b><br>สัดส่วน: <b>%{percent}</b><extra></extra>"
             )
-
-            fig_donut.for_each_trace(lambda t: t.update(labels=[
-                "ระดับสูง" if label == "H" else "ระดับปานกลาง" if label == "M" else "ระดับต่ำ" for label in t.labels
-            ]))
-
+        
             fig_donut.update_layout(
-                height=280,
+                height=280, 
                 margin=dict(l=10, r=10, t=10, b=10),
-                legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.05),
-                paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02),
+                paper_bgcolor='rgba(0,0,0,0)', 
                 plot_bgcolor='rgba(0,0,0,0)',
                 annotations=[{
                     "text": f"<b>นักเรียนทั้งหมด</b><br>{total_students:,} คน",
-                    "x": 0.5, "y": 0.5,
-                    "font_size": 13,
-                    "font_color": "#1E293B",
-                    "showarrow": False
+                    "x": 0.5, "y": 0.5, "font_size": 13, "font_color": "#1E293B", "showarrow": False
                 }]
             )
+        
+            st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False}, key="chart_donut_academic")
+        
+            # 3. กล่องสรุปข้อสังเกตเชิงลึก (Insight Box)
+            st.markdown(f"""
+                <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
+                    <p style='color: #1E293B; font-size: 0.83rem; margin: 0; line-height: 1.5;'>
+                        💡 <strong>ข้อสังเกตและการนำไปใช้:</strong><br>
+                        • นักเรียนส่วนใหญ่อยู่ใน <strong>ระดับปานกลาง (M) {pct_m:.1f}% ({count_m:,} คน)</strong> ซึ่งเป็นกลุ่มเป้าหมายสำคัญที่มีศักยภาพในการยกระดับผลสัมฤทธิ์ขึ้นสู่ระดับสูง<br>
+                        • กลุ่มที่ต้องได้รับการดูแลเร่งด่วนคือ <strong>ระดับต่ำ (L) {pct_l:.1f}% ({count_l:,} คน)</strong> เพื่อวางมาตรการช่วยเหลือและลดอัตราการเรียนตกค้าง
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("ไม่พบข้อมูลผลสัมฤทธิ์ทางการเรียนสำหรับแสดงผล")
+    # =====================================================
+    # โซน: การมีส่วนร่วมรายชั้นปี แยกตามภาคเรียน (Semester Comparison)
+    # =====================================================
+    with st.container(border=True):
+        st.markdown("""
+            <h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การเปรียบเทียบการมีส่วนร่วมรายชั้นปี จำแนกตามภาคเรียน</h3>
+            <p style='color: #64748B; font-size: 0.8rem; margin-top: 2px; margin-bottom: 15px;'>
+                แสดงคะแนนเฉลี่ยการมีส่วนร่วมในแต่ละชั้นปี เปรียบเทียบระหว่างภาคเรียนที่ 1 และ ภาคเรียนที่ 2
+            </p>
+        """, unsafe_allow_html=True)
 
-            st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False})
+        if {"GradeID", "Semester"}.issubset(filtered_df.columns) and not filtered_df.empty:
+            activity_cols = [c for c in ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"] if c in filtered_df.columns]
+        
+            if activity_cols:
+                grade_map = {
+                    "G-01": {"name": "ป.2", "order": 1},
+                    "G-02": {"name": "ป.2", "order": 2},
+                    "G-04": {"name": "ป.4", "order": 3},
+                    "G-05": {"name": "ป.5", "order": 4},
+                    "G-06": {"name": "ป.6", "order": 5},
+                    "G-07": {"name": "ม.1", "order": 6},
+                    "G-08": {"name": "ม.2", "order": 7},
+                    "G-09": {"name": "ม.3", "order": 8},
+                    "G-10": {"name": "ม.4", "order": 9},
+                    "G-11": {"name": "ม.5", "order": 10},
+                    "G-12": {"name": "ม.6", "order": 11},
+                }
 
-    with col_right:
-        with st.container(border=True):
-            st.markdown("<h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>ผลการเรียนรายภาคการศึกษา</h3>", unsafe_allow_html=True)
+                # Groupby ทั้ง GradeID และ Semester
+                sem_grade_df = filtered_df.groupby(["GradeID", "Semester"]).agg(
+                    Avg_Score=(activity_cols[0], lambda x: filtered_df.loc[x.index, activity_cols].mean(axis=1).mean()),
+                    Student_Count=("GradeID", "count")
+                ).reset_index()
+
+                sem_grade_df["Grade_Name"] = sem_grade_df["GradeID"].map(lambda x: grade_map.get(x, {}).get("name", x))
+                sem_grade_df["Order"] = sem_grade_df["GradeID"].map(lambda x: grade_map.get(x, {}).get("order", 99))
+                sem_grade_df["Semester_Label"] = sem_grade_df["Semester"].map({"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"}).fillna(sem_grade_df["Semester"])
             
-            if "Semester" in filtered_df.columns:
-                sem_df = filtered_df.groupby(["Semester", "Class"]).size().reset_index(name="Count")
-                sem_df["Semester_Label"] = sem_df["Semester"].map({"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"}).fillna(sem_df["Semester"])
-                
-                fig_bar = px.bar(
-                    sem_df,
-                    x="Semester_Label",
-                    y="Count",
-                    color="Class",
-                    barmode="group",
-                    text_auto=True,
-                    category_orders={"Class": ["H", "M", "L"]},
-                    color_discrete_map={"H": "#86EFAC", "M": "#FDE047", "L": "#F87171"}
-                )
-                
-                # ✨ แก้ไขตรงนี้: ปรับ cliponaxis=False ไม่ให้ตัวเลขโดนขอบตัด
-                fig_bar.update_traces(
-                    textposition="outside",
-                    cliponaxis=False
-                )
-                
-                newnames = {'H': 'ระดับสูง', 'M': 'ระดับปานกลาง', 'L': 'ระดับต่ำ'}
-                fig_bar.for_each_trace(lambda t: t.update(name=newnames.get(t.name, t.name)))
+                sem_grade_df = sem_grade_df.sort_values(by="Order")
+                sem_grade_df["Label_Text"] = sem_grade_df.apply(lambda r: f"<b>{r['Avg_Score']:.0f}%</b>", axis=1)
 
-                fig_bar.update_layout(
-                    height=290,  # ขยับความสูงขึ้นเล็กน้อย
-                    margin=dict(l=10, r=10, t=40, b=10),  # ✨ แก้ไขตรงนี้: เพิ่ม t=40 เพิ่มพื้นที่ด้านบน
+                # สร้าง Grouped Bar Chart
+                fig_sem_grade = px.bar(
+                    sem_grade_df,
+                    x="Grade_Name",
+                    y="Avg_Score",
+                    color="Semester_Label",
+                    barmode="group",
+                    text="Label_Text",
+                    color_discrete_map={
+                        "ภาคเรียนที่ 1": "#93C5FD",  # ฟ้าอ่อน
+                        "ภาคเรียนที่ 2": "#1D4ED8"   # น้ำเงินเข้ม
+                    }
+                )
+
+                fig_sem_grade.update_traces(
+                    textposition="outside",
+                    cliponaxis=False,
+                    hovertemplate="<b>%{x} (%{fullData.name})</b><br>คะแนนเฉลี่ย: <b>%{y:.1f}%</b><extra></extra>"
+                )
+
+                fig_sem_grade.update_layout(
+                    height=380,
+                    margin=dict(l=20, r=20, t=30, b=20),
                     xaxis_title="",
-                    yaxis_title="",
-                    showlegend=True,
-                    legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.05),
+                    yaxis_title="คะแนนเฉลี่ย (%)",
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=False),
-                    yaxis=dict(showgrid=True, gridcolor='#F1F5F9')
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1,
+                        title_text=""
+                    ),
+                    xaxis=dict(showgrid=False, tickfont=dict(size=12, color="#1E293B", weight="bold")),
+                    yaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, 105])
                 )
 
-                st.plotly_chart(fig_bar, use_container_width=True, config={"displayModeBar": False})
-    # --- 3. โซนล่าง: คะแนนเฉลี่ยตามรายวิชา (Topic) - ข้อความอยู่กึ่งกลางคอลัมน์ ---
+                st.plotly_chart(fig_sem_grade, use_container_width=True, config={"displayModeBar": False}, key="chart_sem_grade")
+
+                # กล่องสรุปข้อสังเกต
+                st.markdown("""
+                    <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1D4ED8; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
+                        <p style='color: #1E293B; font-size: 0.85rem; margin: 0; line-height: 1.5;'>
+                            📊 <strong>วิเคราะห์พัฒนาการ:</strong> การเปรียบเทียบระหว่างภาคเรียนช่วยให้เห็นการเติบโตของการมีส่วนร่วมในแต่ละระดับชั้น โดยชั้นปีที่มีคะแนนเพิ่มขึ้นในภาคเรียนที่ 2 สะท้อนถึงการปรับตัวและแรงจูงใจในการเรียนรู้ที่สูงขึ้น
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            else:
+                st.warning("ไม่พบคอลัมน์ข้อมูลกิจกรรมการเรียนรู้")
+        else:
+            st.info("ไม่พบข้อมูลระดับชั้นหรือภาคเรียนสำหรับแสดงผล")
+
+    # --- 3. โซนล่าง: คะแนนเฉลี่ยตามรายวิชา (Topic) ---
     with st.container(border=True):
-        st.markdown("<h3 style='font-size: 1.2rem; font-weight: bold; color: #1E293B; margin-bottom: 20px;'>คะแนนเฉลี่ยตามรายวิชา</h3>", unsafe_allow_html=True)
-        
+        st.markdown("""
+            <h3 style='font-size: 1.2rem; font-weight: bold; color: #1E293B; margin-bottom: 0px;'>คะแนนเฉลี่ยการมีส่วนร่วมตามรายวิชา</h3>
+            <p style='color: #64748B; font-size: 0.85rem; margin-top: 2px; margin-bottom: 15px;'>
+                คิดจากกิจกรรม: การยกมือตอบ, การเข้าชมบทเรียน, การดูประกาศ และการร่วมอภิปราย
+            </p>
+        """, unsafe_allow_html=True)
+
         if "Topic" in filtered_df.columns and not filtered_df.empty:
             activity_cols = [c for c in ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"] if c in filtered_df.columns]
-            
+    
             if activity_cols:
-                topic_df = filtered_df.groupby("Topic")[activity_cols].mean()
-                topic_df["Avg_Score"] = topic_df.mean(axis=1)
-                topic_df = topic_df.reset_index().sort_values(by="Avg_Score", ascending=False)
-                
-                html_table = "<table style='width:100%; border-collapse:collapse; color:#1E3A5F; font-size:0.9rem; margin-top:10px;'>"
-                html_table += "<thead><tr style='font-weight:600; color:#1E293B; border-bottom: 1px solid #E2E8F0;'><th style='padding:12px 8px; width:20%; text-align:center; vertical-align:middle;'>รายวิชา</th><th style='padding:12px 8px; width:65%; text-align:center; vertical-align:middle;'>คะแนนเฉลี่ย</th><th style='padding:12px 8px; width:15%; text-align:center; vertical-align:middle; white-space:nowrap;'>นักเรียน</th></tr></thead><tbody>"
-                
-                for _, row in topic_df.iterrows():
-                    score_pct = min(max(row['Avg_Score'], 0), 100)
-                    student_cnt = len(filtered_df[filtered_df['Topic'] == row['Topic']])
-                    
-                    html_table += f"<tr><td style='padding:10px 8px; text-align:center; font-weight:500; color:#1E293B; vertical-align:middle;'>{row['Topic']}</td><td style='padding:10px 8px; vertical-align:middle;'><div style='background-color:#003366; border-radius:15px; width:100%; height:18px; overflow:hidden;'><div style='background-color:#00A3E0; width:{score_pct:.0f}%; height:100%; border-radius:15px;'></div></div></td><td style='padding:10px 8px; text-align:center; font-weight:500; color:#1E293B; vertical-align:middle; white-space:nowrap;'>{student_cnt} คน</td></tr>"
-                
-                html_table += "</tbody></table>"
-                st.markdown(html_table, unsafe_allow_html=True)
+                # พจนานุกรมแปลชื่อรายวิชาเป็นภาษาไทย
+                topic_th_map = {
+                    "IT": "เทคโนโลยีสารสนเทศ (IT)",
+                    "Math": "คณิตศาสตร์",
+                    "Arabic": "ภาษาอาหรับ",
+                    "English": "ภาษาอังกฤษ",
+                    "French": "ภาษาฝรั่งเศส",
+                    "Spanish": "ภาษาสเปน",
+                    "Science": "วิทยาศาสตร์",
+                    "Biology": "ชีววิทยา",
+                    "Chemistry": "เคมี",
+                    "Geology": "ธรณีวิทยา",
+                    "History": "ประวัติศาสตร์",
+                    "Quran": "อัลกุรอาน"
+                }
+
+                # คำนวณคะแนนเฉลี่ยและนับจำนวนผู้เรียน
+                topic_df = filtered_df.groupby("Topic").agg(
+                    Avg_Score=(activity_cols[0], lambda x: filtered_df.loc[x.index, activity_cols].mean(axis=1).mean()),
+                    Student_Count=("Topic", "count")
+                ).reset_index()
+
+                # 1. [แก้ไข] แปลงชื่อวิชาเป็นภาษาไทย
+                topic_df["Topic_TH"] = topic_df["Topic"].map(topic_th_map).fillna(topic_df["Topic"])
+
+                # 2. [แก้ไข] เรียงลำดับ ascending=True เพื่อให้ Plotly เอาค่ามากไว้ด้านบน
+                topic_df = topic_df.sort_values(by="Avg_Score", ascending=False)
+        
+                # สร้างข้อความสำหรับ Data Label (เช่น "62% (24 คน)")
+                topic_df["Label_Text"] = topic_df.apply(lambda r: f" <b>{r['Avg_Score']:.0f}%</b> ({r['Student_Count']} คน)", axis=1)
+
+                # 3. สร้าง Horizontal Bar Chart
+                fig_topic = px.bar(
+                    topic_df,
+                    x="Avg_Score",
+                    y="Topic_TH",  # [แก้ไขจุดที่ผิด] เปลี่ยนจาก "Topic" เป็น "Topic_TH"
+                    orientation="h",
+                    text="Label_Text",
+                    color="Avg_Score",
+                    color_continuous_scale=["#93C5FD", "#3B82F6", "#1D4ED8"]
+                )
+
+                fig_topic.update_traces(
+                    textposition="outside",
+                    cliponaxis=False,
+                    width=0.6,
+                    hovertemplate="<b>วิชา %{y}</b><br>คะแนนเฉลี่ย: <b>%{x:.1f}%</b><extra></extra>"
+                )
+
+                fig_topic.update_layout(
+                    height=480,
+                    margin=dict(l=10, r=90, t=10, b=10),
+                    xaxis_title="",
+                    yaxis_title="",
+                    coloraxis_showscale=False,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(
+                        showgrid=True,
+                        gridcolor='#F1F5F9',
+                        showticklabels=False,
+                        range=[0, topic_df['Avg_Score'].max() * 1.25]
+                    ),
+                    yaxis=dict(
+                        showgrid=False,
+                        tickfont=dict(size=13, color="#1E293B", weight="bold")
+                    )
+                )
+
+                # 4. [แก้ไข] ใส่ key="chart_bar_topic" เพื่อป้องกันเออเรอร์ Duplicate ID
+                st.plotly_chart(fig_topic, use_container_width=True, config={"displayModeBar": False}, key="chart_bar_topic")
+                # [ปรับแก้ไข] เพิ่ม margin-top: 10px และ margin-bottom: 15px เว้นระยะห่างไม่ให้ติดกรอบล่าง
+                st.markdown("""
+                    <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #8B5CF6; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
+                        <p style='color: #1E293B; font-size: 0.85rem; margin: 0; line-height: 1.5;'>
+                            🎯 <strong>ข้อสังเกต:</strong> รายวิชาที่มีระดับการมีส่วนร่วมสูงสะท้อนถึงความสนใจของนักเรียนผ่านกิจกรรมการเรียนรู้แบบโต้ตอบ 
+                            ในขณะที่วิชาที่มีคะแนนเฉลี่ยต่ำกว่าอาจเป็นจุดที่ต้องได้รับการสนับสนุนหรือปรับรูปแบบกิจกรรมเพิ่มเติม
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
             else:
                 st.warning("ไม่พบคอลัมน์ข้อมูลกิจกรรมการเรียนรู้")
         else:
@@ -1066,69 +2025,448 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
 # =====================================================
 elif menu == "พฤติกรรมการเรียนรู้":
 
-    st.title("📚 Learning Bahavior")
+    st.title("Learning Behavior")
     st.caption("พฤติกรรมการเรียนรู้")
     st.markdown("---")
 
+    # =================================================
+    # ตรวจสอบข้อมูล
+    # =================================================
+    if filtered_df.empty:
+        st.warning("ไม่พบข้อมูลสำหรับการแสดงผล")
+        st.stop()
+
+    # ทำสำเนาข้อมูลเพื่อป้องกันการแก้ไข filtered_df เดิม
+    behavior_df = filtered_df.copy()
+
+    # =================================================
+    # ตัวแปรพฤติกรรมการเรียนรู้
+    # =================================================
+    behavior_cols = [
+        "raisedhands",
+        "VisITedResources",
+        "AnnouncementsView",
+        "Discussion"
+    ]
+
+    behavior_names = {
+        "raisedhands": "Raised Hands",
+        "VisITedResources": "Visited Resources",
+        "AnnouncementsView": "Announcements View",
+        "Discussion": "Discussion"
+    }
+
+    # =================================================
+    # CSS
+    # =================================================
+    st.markdown("""
+    <style>
+
+    .behavior-card {
+        border: 1px solid #8BA4BE;
+        border-radius: 25px;
+        padding: 10px 6px;
+        min-height: 90px;
+        background: white;
+        text-align: center;
+    }
+
+    .behavior-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+    }
+
+    .behavior-title {
+        font-size: 12px;
+        color: #2463A5;
+        line-height: 1.25;
+        min-height: 32px;
+    }
+
+    .behavior-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333333;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+    # =================================================
+    # คำนวณค่าเฉลี่ยพฤติกรรม
+    # =================================================
+    avg_raised = behavior_df["raisedhands"].mean()
+    avg_resource = behavior_df["VisITedResources"].mean()
+    avg_announcement = behavior_df["AnnouncementsView"].mean()
+    avg_discussion = behavior_df["Discussion"].mean()
+
+    # คะแนนการมีส่วนร่วมรวม
+    behavior_df["ParticipationScore"] = (
+        behavior_df["raisedhands"] +
+        behavior_df["VisITedResources"] +
+        behavior_df["AnnouncementsView"] +
+        behavior_df["Discussion"]
+    )
+
+    avg_participation = behavior_df["ParticipationScore"].mean()
+
+    # =================================================
+    # 1. KPI CARDS
+    # =================================================
+    card_cols = st.columns(5)
+
+    cards = [
+        ("✋", "จำนวนการยกมือ", f"{avg_raised:.1f} ครั้ง/คน"),
+        ("👁️", "จำนวนการเข้าดูสื่อ", f"{avg_resource:.1f} ครั้ง/คน"),
+        ("📣", "จำนวนการดูประกาศ", f"{avg_announcement:.1f} ครั้ง/คน"),
+        ("💬", "จำนวนการมีส่วนร่วมอภิปราย", f"{avg_discussion:.1f} ครั้ง/คน"),
+        ("📊", "คะแนนการมีส่วนร่วมรวม", f"{avg_participation:.1f}")
+    ]
+
+    for col, (icon, title, value) in zip(card_cols, cards):
+
+        with col:
+            st.markdown(
+                f"""
+                <div class="behavior-card">
+                    <div class="behavior-icon">{icon}</div>
+                    <div class="behavior-title">{title}</div>
+                    <div class="behavior-value">{value}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Map ชื่อพฤติกรรมภาษาไทย
+    thai_behavior_names = {
+        "raisedhands": "การยกมือตอบคำถาม",
+        "VisITedResources": "การเข้าดูสื่อการเรียน",
+        "AnnouncementsView": "การดูประกาศ",
+        "Discussion": "การอภิปราย"
+    }
+
+    # Map ระดับผลการเรียน
+    class_names = {
+        "L": "ระดับต่ำ",
+        "M": "ระดับปานกลาง",
+        "H": "ระดับสูง"
+    }
+
+    # =================================================
+    # 2. เปรียบเทียบค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกตามมิติต่างๆ
+    # =================================================
     with st.container(border=True):
-        fig = px.scatter(
-            filtered_df,
-            x="raisedhands",
-            y="VisITedResources",
-            color="Class",
-            size="Discussion",
-            hover_data=["AnnouncementsView"],
-            title="การยกมือตอบคำถาม vs การเข้าดูสื่อการเรียน (ขนาดจุด = การอภิปราย)",
-            labels={
-                "raisedhands": "Raised Hands (ยกมือตอบคำถาม)",
-                "VisITedResources": "Visited Resources (เข้าดูสื่อการเรียน)",
-                "Class": "ระดับผลการเรียน"
+        st.markdown("### 📊 เปรียบเทียบค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกตามมิติต่างๆ")
+
+        # Dictionary สำหรับแปลงชื่อระดับชั้น (GradeID) เป็นภาษาไทย
+        grade_mapping = {
+            "G-01": "ประถมศึกษาปีที่ 1",
+            "G-02": "ประถมศึกษาปีที่ 2",
+            "G-03": "ประถมศึกษาปีที่ 3",
+            "G-04": "ประถมศึกษาปีที่ 4",
+            "G-05": "ประถมศึกษาปีที่ 5",
+            "G-06": "ประถมศึกษาปีที่ 6",
+            "G-07": "มัธยมศึกษาปีที่ 1",
+            "G-08": "มัธยมศึกษาปีที่ 2",
+            "G-09": "มัธยมศึกษาปีที่ 3",
+            "G-10": "มัธยมศึกษาปีที่ 4",
+            "G-11": "มัธยมศึกษาปีที่ 5",
+            "G-12": "มัธยมศึกษาปีที่ 6"
+        }
+
+        # Order การเรียงลำดับระดับชั้นภาษาไทย
+        grade_order = [
+            "ประถมศึกษาปีที่ 1", "ประถมศึกษาปีที่ 2", "ประถมศึกษาปีที่ 3",
+            "ประถมศึกษาปีที่ 4", "ประถมศึกษาปีที่ 5", "ประถมศึกษาปีที่ 6",
+            "มัธยมศึกษาปีที่ 1", "มัธยมศึกษาปีที่ 2", "มัธยมศึกษาปีที่ 3",
+            "มัธยมศึกษาปีที่ 4", "มัธยมศึกษาปีที่ 5", "มัธยมศึกษาปีที่ 6"
+        ]
+
+        # -------------------------------------------------
+        # ส่วนที่ 1: 3 มิติหลัก (ระดับผลการเรียน, ช่วงชั้น, ภาคการศึกษา)
+        # -------------------------------------------------
+        main_dimensions = {
+            "Class": ("ระดับผลการเรียน", {"L": "ระดับต่ำ", "M": "ระดับปานกลาง", "H": "ระดับสูง"}),
+            "StageID": ("ช่วงชั้น", {"lowerlevel": "ประถมศึกษา", "MiddleSchool": "มัธยมศึกษาตอนต้น", "HighSchool": "มัธยมศึกษาตอนปลาย"}),
+            "Semester": ("ภาคการศึกษา", {"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"})
+        }
+
+        main_list = []
+        for dim_col, (dim_label, mapping) in main_dimensions.items():
+            if dim_col in behavior_df.columns:
+                avg_temp = behavior_df.groupby(dim_col)[behavior_cols].mean().reset_index()
+                long_temp = avg_temp.melt(id_vars=dim_col, value_vars=behavior_cols, var_name="Behavior", value_name="Average")
+                long_temp["Dimension"] = dim_label
+                long_temp["Group"] = long_temp[dim_col].replace(mapping).astype(str)
+                long_temp["Behavior"] = long_temp["Behavior"].replace(thai_behavior_names)
+                main_list.append(long_temp[["Dimension", "Group", "Behavior", "Average"]])
+
+        if main_list:
+            main_df = pd.concat(main_list, ignore_index=True)
+
+            fig_main = px.bar(
+                main_df,
+                x="Group",
+                y="Average",
+                color="Behavior",
+                barmode="group",
+                facet_col="Dimension",
+                facet_col_spacing=0.06,
+                text_auto=".1f",
+                title="ค่าเฉลี่ยพฤติกรรมจำแนกตาม ระดับผลการเรียน, ช่วงชั้น และภาคการศึกษา",
+                labels={"Group": "", "Average": "ค่าเฉลี่ย (ครั้ง)", "Behavior": "พฤติกรรม", "Dimension": ""},
+                color_discrete_map={
+                    "การยกมือตอบคำถาม": "#DDA4F1",
+                    "การเข้าดูสื่อการเรียน": "#8EDB8A",
+                    "การดูประกาศ": "#F7C363",
+                    "การอภิปราย": "#FF8A4C"
+                },
+                template="plotly_white"
+            )
+
+            fig_main.for_each_annotation(lambda a: a.update(text=f"<b>{a.text.split('=')[-1]}</b>"))
+            fig_main.update_xaxes(matches=None, showticklabels=True)
+            fig_main.update_yaxes(range=[0, main_df["Average"].max() * 1.18])
+            fig_main.update_traces(textposition="outside")
+            
+            fig_main.update_layout(
+                height=380,
+                margin=dict(l=30, r=20, t=60, b=60),
+                font=dict(family="Plus Jakarta Sans, sans-serif"),
+                legend=dict(orientation="h", y=-0.22, x=0.5, xanchor="center")
+            )
+
+            st.plotly_chart(fig_main, use_container_width=True, config={"displayModeBar": False})
+
+        # -------------------------------------------------
+        # ส่วนที่ 2: มิติ "ระดับชั้น (GradeID)" ภาษาไทย แยกออกมากราฟแนวยาว
+        # -------------------------------------------------
+        if "GradeID" in behavior_df.columns:
+            st.markdown("---")
+            avg_grade = behavior_df.groupby("GradeID")[behavior_cols].mean().reset_index()
+            long_grade = avg_grade.melt(id_vars="GradeID", value_vars=behavior_cols, var_name="Behavior", value_name="Average")
+            
+            # แปลงชื่อระดับชั้นและพฤติกรรมเป็นภาษาไทย
+            long_grade["Grade_Name"] = long_grade["GradeID"].replace(grade_mapping).astype(str)
+            long_grade["Behavior"] = long_grade["Behavior"].replace(thai_behavior_names)
+
+            fig_grade = px.bar(
+                long_grade,
+                x="Grade_Name",
+                y="Average",
+                color="Behavior",
+                barmode="group",
+                text_auto=".1f",
+                title="ค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกรายระดับชั้น",
+                labels={"Grade_Name": "ระดับชั้น", "Average": "ค่าเฉลี่ย (ครั้ง)", "Behavior": "พฤติกรรม"},
+                category_orders={"Grade_Name": grade_order}, # เรียงลำดับ ป.1 -> ม.6 ให้ถูกต้อง
+                color_discrete_map={
+                    "การยกมือตอบคำถาม": "#DDA4F1",
+                    "การเข้าดูสื่อการเรียน": "#8EDB8A",
+                    "การดูประกาศ": "#F7C363",
+                    "การอภิปราย": "#FF8A4C"
+                },
+                template="plotly_white"
+            )
+
+            fig_grade.update_yaxes(range=[0, long_grade["Average"].max() * 1.18])
+            fig_grade.update_traces(textposition="outside")
+            
+            fig_grade.update_layout(
+                height=450, # ปรับความสูงเล็กน้อยเพื่อรองรับชื่อแกน X ภาษาไทยที่ยาวขึ้น
+                margin=dict(l=30, r=20, t=60, b=80),
+                font=dict(family="Plus Jakarta Sans, sans-serif"),
+                showlegend=False
+            )
+
+            st.plotly_chart(fig_grade, use_container_width=True, config={"displayModeBar": False})
+
+        # -------------------------------------------------
+        # ส่วนที่ 3: สรุป Insight
+        # -------------------------------------------------
+        all_data = pd.concat([main_df, long_grade.rename(columns={"Grade_Name": "Group"}).assign(Dimension="ระดับชั้น")], ignore_index=True)
+        max_row = all_data.loc[all_data["Average"].idxmax()]
+        min_row = all_data.loc[all_data["Average"].idxmin()]
+
+        st.info(
+            f"""**📌 สรุปภาพรวมจากทุกมิติ:** 
+            * พฤติกรรมที่มีค่าเฉลี่ยสูงสุดในภาพรวม คือ **{max_row['Behavior']}** ในกลุ่ม **{max_row['Group']}** ({max_row['Dimension']}) เฉลี่ย **{max_row['Average']:.1f} ครั้ง**
+            * พฤติกรรมที่มีค่าเฉลี่ยต่ำสุดในภาพรวม คือ **{min_row['Behavior']}** ในกลุ่ม **{min_row['Group']}** ({min_row['Dimension']}) เฉลี่ย **{min_row['Average']:.1f} ครั้ง**"""
+        )
+    # =================================================
+    # 2. DONUT CHART
+    # สัดส่วนผู้เรียนตามระดับผลการเรียน (เหมาะสมแล้วสำหรับการดู Composition)
+    # =================================================
+    with st.container(border=True):
+        st.markdown("### 🍩 สัดส่วนผู้เรียนตามระดับผลการเรียน")
+
+        class_count = (
+            behavior_df["Class"]
+            .value_counts()
+            .reset_index()
+        )
+        class_count.columns = ["Class", "Count"]
+        class_count["ClassName"] = class_count["Class"].replace(class_names)
+
+        fig_class = px.pie(
+            class_count,
+            names="ClassName",
+            values="Count",
+            hole=0.55,
+            title="สัดส่วนจำนวนผู้เรียนจำแนกตามระดับผลการเรียน",
+            color="ClassName",
+            color_discrete_map={
+                "ระดับต่ำ": "#F5C45D",
+                "ระดับปานกลาง": "#4DB8E8",
+                "ระดับสูง": "#8BD98A"
             },
-            category_orders={"Class": ["L", "M", "H"]},
-            color_discrete_map={"L": "#EF4444", "M": "#F59E0B", "H": "#10B981"},
             template="plotly_white"
         )
 
-        fig.update_layout(
-            height=500,
-            font=dict(family="Plus Jakarta Sans, sans-serif"),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        fig_class.update_traces(
+            texttemplate="%{label}<br>%{percent}",
+            textposition="inside",
+            hovertemplate="<b>%{label}</b><br>จำนวนผู้เรียน: %{value} คน<br>คิดเป็น: %{percent}<extra></extra>"
         )
 
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        fig_class.update_layout(
+            height=380,
+            margin=dict(l=30, r=30, t=60, b=30),
+            font=dict(family="Plus Jakarta Sans, sans-serif"),
+            legend=dict(title="ระดับผลการเรียน", orientation="v", y=0.5, x=1.02)
+        )
 
-# =====================================================
-# การเข้าเรียน
-# =====================================================
+        st.plotly_chart(fig_class, use_container_width=True, config={"displayModeBar": False})
+
+        # --- คำนวณ Insight Donut Chart ---
+        total_class = class_count["Count"].sum()
+    
+        max_c = class_count.loc[class_count["Count"].idxmax()]
+        min_c = class_count.loc[class_count["Count"].idxmin()]
+
+        st.info(
+            f"""**📌 สรุปสาระสำคัญ:** 
+            * ผู้เรียนส่วนใหญ่อยู่ใน **{max_c['ClassName']}** จำนวน **{int(max_c['Count']):,} คน** (คิดเป็น **{(max_c['Count']/total_class)*100:.1f}%**)
+            * ผู้เรียนที่มีจำนวนน้อยที่สุดคือ **{min_c['ClassName']}** จำนวน **{int(min_c['Count']):,} คน** (คิดเป็น **{(min_c['Count']/total_class)*100:.1f}%**)"
+            """
+        )
+   
+    # =================================================
+    # 3. GROUPED BAR CHART: การกระจายความถี่ (นำโค้ดใหม่มาวางตรงนี้ได้เลย)
+    # =================================================
+    with st.container(border=True):
+        st.markdown("### 📈 การกระจายความถี่ของพฤติกรรมการเรียนรู้ทั้งหมด")
+
+        behavior_cols = ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"]
+        bins = [-1, 10, 20, 30, 45, float("inf")]
+        labels = ["0–10 ครั้ง", "11–20 ครั้ง", "21–30 ครั้ง", "31–45 ครั้ง", "มากกว่า 45 ครั้ง"]
+
+        # 1. จัดกลุ่มช่วงคะแนนของทุกพฤติกรรมพร้อมกัน
+        dist_list = []
+        for col in behavior_cols:
+            b_range = pd.cut(behavior_df[col], bins=bins, labels=labels, include_lowest=True)
+            counts = b_range.value_counts().sort_index().reset_index()
+            counts.columns = ["ช่วงจำนวนครั้ง", "จำนวนผู้เรียน"]
+            counts["Behavior"] = thai_behavior_names[col]
+            dist_list.append(counts)
+
+        # รวม Dataframe เข้าด้วยกัน
+        all_dist_df = pd.concat(dist_list, ignore_index=True)
+
+        # 2. สร้าง Grouped Bar Chart รวมในกราฟเดียว
+        fig_all_dist = px.bar(
+            all_dist_df,
+            x="ช่วงจำนวนครั้ง",
+            y="จำนวนผู้เรียน",
+            color="Behavior",
+            barmode="group",
+            text_auto=True,
+            title="การเปรียบเทียบการกระจายความถี่จำแนกตามพฤติกรรมการเรียนรู้",
+            labels={
+                "ช่วงจำนวนครั้ง": "ช่วงความถี่การทำพฤติกรรม",
+                "จำนวนผู้เรียน": "จำนวนผู้เรียน (คน)",
+                "Behavior": "พฤติกรรมการเรียนรู้"
+            },
+            color_discrete_map={
+                "การยกมือตอบคำถาม": "#DDA4F1",
+                "การเข้าดูสื่อการเรียน": "#8EDB8A",
+                "การดูประกาศ": "#F7C363",
+                "การอภิปราย": "#FF8A4C"
+            },
+            template="plotly_white"
+        )
+
+        fig_all_dist.update_traces(textposition="outside")
+        fig_all_dist.update_layout(
+            height=450,
+            margin=dict(l=40, r=30, t=60, b=80),
+            font=dict(family="Plus Jakarta Sans, sans-serif"),
+            legend=dict(
+                orientation="h",
+                y=-0.25,
+                x=0.5,
+                xanchor="center"
+            )
+        )
+
+        st.plotly_chart(fig_all_dist, use_container_width=True, config={"displayModeBar": False})
+
+        # คำนวณ Insight คำอธิบายสรุปภาพรวม
+        total_students = len(behavior_df)
+        
+        high_freq_df = all_dist_df[all_dist_df["ช่วงจำนวนครั้ง"] == "มากกว่า 45 ครั้ง"]
+        max_high = high_freq_df.loc[high_freq_df["จำนวนผู้เรียน"].idxmax()]
+
+        low_freq_df = all_dist_df[all_dist_df["ช่วงจำนวนครั้ง"] == "0–10 ครั้ง"]
+        max_low = low_freq_df.loc[low_freq_df["จำนวนผู้เรียน"].idxmax()]
+
+        st.info(
+            f"""**📌 สรุปภาพรวมการกระจายตัว:** 
+            * พฤติกรรมที่มีผู้เรียนทำในระดับสูงมาก (**มากกว่า 45 ครั้ง**) มากที่สุด คือ **{max_high['Behavior']}** จำนวน **{max_high['จำนวนผู้เรียน']} คน** (คิดเป็น **{(max_high['จำนวนผู้เรียน']/total_students)*100:.1f}%**)
+            * พฤติกรรมที่มีผู้เรียนทำในระดับต่ำ (**0–10 ครั้ง**) มากที่สุด คือ **{max_low['Behavior']}** จำนวน **{max_low['จำนวนผู้เรียน']} คน** (คิดเป็น **{(max_low['จำนวนผู้เรียน']/total_students)*100:.1f}%**)
+            """
+        )   
+#---------------------------------------------------------------------------------------------------------
+# การมาเรียน
+#---------------------------------------------------------------------------------------------------------        
 elif menu == "การเข้าเรียน":
-
-    st.title("🗓️ Attendance")
-    st.caption("เปรียบเทียบผลกระทบของวันขาดเรียน (น้อยกว่า 7 วัน vs มากกว่า 7 วัน) ต่อระดับผลการเรียน")
+    
+    st.title("🗓️ Attendance Analysis")
+    st.caption("สถิติเชิงพรรณนาแสดงสัดส่วนการขาดเรียนจำแนกตาม ผลการเรียน, ช่วงชั้น, ชั้นเรียน และภาคการศึกษา")
     st.markdown("---")
+    
+    # Mapping Dictionary สำหรับแปลงชื่อกลุ่มเป็นภาษาไทย
+    absence_map = {"Under-7": "ขาดเรียน < 7 วัน", "Above-7": "ขาดเรียน ≥ 7 วัน"}
+    class_map = {"L": "ระดับต่ำ (L)", "M": "ระดับปานกลาง (M)", "H": "ระดับสูง (H)"}
+    stage_map = {"lowerlevel": "ประถมศึกษา", "MiddleSchool": "มัธยมศึกษาตอนต้น", "HighSchool": "มัธยมศึกษาตอนปลาย"}
+    semester_map = {"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"}
+    grade_map = {
+        "G-01": "ป.1", "G-02": "ป.2", "G-03": "ป.3", "G-04": "ป.4", "G-05": "ป.5", "G-06": "ป.6",
+        "G-07": "ม.1", "G-08": "ม.2", "G-09": "ม.3", "G-10": "ม.4", "G-11": "ม.5", "G-12": "ม.6"
+    }
+
     with st.container(border=True):
         st.markdown(
             """
-            <div style='text-align: left; margin-bottom: 12px;'>
-                <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;'>
-                    🚨 การขาดเรียน
+            <div style='text-align: left; margin-bottom: 16px;'>
+                <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700;'>
+                    🚨 ภาพรวมการขาดเรียน (Student Absence Days)
                 </h3>
                 <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>
-                    สัดส่วนการขาดเรียนของนักเรียนจำแนกตามเกณฑ์เสี่ยง (น้อยกว่า 7 วัน vs ตั้งแต่ 7 วันขึ้นไป)
+                    เปรียบเทียบสัดส่วนนักเรียนขาดเรียนน้อย (< 7 วัน) และขาดเรียนมาก (≥ 7 วัน)
                 </p>
             </div>
             """,
             unsafe_allow_html=True
         )
     
+        # 1. การคำนวณสถิติภาพรวม (KPI)
         absence_counts = filtered_df["StudentAbsenceDays"].value_counts().reset_index()
         absence_counts.columns = ["AbsenceCategory", "Count"]
-    
-        category_map = {
-            "Under-7": "ขาดเรียนน้อย ",
-            "Above-7": "ขาดเรียนมาก "
-        }
-        absence_counts["Absence_TH"] = absence_counts["AbsenceCategory"].map(category_map)
-            
+        absence_counts["Absence_TH"] = absence_counts["AbsenceCategory"].map(absence_map)
+        
         total_filtered = len(filtered_df)
         absence_counts["Percent"] = (absence_counts["Count"] / total_filtered * 100) if total_filtered > 0 else 0
     
@@ -1137,17 +2475,16 @@ elif menu == "การเข้าเรียน":
     
         count_under7 = under_7_row["Count"].values[0] if not under_7_row.empty else 0
         pct_under7 = under_7_row["Percent"].values[0] if not under_7_row.empty else 0
-    
         count_above7 = above_7_row["Count"].values[0] if not above_7_row.empty else 0
         pct_above7 = above_7_row["Percent"].values[0] if not above_7_row.empty else 0
     
+        # KPI Cards
         kpi_col1, kpi_col2 = st.columns(2)
-    
         with kpi_col1:
             st.markdown(
                 f"""
                 <div style='background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 12px; text-align: center;'>
-                    <span style='color: #166534; font-size: 13px; font-weight: 600;'>🟢 ขาดเรียนน้อย </span>
+                    <span style='color: #166534; font-size: 13px; font-weight: 600;'>🟢 ขาดเรียน < 7 วัน</span>
                     <div style='color: #15803D; font-size: 22px; font-weight: 800; margin-top: 2px;'>
                         {count_under7:,} คน <span style='font-size: 14px; font-weight: 500;'>({pct_under7:.1f}%)</span>
                     </div>
@@ -1155,12 +2492,11 @@ elif menu == "การเข้าเรียน":
                 """,
                 unsafe_allow_html=True
             )
-    
         with kpi_col2:
             st.markdown(
                 f"""
                 <div style='background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; padding: 12px; text-align: center;'>
-                    <span style='color: #991B1B; font-size: 13px; font-weight: 600;'>🔴 ขาดเรียนมาก </span>
+                    <span style='color: #991B1B; font-size: 13px; font-weight: 600;'>🔴 ขาดเรียน ≥ 7 วัน</span>
                     <div style='color: #DC2626; font-size: 22px; font-weight: 800; margin-top: 2px;'>
                         {count_above7:,} คน <span style='font-size: 14px; font-weight: 500;'>({pct_above7:.1f}%)</span>
                     </div>
@@ -1168,73 +2504,91 @@ elif menu == "การเข้าเรียน":
                 """,
                 unsafe_allow_html=True
             )
-    
-        fig_absence = px.pie(
-            absence_counts,
-            names="Absence_TH",
-            values="Count",
-            hole=0.55,
-            color="AbsenceCategory",
-            color_discrete_map={
-                "Under-7": "#22C55E",
-                "Above-7": "#EF4444"
-            },
-            custom_data=["Percent"]
-        )
-    
-        fig_absence.update_traces(
-            textposition="inside",
-            textinfo="percent+label",
-            insidetextfont=dict(size=13, color="#FFFFFF"),
-            hovertemplate="<b>เกณฑ์การขาดเรียน:</b> %{label}<br>" +
-                          "<b>จำนวน:</b> %{value:,} คน<br>" +
-                          "<b>คิดเป็น:</b> %{customdata[0]:.2f}%<extra></extra>",
-            marker=dict(line=dict(color="#FFFFFF", width=2))
-        )
-    
-        fig_absence.update_layout(
-            template="plotly_white",
-            height=350,
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.15,
-                xanchor="center",
-                x=0.5,
-                font=dict(size=13, color="#334155")
-            ),
-            margin=dict(l=10, r=10, t=10, b=30),
-            annotations=[{
-                "text": f"<b>รวมทั้งหมด</b><br>{total_filtered:,} คน",
-                "x": 0.5, "y": 0.5,
-                "font_size": 13,
-                "font_color": "#1E293B",
-                "showarrow": False
-            }]
-        )
-    
-        st.plotly_chart(fig_absence, use_container_width=True, config={"displayModeBar": False})
-    
-        if count_above7 > 0:
-            st.markdown(
-                f"""
-                <div style='position: relative; top: -15px; margin-bottom: -15px;
-                            background-color: #FFFBEB; border: 1px solid #FDE68A; border-left: 4px solid #F59E0B;
-                            border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #92400E; '>
-                ⚠️ <b>ข้อสังเกตพฤติกรรม:</b> มีนักเรียนอยู่ในกลุ่มเสี่ยงขาดเรียนบ่อย (ตั้งแต่ 7 วันขึ้นไป) 
-                    จำนวน <b>{count_above7:,} คน ({pct_above7:.1f}%)</b> ซึ่งอาจส่งผลกระทบโดยตรงต่อผลสัมฤทธิ์ทางการเรียน
-                </div>
-                """,
-                unsafe_allow_html=True
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # -------------------------------------------------
+        # 2. กราฟจำแนกตามมิติต่างๆ (Descriptive Bar Charts)
+        # -------------------------------------------------
+        
+        # ฟังก์ชันช่วยสร้าง Bar Chart แบบ Grouped
+        def create_absence_bar(df, group_col, title_text, label_map=None, category_order=None):
+            temp_df = df.groupby([group_col, "StudentAbsenceDays"]).size().reset_index(name="Count")
+            temp_df["Absence_TH"] = temp_df["StudentAbsenceDays"].map(absence_map)
+            if label_map:
+                temp_df["Group_TH"] = temp_df[group_col].map(label_map).fillna(temp_df[group_col])
+            else:
+                temp_df["Group_TH"] = temp_df[group_col]
+
+            fig = px.bar(
+                temp_df,
+                x="Group_TH",
+                y="Count",
+                color="Absence_TH",
+                barmode="group",
+                text="Count",
+                title=f"<b>{title_text}</b>",
+                labels={"Group_TH": "", "Count": "จำนวน (คน)", "Absence_TH": "การขาดเรียน"},
+                color_discrete_map={"ขาดเรียน < 7 วัน": "#22C55E", "ขาดเรียน ≥ 7 วัน": "#EF4444"},
+                category_orders={"Group_TH": category_order} if category_order else {}
             )
+            fig.update_traces(textposition="outside")
+            fig.update_yaxes(range=[0, temp_df["Count"].max() * 1.25])
+            fig.update_layout(
+                template="plotly_white",
+                height=320,
+                margin=dict(l=10, r=10, t=40, b=10),
+                legend=dict(orientation="h", y=-0.25, x=0.5, xanchor="center")
+            )
+            return fig
+
+        # แถวที่ 1: ผลการเรียน (Class) & ภาคการศึกษา (Semester)
+        row1_col1, row1_col2 = st.columns(2)
+        with row1_col1:
+            if "Class" in filtered_df.columns:
+                fig_class = create_absence_bar(filtered_df, "Class", "จำแนกตามระดับผลการเรียน", class_map, ["ระดับต่ำ (L)", "ระดับปานกลาง (M)", "ระดับสูง (H)"])
+                st.plotly_chart(fig_class, use_container_width=True, config={"displayModeBar": False})
+
+        with row1_col2:
+            if "Semester" in filtered_df.columns:
+                fig_sem = create_absence_bar(filtered_df, "Semester", "จำแนกตามภาคการศึกษา", semester_map, ["ภาคเรียนที่ 1", "ภาคเรียนที่ 2"])
+                st.plotly_chart(fig_sem, use_container_width=True, config={"displayModeBar": False})
+
+        # แถวที่ 2: ช่วงชั้น (StageID) & ระดับชั้นเรียน (GradeID)
+        row2_col1, row2_col2 = st.columns(2)
+        with row2_col1:
+            if "StageID" in filtered_df.columns:
+                fig_stage = create_absence_bar(filtered_df, "StageID", "จำแนกตามช่วงชั้น", stage_map, ["ประถมศึกษา", "มัธยมศึกษาตอนต้น", "มัธยมศึกษาตอนปลาย"])
+                st.plotly_chart(fig_stage, use_container_width=True, config={"displayModeBar": False})
+
+        with row2_col2:
+            if "GradeID" in filtered_df.columns:
+                grade_order_list = ["ป.1", "ป.2", "ป.3", "ป.4", "ป.5", "ป.6", "ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"]
+                fig_grade = create_absence_bar(filtered_df, "GradeID", "จำแนกตามชั้นเรียน (Grade)", grade_map, grade_order_list)
+                st.plotly_chart(fig_grade, use_container_width=True, config={"displayModeBar": False})
+
+        # -------------------------------------------------
+        # 3. สรุปสถิติเชิงพรรณนา (Descriptive Summary)
+        # -------------------------------------------------
+        st.markdown(
+            f"""
+            <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #0EA5E9; border-radius: 8px; 
+                        padding: 12px; font-size: 13px; color: #334155; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; '>
+                📌 <b>สรุปภาพรวม:</b> จากนักเรียนทั้งหมด <b>{total_filtered:,} คน</b> 
+                มีผู้เรียนที่อยู่ในกลุ่มขาดเรียนน้อยกว่า 7 วัน จำนวน <b>{count_under7:,} คน ({pct_under7:.1f}%)</b> 
+                และกลุ่มขาดเรียนตั้งแต่ 7 วันขึ้นไป จำนวน <b>{count_above7:,} คน ({pct_above7:.1f}%)</b> 
+                โดยสามารถแยกดูสัดส่วนตามมิติต่างๆ ในกราฟด้านบนเพื่อเปรียบเทียบจำนวนนักเรียนในแต่ละกลุ่มได้ทันที
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 # =====================================================
 # การมีส่วนร่วมของผู้ปกครอง
 # =====================================================
 elif menu == "การมีส่วนร่วมของผู้ปกครอง":
 
-    st.title("👨‍👩‍👧 การวิเคราะห์การมีส่วนร่วมของผู้ปกครอง")
-    st.caption("วิเคราะห์สัดส่วนความร่วมมือของผู้ดูแลหลัก ความพึงพอใจต่อโรงเรียน และผลการเรียนของผู้เรียน")
+    st.title("👨‍👩‍👧 การมีส่วนร่วมของผู้ปกครอง")
+    st.caption("ความร่วมมือของผู้ปกครอง ความพึงพอใจต่อโรงเรียน และผลการเรียนของผู้เรียน")
     st.markdown("---")
 
     with st.container(border=True):
