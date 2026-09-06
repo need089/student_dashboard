@@ -168,9 +168,8 @@ with st.sidebar:
             "ภาพรวม",
             "ผลสัมฤทธิ์ทางการเรียน",
             "พฤติกรรมการเรียนรู้",
-            "การเข้าเรียน",
             "การมีส่วนร่วมของผู้ปกครอง",
-            "การวิเคราะห์ความสัมพันธ์ของข้อมูล",
+            "การวิเคราะห์ความสัมพันธ์ของตัวแปร",
             "การทำนายผลการเรียนของนักเรียน"
         ],
         icons=[
@@ -417,14 +416,16 @@ if menu == "ภาพรวม":
                 hole=0.55,
                 color="Gender",
                 color_discrete_map={
-                    "เพศชาย": "#4F8EF7",
-                    "เพศหญิง": "#FF6B9A"
+                    "เพศชาย": "#4A90E2",
+                    "เพศหญิง": "#E22E82"
                 }
             )
             # ========================================================
             # 🎨 ปรับแต่งกราฟวงกลม
             # ========================================================
             fig_gender.update_traces(
+                rotation=180,
+                direction="clockwise",
                 textposition="inside",
                 texttemplate="<b>%{percent}</b><br>%{value:,} คน",
                 textfont=dict(
@@ -657,12 +658,12 @@ if menu == "ภาพรวม":
                 orientation="h",
                 text="Count",
                 color="Count",
-                color_continuous_scale=[
-                    [0.00, "#F5D0FE"],
-                    [0.25, "#E9A8F0"],
-                    [0.50, "#D77AE5"],
-                    [0.75, "#B84FCF"],
-                    [1.00, "#9333A8"]
+               color_continuous_scale=[
+                    [0.00, "#F8F7FF"],  # อ่อนสุด (ม่วงสว่างสบายตา)
+                    [0.25, "#D0D7DE"],  # อ่อน (ม่วงเทานุ่มนวล)
+                    [0.50, "#8C92AC"],  # กลาง (ม่วงหม่นเย็น/Cool Slate Purple)
+                    [0.75, "#5A639C"],  # เข้ม (ม่วงครามเย็นตา)
+                    [1.00, "#2B3160"]   # เข้มสุด (ม่วงน้ำเงินเข้มลึก)
                 ],
                 custom_data=["Percent"]
 
@@ -793,7 +794,6 @@ if menu == "ภาพรวม":
     # ------------------------------------------------------------------------
     # 📦 ROW 2: STUDENT DISTRIBUTION BY STAGE / GRADE
     # ------------------------------------------------------------------------
-
     chart3, chart4 = st.columns(2, gap="medium")
 
     # ========================================================================
@@ -883,9 +883,9 @@ if menu == "ภาพรวม":
                 text="Count",
                 color="Count",
                 color_continuous_scale=[
-                    [0.0, "#93C5FD"],   # อ่อนสุด แต่ยังเป็นฟ้า
-                    [0.5, "#3B82F6"],   # กลาง
-                    [1.0, "#1E3A8A"]    # เข้มสุด
+                    [0.0, "#FFEDD5"],   # อ่อนสุด 
+                    [0.5, "#FB923C"],   # กลาง
+                    [1.0, "#9A3412"]    # เข้มสุด
                 ],
                 custom_data=["Percent"],
                 category_orders={
@@ -1132,18 +1132,18 @@ if menu == "ภาพรวม":
                     ]
                 },
                 color_discrete_sequence=[
-                        "#0B351D",
-                        "#0F4224",
-                        "#124C2A",
-                        "#14532D",
-                        "#166534",
-                        "#15803D",
-                        "#16A34A",
-                        "#22C55E",
-                        "#4ADE80",
-                        "#86EFAC",
-                        "#BBF7D0",
-                        "#DCFCE7"
+                    "#E6F4F1",  # เขียวพาสเทลอ่อนมาก
+                    "#CCECE6",  # เขียวมิ้นต์อ่อน
+                    "#99D8C9",  # เขียวมิ้นต์
+                    "#66C2A4",  # เขียวหยกอ่อน
+                    "#41AE76",  # เขียวมรกตสด
+                    "#238B45",  # เขียวมรกตกลาง
+                    "#006D2C",  # เขียวมรกตเข้ม
+                    "#00441B",  # เขียวไพน์เข้ม
+                    "#003615",  # เขียวอมฟ้าเข้ม
+                    "#00280F",  # เขียวเข้มลึก
+                    "#001F0B",  # เขียวเกือบดำ
+                    "#001407"   # เขียวเข้มสุด                                          
                 ]
             )
             fig_grade.update_traces(
@@ -1257,7 +1257,6 @@ if menu == "ภาพรวม":
     # ------------------------------------------------------------------------
     # 📦 ROW 3: SEMESTER DISTRIBUTION
     # ------------------------------------------------------------------------
-
     with st.container(border=True, height=600):
         st.markdown(
             """
@@ -1299,6 +1298,15 @@ if menu == "ภาพรวม":
             "F": "ภาคการศึกษาที่ 1",
             "S": "ภาคการศึกษาที่ 2"
         })
+        semester_count["Semester"] = pd.Categorical(
+                        semester_count["Semester"],
+                        categories=[
+                            "ภาคการศึกษาที่ 1",
+                            "ภาคการศึกษาที่ 2"
+                        ],
+                        ordered=True
+                    )
+        semester_count = semester_count.sort_values("Semester")
         # ================================================================
         # 🔢 ป้องกันข้อมูลผิดประเภท / NaN
         # ================================================================
@@ -1386,8 +1394,8 @@ if menu == "ภาพรวม":
                 hole=0.60,
                 color="Semester",
                 color_discrete_map={
-                    "ภาคการศึกษาที่ 1": "#3B82F6",
-                    "ภาคการศึกษาที่ 2": "#8B5CF6"
+                    "ภาคการศึกษาที่ 1": "#35A6DB",
+                    "ภาคการศึกษาที่ 2": "#383AB5"
                 },
             )
             # ================================================================
@@ -1408,6 +1416,8 @@ if menu == "ภาพรวม":
                         width=3
                     )
                 ),
+                sort=False,          # เพิ่ม
+                rotation=180,        # เพิ่ม
                 hovertemplate=
                     "<b>📅 %{label}</b><br>" +
                     "<b>👥 จำนวน:</b> %{value:,} คน<br>" +
@@ -1527,7 +1537,7 @@ if menu == "ภาพรวม":
                     </div>
 
                     <div style="
-                        color:#2563EB;
+                        color:#3FADE0;
                         font-size:22px;
                         font-weight:700;
                         margin-top:3px;
@@ -1535,7 +1545,7 @@ if menu == "ภาพรวม":
                         {semester1_count:,.0f} คน
                     </div>
 
-                    <div style="
+                    <div style="35A6DB;
                         color:#64748B;
                         font-size:12px;
                     ">
@@ -1563,7 +1573,7 @@ if menu == "ภาพรวม":
                     </div>
 
                     <div style="
-                        color:#7C3AED;
+                        color:#383AB5;
                         font-size:22px;
                         font-weight:700;
                         margin-top:3px;
@@ -1616,47 +1626,6 @@ if menu == "ภาพรวม":
                     """,
                     unsafe_allow_html=True
                 )
-    
-    # ------------------------------------------------------------------------
-    # 📦 ROW 5: SEARCH & DATA TABLE (แบ่งแถวด้วย Container มีเส้นขอบ)
-    # ------------------------------------------------------------------------
-    with st.container(border=True):
-        st.markdown(
-        """
-        <div style='position: relative; top: -8px; margin-bottom: -5px;
-                    background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #3B82F6;
-                    border-radius: 8px; padding: 10px 14px; font-size: 16px; font-weight: 600; color: #1E40AF;'>
-            🔍 ค้นหาและดูข้อมูลนักเรียน
-        </div>
-        """,
-        unsafe_allow_html=True
-        )
-    
-        # 2. ช่องค้นหาข้อมูล
-        keyword = st.text_input("ระบุคำค้นหา (ค้นหาได้ทุกคอลัมน์):", placeholder="พิมพ์คำค้นหา...")
-
-        # 3. การกรองข้อมูล DataFrame
-        if keyword:
-            display_df = filtered_df[
-                filtered_df.astype(str)
-                .apply(lambda x: x.str.contains(keyword, case=False))
-                .any(axis=1)
-            ]
-        else:
-            display_df = filtered_df
-
-        # 4. แสดงผลตาราง
-        st.dataframe(display_df, use_container_width=True, height=350)
-
-        # 5. เตรียมไฟล์และปุ่มดาวน์โหลด
-        csv = display_df.to_csv(index=False).encode('utf-8-sig')
-        st.download_button(
-            label="⬇️ ดาวน์โหลดรายงาน CSV",
-            data=csv,
-            file_name="student_dashboard_report.csv",
-            mime="text/csv",
-            use_container_width=True # (Optional) ปรับให้ปุ่มยาวเต็มความกว้างขอบเพื่อความเรียบร้อย
-        )
 
 # =====================================================
 # ผลสัมฤทธิ์ทางการเรียน
@@ -1792,272 +1761,589 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
     # =====================================================
-    # 2. โซนกลาง ( Donut Chart )
+    # 2. โซนกลาง ( Grouped Bar Chart ตามช่วงชั้น )
     # =====================================================
     with st.container(border=True):
-        st.markdown("""
-            <h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การกระจายผลสัมฤทธิ์ทางการเรียน</h3>
+        st.markdown(
+            """
+            <h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การกระจายผลสัมฤทธิ์ทางการเรียนตามช่วงชั้น</h3>
             <p style='color: #64748B; font-size: 0.8rem; margin-top: 2px; margin-bottom: 10px;'>
-                สัดส่วนจำแนกตามกลุ่มผลสัมฤทธิ์ (High / Medium / Low) • <i>เกณฑ์: H (70-100%), M (40-69%), L (&lt;40%)</i>
+                สัดส่วนจำแนกตามกลุ่มผลสัมฤทธิ์ (High / Medium / Low) แบ่งตามช่วงชั้น • <i>เกณฑ์: H (70-100%), M (40-69%), L (&lt;40%)</i>
             </p>
-        """, unsafe_allow_html=True)
-        
+        """,
+            unsafe_allow_html=True,
+        )
+
         if "Class" in filtered_df.columns and not filtered_df.empty:
+            # Map ชื่อช่วงชั้นภาษาไทย (ถ้ายังไม่มี)
+            stage_map = {
+                "lowerlevel": "ประถม",
+                "MiddleSchool": "มัธยมต้น",
+                "HighSchool": "มัธยมปลาย",
+            }
+            if "StageID" in filtered_df.columns:
+                filtered_df["Stage_TH"] = (
+                    filtered_df["StageID"]
+                    .map(stage_map)
+                    .fillna(filtered_df["StageID"])
+                )
+
+            # Map ชื่อระดับผลสัมฤทธิ์ภาษาไทย
+            class_label_map = {
+                "H": "ระดับสูง (H)",
+                "M": "ระดับปานกลาง (M)",
+                "L": "ระดับต่ำ (L)",
+            }
+            filtered_df["Class_TH"] = filtered_df["Class"].map(class_label_map)
+
+            # Groupby คำนวณจำนวนและสัดส่วน %
+            stage_class_df = (
+                filtered_df.groupby(
+                    ["Stage_TH", "Class", "Class_TH"], as_index=False
+                )
+                .size()
+                .rename(columns={"size": "Count"})
+            )
+
+            # คำนวณ % เทียบในแต่ละช่วงชั้น
+            total_per_stage = stage_class_df.groupby("Stage_TH")[
+                "Count"
+            ].transform("sum")
+            stage_class_df["Percent"] = (
+                stage_class_df["Count"] / total_per_stage * 100
+            )
+
+            # ลำดับช่วงชั้น และ ระดับผลสัมฤทธิ์
+            stage_order = ["ประถม", "มัธยมต้น", "มัธยมปลาย"]
+            class_order = [
+                "ระดับสูง (H)",
+                "ระดับปานกลาง (M)",
+                "ระดับต่ำ (L)",
+            ]
+
+            # สร้าง Grouped Bar Chart
+            fig_bar = px.bar(
+                stage_class_df,
+                x="Stage_TH",
+                y="Count",
+                color="Class_TH",
+                barmode="group",
+                text=stage_class_df["Percent"].round(1).astype(str) + "%",
+                category_orders={
+                    "Stage_TH": stage_order,
+                    "Class_TH": class_order,
+                },
+                color_discrete_map={
+                    "ระดับสูง (H)": "#7BF3C3",    # เขียวมิ้นต์เย็นสบายตา (Cool Mint)
+                    "ระดับปานกลาง (M)": "#FDE68A",  # เหลืองพาสเทลนุ่มนวล (Soft Warm Yellow)
+                    "ระดับต่ำ (L)": "#FCA5A5"     # แดงพาสเทลละมุน (Soft Pastel Red)
+                }
+            )
+
+            fig_bar.update_traces(
+                textposition="outside",
+                textfont=dict(size=10),
+                cliponaxis=False,
+                hovertemplate="<b>%{x} - %{fullData.name}</b><br>จำนวน: <b>%{y:,} คน</b> (%{text})<extra></extra>",
+            )
+
+            fig_bar.update_layout(
+                height=320,
+                margin=dict(l=10, r=10, t=20, b=20),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1,
+                    title_text="",
+                ),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+            )
+
+            fig_bar.update_xaxes(
+                title_text="ช่วงชั้น", tickfont=dict(size=11), showgrid=False
+            )
+            fig_bar.update_yaxes(
+                title_text="จำนวนนักเรียน (คน)",
+                tickfont=dict(size=10),
+                gridcolor="#E2E8F0",
+            )
+
+            st.plotly_chart(
+                fig_bar,
+                use_container_width=True,
+                config={"displayModeBar": False},
+                key="chart_bar_stage_academic",
+            )
+
+            # คำนวณสรุปข้อมูลแบบ Dynamic สำหรับ Insights
             total_students = len(filtered_df)
-        
-            # 1. คำนวณจำนวนนักเรียนและ % แต่ละกลุ่มแบบ Dynamic
             counts = filtered_df["Class"].value_counts()
-            count_h = counts.get("H", 0)
             count_m = counts.get("M", 0)
             count_l = counts.get("L", 0)
-        
-            pct_h = (count_h / total_students * 100) if total_students > 0 else 0
-            pct_m = (count_m / total_students * 100) if total_students > 0 else 0
-            pct_l = (count_l / total_students * 100) if total_students > 0 else 0
+            pct_m = (
+                (count_m / total_students * 100) if total_students > 0 else 0
+            )
+            pct_l = (
+                (count_l / total_students * 100) if total_students > 0 else 0
+            )
 
-            # Map ชื่อและจำนวนคนเข้า Legend
-            class_map = {
-                "H": f"ระดับสูง (H): {count_h:,} คน ({pct_h:.1f}%)",
-                "M": f"ระดับปานกลาง (M): {count_m:,} คน ({pct_m:.1f}%)",
-                "L": f"ระดับต่ำ (L): {count_l:,} คน ({pct_l:.1f}%)"
-            }
-        
-            filtered_df["Class_Legend"] = filtered_df["Class"].map(class_map)
-
-            # 2. สร้าง Donut Chart
-            fig_donut = px.pie(
-                filtered_df, names="Class_Legend", hole=0.55,
-                color="Class",
-                category_orders={"Class": ["H", "M", "L"]},
-                color_discrete_map={"H": "#86EFAC", "M": "#FDE047", "L": "#F87171"}
-            )
-        
-            fig_donut.update_traces(
-                textposition="inside", 
-                textinfo="percent",
-                hovertemplate="<b>%{label}</b><br>สัดส่วน: <b>%{percent}</b><extra></extra>"
-            )
-        
-            fig_donut.update_layout(
-                height=280, 
-                margin=dict(l=10, r=10, t=10, b=10),
-                legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02),
-                paper_bgcolor='rgba(0,0,0,0)', 
-                plot_bgcolor='rgba(0,0,0,0)',
-                annotations=[{
-                    "text": f"<b>นักเรียนทั้งหมด</b><br>{total_students:,} คน",
-                    "x": 0.5, "y": 0.5, "font_size": 13, "font_color": "#1E293B", "showarrow": False
-                }]
-            )
-        
-            st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False}, key="chart_donut_academic")
-        
-            # 3. กล่องสรุปข้อสังเกตเชิงลึก (Insight Box)
-            st.markdown(f"""
-                <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
+            # กล่องสรุป Insights
+            st.markdown(
+                f"""
+                <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; border-radius: 12px; padding: 12px 16px; margin-top: 5px; margin-bottom: 10px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
                     <p style='color: #1E293B; font-size: 0.83rem; margin: 0; line-height: 1.5;'>
                         💡 <strong>ข้อสังเกตและการนำไปใช้:</strong><br>
                         • นักเรียนส่วนใหญ่อยู่ใน <strong>ระดับปานกลาง (M) {pct_m:.1f}% ({count_m:,} คน)</strong> ซึ่งเป็นกลุ่มเป้าหมายสำคัญที่มีศักยภาพในการยกระดับผลสัมฤทธิ์ขึ้นสู่ระดับสูง<br>
                         • กลุ่มที่ต้องได้รับการดูแลเร่งด่วนคือ <strong>ระดับต่ำ (L) {pct_l:.1f}% ({count_l:,} คน)</strong> เพื่อวางมาตรการช่วยเหลือและลดอัตราการเรียนตกค้าง
                     </p>
                 </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
         else:
             st.info("ไม่พบข้อมูลผลสัมฤทธิ์ทางการเรียนสำหรับแสดงผล")
-    # =====================================================
-    # โซน: การมีส่วนร่วมรายชั้นปี แยกตามภาคเรียน (Semester Comparison)
-    # =====================================================
+
+    # =================================================
+    # โซน วิชา
+    # =================================================
+    topic_map = {
+        "IT": "เทคโนโลยี",
+        "Math": "คณิตศาสตร์",
+        "Science": "วิทยาศาสตร์",
+        "English": "ภาษาอังกฤษ",
+        "French": "ภาษาฝรั่งเศส",
+        "Spanish": "ภาษาสเปน",
+        "Arabic": "ภาษาอาหรับ",
+        "Biology": "ชีววิทยา",
+        "Chemistry": "เคมี",
+        "Geology": "ธรณีวิทยา",
+        "History": "ประวัติศาสตร์",
+        "Quran": "อัลกุรอาน",
+    }
+
+    stage_map = {
+        "LowerLevel": "ประถม",
+        "MiddleSchool": "มัธยมต้น",
+        "HighSchool": "มัธยมปลาย",
+    }
+
+    grade_map = {
+        "G-01": "ป.1",
+        "G-02": "ป.2",
+        "G-03": "ป.3",
+        "G-04": "ป.4",
+        "G-05": "ป.5",
+        "G-06": "ป.6",
+        "G-07": "ม.1",
+        "G-08": "ม.2",
+        "G-09": "ม.3",
+        "G-10": "ม.4",
+        "G-11": "ม.5",
+        "G-12": "ม.6",
+    }
+
+    semester_map = {"F": "ภาคการศึกษาที่ 1", "S": "ภาคการศึกษาที่ 2"}
+
+    # =================================================
+    # 2. กำหนดลำดับช่วงชั้น ระดับชั้น และวิชาแบบกำหนดเอง
+    # =================================================
+    topic_order = [
+        "เทคโนโลยี",
+        "คณิตศาสตร์",
+        "วิทยาศาสตร์",
+        "ภาษาอังกฤษ",
+        "ภาษาฝรั่งเศส",
+        "ภาษาสเปน",
+        "ภาษาอาหรับ",
+        "ชีววิทยา",
+        "เคมี",
+        "ธรณีวิทยา",
+        "ประวัติศาสตร์",
+        "อัลกุรอาน",
+    ]
+
+    stage_order = ["ประถม", "มัธยมต้น", "มัธยมปลาย"]
+    grade_order = [
+        "ป.1",
+        "ป.2",
+        "ป.3",
+        "ป.4",
+        "ป.5",
+        "ป.6",
+        "ม.1",
+        "ม.2",
+        "ม.3",
+        "ม.4",
+        "ม.5",
+        "ม.6",
+    ]
+
+    # =================================================
+    # 3. จัดเตรียมข้อมูล (สร้าง stage_topic_df และ grade_topic_df)
+    # =================================================
+    if "df" in locals() and isinstance(df, pd.DataFrame) and not df.empty:
+        if "Engagement" not in df.columns and all(
+            c in df.columns
+            for c in [
+                "raisedhands",
+                "VisITedResources",
+                "AnnouncementsView",
+                "Discussion",
+            ]
+        ):
+            df["Engagement"] = (
+                df["raisedhands"]
+                + df["VisITedResources"]
+                + df["AnnouncementsView"]
+                + df["Discussion"]
+            ) / 4
+
+        if "Topic" in df.columns:
+            df["Topic_TH"] = df["Topic"].map(topic_map).fillna(df["Topic"])
+        if "StageID" in df.columns:
+            df["Stage_TH"] = df["StageID"].map(stage_map).fillna(df["StageID"])
+        if "GradeID" in df.columns:
+            df["Grade_TH"] = df["GradeID"].map(grade_map).fillna(df["GradeID"])
+        if "Semester" in df.columns:
+            df["Semester_TH"] = (
+                df["Semester"].map(semester_map).fillna(df["Semester"])
+            )
+
+        if all(c in df.columns for c in ["Stage_TH", "Topic_TH", "Semester_TH"]):
+            stage_topic_df = (
+                df.groupby(["Stage_TH", "Topic_TH", "Semester_TH"], as_index=False)
+                .agg(Avg_Engagement=("Engagement", "mean"))
+            )
+        else:
+            stage_topic_df = pd.DataFrame()
+
+        if all(c in df.columns for c in ["Grade_TH", "Topic_TH", "Semester_TH"]):
+            grade_topic_df = (
+                df.groupby(["Grade_TH", "Topic_TH", "Semester_TH"], as_index=False)
+                .agg(Avg_Engagement=("Engagement", "mean"))
+            )
+        else:
+            grade_topic_df = pd.DataFrame()
+    else:
+        stage_topic_df = pd.DataFrame()
+        grade_topic_df = pd.DataFrame()
+
+    # =================================================
+    # 4. แสดงผลกราฟช่วงชั้น (STAGE)
+    # =================================================
     with st.container(border=True):
-        st.markdown("""
-            <h3 style='font-size: 1.1rem; font-weight: bold; color: #0A2540; margin-bottom: 0px;'>การเปรียบเทียบการมีส่วนร่วมรายชั้นปี จำแนกตามภาคเรียน</h3>
-            <p style='color: #64748B; font-size: 0.8rem; margin-top: 2px; margin-bottom: 15px;'>
-                แสดงคะแนนเฉลี่ยการมีส่วนร่วมในแต่ละชั้นปี เปรียบเทียบระหว่างภาคเรียนที่ 1 และ ภาคเรียนที่ 2
+        st.markdown(
+            """
+            <div style='margin-bottom:10px;'>
+            <h3 style='font-size:1.15rem; font-weight:700; color:#1E293B; margin:0;'>
+            การมีส่วนร่วมตามช่วงชั้น
+            </h3>
+            <p style='color:#64748B; font-size:0.82rem; margin-top:3px; margin-bottom:10px;'>
+            เปรียบเทียบการมีส่วนร่วมในแต่ละรายวิชา ระหว่างภาคการศึกษาที่ 1 และภาคการศึกษาที่ 2
             </p>
-        """, unsafe_allow_html=True)
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        if {"GradeID", "Semester"}.issubset(filtered_df.columns) and not filtered_df.empty:
-            activity_cols = [c for c in ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"] if c in filtered_df.columns]
-        
-            if activity_cols:
-                grade_map = {
-                    "G-01": {"name": "ป.2", "order": 1},
-                    "G-02": {"name": "ป.2", "order": 2},
-                    "G-04": {"name": "ป.4", "order": 3},
-                    "G-05": {"name": "ป.5", "order": 4},
-                    "G-06": {"name": "ป.6", "order": 5},
-                    "G-07": {"name": "ม.1", "order": 6},
-                    "G-08": {"name": "ม.2", "order": 7},
-                    "G-09": {"name": "ม.3", "order": 8},
-                    "G-10": {"name": "ม.4", "order": 9},
-                    "G-11": {"name": "ม.5", "order": 10},
-                    "G-12": {"name": "ม.6", "order": 11},
-                }
+        if (
+            isinstance(stage_topic_df, pd.DataFrame)
+            and not stage_topic_df.empty
+            and "Stage_TH" in stage_topic_df.columns
+        ):
+            available_stages = [
+                s for s in stage_order if s in stage_topic_df["Stage_TH"].unique()
+            ]
+        else:
+            available_stages = []
 
-                # Groupby ทั้ง GradeID และ Semester
-                sem_grade_df = filtered_df.groupby(["GradeID", "Semester"]).agg(
-                    Avg_Score=(activity_cols[0], lambda x: filtered_df.loc[x.index, activity_cols].mean(axis=1).mean()),
-                    Student_Count=("GradeID", "count")
-                ).reset_index()
+        for stage in available_stages:
+            stage_data = stage_topic_df[
+                stage_topic_df["Stage_TH"] == stage
+            ].copy()
 
-                sem_grade_df["Grade_Name"] = sem_grade_df["GradeID"].map(lambda x: grade_map.get(x, {}).get("name", x))
-                sem_grade_df["Order"] = sem_grade_df["GradeID"].map(lambda x: grade_map.get(x, {}).get("order", 99))
-                sem_grade_df["Semester_Label"] = sem_grade_df["Semester"].map({"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"}).fillna(sem_grade_df["Semester"])
+            st.markdown(
+                f"""
+                <div style='font-size:1rem; font-weight:700; color:#1E293B; margin-top:15px; margin-bottom:5px;'>
+                {stage}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            fig_stage = px.bar(
+                stage_data,
+                x="Topic_TH",
+                y="Avg_Engagement",
+                color="Semester_TH",
+                barmode="group",
+                text=stage_data["Avg_Engagement"].round(0).astype(int).astype(str)
+                + "%",
+                category_orders={
+                    "Topic_TH": topic_order,
+                    "Semester_TH": ["ภาคการศึกษาที่ 1", "ภาคการศึกษาที่ 2"],
+                },
+                color_discrete_map={
+                    "ภาคการศึกษาที่ 1": "#35A6DB",
+                    "ภาคการศึกษาที่ 2": "#383AB5",
+                },
+            )
+
+            fig_stage.update_traces(
+                textposition="outside",
+                textfont=dict(size=8),
+                cliponaxis=False,
+                hovertemplate="<b>%{x}</b><br>การมีส่วนร่วมเฉลี่ย: <b>%{y:.1f}</b> คะแนน<extra></extra>",
+            )
+
+            fig_stage.update_layout(
+                height=350,
+                showlegend=False,
+                legend_title="",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                margin=dict(l=10, r=10, t=35, b=70),
+            )
+
+            fig_stage.update_xaxes(
+                title_text="", tickangle=-45, tickfont=dict(size=8), showgrid=False
+            )
+
+            fig_stage.update_yaxes(
+                title_text="",
+                range=[0, 100],
+                tickfont=dict(size=8),
+                gridcolor="#E2E8F0",
+            )
+
+            st.plotly_chart(
+                fig_stage,
+                use_container_width=True,
+                config={"displayModeBar": False},
+                key=f"information_stage_topic_{stage}",
+            )
+
+        # คำอธิบายสี
+        st.markdown(
+            """
+            <div style="display:flex; justify-content:center; align-items:center; gap:25px; margin-top:-5px; margin-bottom:20px; font-size:13px; color:#475569;">
+            <div style="display:flex; align-items:center;">
+            <span style="width:12px; height:12px; background:#35A6DB; border-radius:2px; display:inline-block; margin-right:7px;"></span>
+            ภาคการศึกษาที่ 1
+            </div>
             
-                sem_grade_df = sem_grade_df.sort_values(by="Order")
-                sem_grade_df["Label_Text"] = sem_grade_df.apply(lambda r: f"<b>{r['Avg_Score']:.0f}%</b>", axis=1)
+            <div style="display:flex; align-items:center;">
+            <span style="width:12px; height:12px; background:#383AB5; border-radius:2px; display:inline-block; margin-right:7px;"></span>
+            ภาคการศึกษาที่ 2
+            </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )   
 
-                # สร้าง Grouped Bar Chart
-                fig_sem_grade = px.bar(
-                    sem_grade_df,
-                    x="Grade_Name",
-                    y="Avg_Score",
-                    color="Semester_Label",
-                    barmode="group",
-                    text="Label_Text",
-                    color_discrete_map={
-                        "ภาคเรียนที่ 1": "#93C5FD",  # ฟ้าอ่อน
-                        "ภาคเรียนที่ 2": "#1D4ED8"   # น้ำเงินเข้ม
-                    }
-                )
+        # Dynamic Data Insights
+        if isinstance(stage_topic_df, pd.DataFrame) and not stage_topic_df.empty:
+            max_row = stage_topic_df.loc[stage_topic_df["Avg_Engagement"].idxmax()]
+            min_row = stage_topic_df.loc[stage_topic_df["Avg_Engagement"].idxmin()]
 
-                fig_sem_grade.update_traces(
-                    textposition="outside",
-                    cliponaxis=False,
-                    hovertemplate="<b>%{x} (%{fullData.name})</b><br>คะแนนเฉลี่ย: <b>%{y:.1f}%</b><extra></extra>"
-                )
+            top_stage_info = (
+                stage_topic_df.groupby("Stage_TH")["Avg_Engagement"]
+                .mean()
+                .reset_index()
+                .sort_values("Avg_Engagement", ascending=False)
+                .iloc[0]
+            )
 
-                fig_sem_grade.update_layout(
-                    height=380,
-                    margin=dict(l=20, r=20, t=30, b=20),
-                    xaxis_title="",
-                    yaxis_title="คะแนนเฉลี่ย (%)",
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    legend=dict(
-                        orientation="h",
-                        yanchor="bottom",
-                        y=1.02,
-                        xanchor="right",
-                        x=1,
-                        title_text=""
-                    ),
-                    xaxis=dict(showgrid=False, tickfont=dict(size=12, color="#1E293B", weight="bold")),
-                    yaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, 105])
-                )
+            sem_stage_avg = stage_topic_df.groupby("Semester_TH")[
+                "Avg_Engagement"
+            ].mean()
+            s1_avg = sem_stage_avg.get("ภาคการศึกษาที่ 1", 0)
+            s2_avg = sem_stage_avg.get("ภาคการศึกษาที่ 2", 0)
 
-                st.plotly_chart(fig_sem_grade, use_container_width=True, config={"displayModeBar": False}, key="chart_sem_grade")
-
-                # กล่องสรุปข้อสังเกต
-                st.markdown("""
-                    <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1D4ED8; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
-                        <p style='color: #1E293B; font-size: 0.85rem; margin: 0; line-height: 1.5;'>
-                            📊 <strong>วิเคราะห์พัฒนาการ:</strong> การเปรียบเทียบระหว่างภาคเรียนช่วยให้เห็นการเติบโตของการมีส่วนร่วมในแต่ละระดับชั้น โดยชั้นปีที่มีคะแนนเพิ่มขึ้นในภาคเรียนที่ 2 สะท้อนถึงการปรับตัวและแรงจูงใจในการเรียนรู้ที่สูงขึ้น
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
-
+            if s2_avg > s1_avg:
+                sem_trend = f"การมีส่วนร่วมเฉลี่ยในภาคการศึกษาที่ 2 สูงกว่าภาคการศึกษาที่ 1 ({s2_avg:.1f}% vs {s1_avg:.1f}%)"
+            elif s1_avg > s2_avg:
+                sem_trend = f"การมีส่วนร่วมเฉลี่ยในภาคการศึกษาที่ 1 สูงกว่าภาคการศึกษาที่ 2 ({s1_avg:.1f}% vs {s2_avg:.1f}%)"
             else:
-                st.warning("ไม่พบคอลัมน์ข้อมูลกิจกรรมการเรียนรู้")
-        else:
-            st.info("ไม่พบข้อมูลระดับชั้นหรือภาคเรียนสำหรับแสดงผล")
+                sem_trend = (
+                    f"อัตราการมีส่วนร่วมเฉลี่ยทั้งสองภาคการศึกษาเท่ากันที่ {s1_avg:.1f}%"
+                )
 
-    # --- 3. โซนล่าง: คะแนนเฉลี่ยตามรายวิชา (Topic) ---
+            st.markdown(
+                f"""
+                <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:15px; margin-top:10px;">
+                    <div style="font-size:0.95rem; font-weight:700; color:#1E293B; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                        📌 สรุปตามช่วงชั้น
+                    </div>
+                    <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:#334155; line-height:1.6;">
+                        <li><b>วิชาที่มีการมีส่วนร่วมสูงสุด:</b> วิชา {max_row['Topic_TH']} ช่วงชั้น {max_row['Stage_TH']} ({max_row['Semester_TH']}) เฉลี่ยสูงถึง <b>{max_row['Avg_Engagement']:.1f}%</b></li>
+                        <li><b>วิชาที่มีการมีส่วนร่วมต่ำสุด:</b> วิชา {min_row['Topic_TH']} ช่วงชั้น {min_row['Stage_TH']} ({min_row['Semester_TH']}) เฉลี่ยอยู่ที่ <b>{min_row['Avg_Engagement']:.1f}%</b></li>
+                        <li><b>ช่วงชั้นที่มีปฏิสัมพันธ์รวมสูงสุด:</b> ช่วงชั้น <b>{top_stage_info['Stage_TH']}</b> (คะแนนเฉลี่ยรวม {top_stage_info['Avg_Engagement']:.1f}%)</li>
+                        <li><b>แนวโน้มรายภาคเรียน:</b> {sem_trend}</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        # -------------------------------------------------
+        # เว้นระยะระหว่างกราฟ
+        # -------------------------------------------------
+        st.markdown(
+            "<div style='height:20px;'></div>",
+            unsafe_allow_html=True
+        )
+    # =================================================
+    # กราฟระดับชั้น (2 คอลัมน์ต่อแถว + คำอธิบายอัตโนมัติด้านล่าง)
+    # =================================================
     with st.container(border=True):
         st.markdown("""
-            <h3 style='font-size: 1.2rem; font-weight: bold; color: #1E293B; margin-bottom: 0px;'>คะแนนเฉลี่ยการมีส่วนร่วมตามรายวิชา</h3>
-            <p style='color: #64748B; font-size: 0.85rem; margin-top: 2px; margin-bottom: 15px;'>
-                คิดจากกิจกรรม: การยกมือตอบ, การเข้าชมบทเรียน, การดูประกาศ และการร่วมอภิปราย
+        <div style='margin-bottom:10px;'>
+            <h3 style='font-size:1.15rem; font-weight:700; color:#1E293B; margin:0;'>
+            การมีส่วนร่วมตามระดับชั้น
+            </h3>
+            <p style='color:#64748B; font-size:0.82rem; margin-top:3px; margin-bottom:10px;'>
+            เปรียบเทียบการมีส่วนร่วมในแต่ละรายวิชา ระหว่างภาคการศึกษาที่ 1 และภาคการศึกษาที่ 2
             </p>
+        </div>
         """, unsafe_allow_html=True)
 
-        if "Topic" in filtered_df.columns and not filtered_df.empty:
-            activity_cols = [c for c in ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"] if c in filtered_df.columns]
-    
-            if activity_cols:
-                # พจนานุกรมแปลชื่อรายวิชาเป็นภาษาไทย
-                topic_th_map = {
-                    "IT": "เทคโนโลยีสารสนเทศ (IT)",
-                    "Math": "คณิตศาสตร์",
-                    "Arabic": "ภาษาอาหรับ",
-                    "English": "ภาษาอังกฤษ",
-                    "French": "ภาษาฝรั่งเศส",
-                    "Spanish": "ภาษาสเปน",
-                    "Science": "วิทยาศาสตร์",
-                    "Biology": "ชีววิทยา",
-                    "Chemistry": "เคมี",
-                    "Geology": "ธรณีวิทยา",
-                    "History": "ประวัติศาสตร์",
-                    "Quran": "อัลกุรอาน"
-                }
+        available_grades = [
+            g for g in grade_order 
+            if g in grade_topic_df["Grade_TH"].unique()
+        ]
 
-                # คำนวณคะแนนเฉลี่ยและนับจำนวนผู้เรียน
-                topic_df = filtered_df.groupby("Topic").agg(
-                    Avg_Score=(activity_cols[0], lambda x: filtered_df.loc[x.index, activity_cols].mean(axis=1).mean()),
-                    Student_Count=("Topic", "count")
-                ).reset_index()
+        # -------------------------------------------------
+        # วน Loop แสดงกราฟแท่งแบบ 2 คอลัมน์ต่อแถว
+        # -------------------------------------------------
+        for i in range(0, len(available_grades), 2):
+            batch = available_grades[i:i+2]
+            cols = st.columns(2)
+            
+            for j, grade in enumerate(batch):
+                with cols[j]:
+                    with st.container(border=True):
+                        grade_data = grade_topic_df[
+                            grade_topic_df["Grade_TH"] == grade
+                        ].copy()
 
-                # 1. [แก้ไข] แปลงชื่อวิชาเป็นภาษาไทย
-                topic_df["Topic_TH"] = topic_df["Topic"].map(topic_th_map).fillna(topic_df["Topic"])
+                        st.markdown(f"""
+                        <div style='font-size:0.95rem; font-weight:700; color:#1E293B; margin-bottom:5px;'>
+                        ระดับชั้น {grade}
+                        </div>
+                        """, unsafe_allow_html=True)
 
-                # 2. [แก้ไข] เรียงลำดับ ascending=True เพื่อให้ Plotly เอาค่ามากไว้ด้านบน
-                topic_df = topic_df.sort_values(by="Avg_Score", ascending=False)
-        
-                # สร้างข้อความสำหรับ Data Label (เช่น "62% (24 คน)")
-                topic_df["Label_Text"] = topic_df.apply(lambda r: f" <b>{r['Avg_Score']:.0f}%</b> ({r['Student_Count']} คน)", axis=1)
+                        fig_grade_single = px.bar(
+                            grade_data,
+                            x="Topic_TH",
+                            y="Avg_Engagement",
+                            color="Semester_TH",
+                            barmode="group",
+                            text=grade_data["Avg_Engagement"].round(0).astype(int).astype(str) + "%",
+                            category_orders={
+                                "Topic_TH": topic_order,
+                                "Semester_TH": ["ภาคการศึกษาที่ 1", "ภาคการศึกษาที่ 2"]
+                            },
+                            color_discrete_map={
+                                "ภาคการศึกษาที่ 1": "#35A6DB",
+                                "ภาคการศึกษาที่ 2": "#383AB5"
+                            }
+                        )
 
-                # 3. สร้าง Horizontal Bar Chart
-                fig_topic = px.bar(
-                    topic_df,
-                    x="Avg_Score",
-                    y="Topic_TH",  # [แก้ไขจุดที่ผิด] เปลี่ยนจาก "Topic" เป็น "Topic_TH"
-                    orientation="h",
-                    text="Label_Text",
-                    color="Avg_Score",
-                    color_continuous_scale=["#93C5FD", "#3B82F6", "#1D4ED8"]
-                )
+                        fig_grade_single.update_traces(
+                            textposition="outside",
+                            textfont=dict(size=8),
+                            cliponaxis=False,
+                            hovertemplate="<b>%{x}</b><br>เฉลี่ย: <b>%{y:.1f}</b> คะแนน<extra></extra>"
+                        )
 
-                fig_topic.update_traces(
-                    textposition="outside",
-                    cliponaxis=False,
-                    width=0.6,
-                    hovertemplate="<b>วิชา %{y}</b><br>คะแนนเฉลี่ย: <b>%{x:.1f}%</b><extra></extra>"
-                )
+                        fig_grade_single.update_layout(
+                            height=260,
+                            showlegend=False,
+                            paper_bgcolor="rgba(0,0,0,0)",
+                            plot_bgcolor="rgba(0,0,0,0)",
+                            margin=dict(l=5, r=5, t=25, b=35)
+                        )
 
-                fig_topic.update_layout(
-                    height=480,
-                    margin=dict(l=10, r=90, t=10, b=10),
-                    xaxis_title="",
-                    yaxis_title="",
-                    coloraxis_showscale=False,
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(
-                        showgrid=True,
-                        gridcolor='#F1F5F9',
-                        showticklabels=False,
-                        range=[0, topic_df['Avg_Score'].max() * 1.25]
-                    ),
-                    yaxis=dict(
-                        showgrid=False,
-                        tickfont=dict(size=13, color="#1E293B", weight="bold")
-                    )
-                )
+                        fig_grade_single.update_xaxes(
+                            title_text="",
+                            tickangle=-30,
+                            tickfont=dict(size=8),
+                            showgrid=False
+                        )
+                        fig_grade_single.update_yaxes(
+                            title_text="",
+                            range=[0, 100],
+                            tickfont=dict(size=8),
+                            gridcolor="#E2E8F0"
+                        )
 
-                # 4. [แก้ไข] ใส่ key="chart_bar_topic" เพื่อป้องกันเออเรอร์ Duplicate ID
-                st.plotly_chart(fig_topic, use_container_width=True, config={"displayModeBar": False}, key="chart_bar_topic")
-                # [ปรับแก้ไข] เพิ่ม margin-top: 10px และ margin-bottom: 15px เว้นระยะห่างไม่ให้ติดกรอบล่าง
-                st.markdown("""
-                    <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #8B5CF6; border-radius: 12px; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; box-shadow: 0px 1px 3px rgba(0,0,0,0.03);'>
-                        <p style='color: #1E293B; font-size: 0.85rem; margin: 0; line-height: 1.5;'>
-                            🎯 <strong>ข้อสังเกต:</strong> รายวิชาที่มีระดับการมีส่วนร่วมสูงสะท้อนถึงความสนใจของนักเรียนผ่านกิจกรรมการเรียนรู้แบบโต้ตอบ 
-                            ในขณะที่วิชาที่มีคะแนนเฉลี่ยต่ำกว่าอาจเป็นจุดที่ต้องได้รับการสนับสนุนหรือปรับรูปแบบกิจกรรมเพิ่มเติม
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
+                        st.plotly_chart(
+                            fig_grade_single,
+                            use_container_width=True,
+                            config={"displayModeBar": False},
+                            key=f"information_grade_card_{grade}"
+                        )
+
+        # -------------------------------------------------
+        # สัญลักษณ์อธิบายสี (Legend)
+        # -------------------------------------------------
+        st.markdown("""
+        <div style="display:flex; justify-content:center; align-items:center; gap:25px; margin-top:15px; margin-bottom:15px; font-size:13px; color:#475569;">
+            <div style="display:flex; align-items:center;">
+                <span style="width:12px; height:12px; background:#35A6DB; border-radius:2px; display:inline-block; margin-right:7px;"></span>
+                ภาคการศึกษาที่ 1
+            </div>
+            <div style="display:flex; align-items:center;">
+                <span style="width:12px; height:12px; background:#383AB5; border-radius:2px; display:inline-block; margin-right:7px;"></span>
+                ภาคการศึกษาที่ 2
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # =================================================
+        # คำอธิบายผลวิเคราะห์แบบ Dynamic (เปลี่ยนตามข้อมูลใน CSV)
+        # =================================================
+        if not grade_topic_df.empty:
+            # คำนวณค่าทางสถิติ
+            max_row = grade_topic_df.loc[grade_topic_df["Avg_Engagement"].idxmax()]
+            min_row = grade_topic_df.loc[grade_topic_df["Avg_Engagement"].idxmin()]
+            
+            top_grade_info = (
+                grade_topic_df.groupby("Grade_TH")["Avg_Engagement"]
+                .mean()
+                .reset_index()
+                .sort_values("Avg_Engagement", ascending=False)
+                .iloc[0]
+            )
+
+            sem_avg = grade_topic_df.groupby("Semester_TH")["Avg_Engagement"].mean()
+            sem1 = sem_avg.get("ภาคการศึกษาที่ 1", 0)
+            sem2 = sem_avg.get("ภาคการศึกษาที่ 2", 0)
+            
+            if sem2 > sem1:
+                sem_compare_text = f"ภาพรวมภาคการศึกษาที่ 2 มีระดับการมีส่วนร่วมเฉลี่ยสูงกว่าภาคการศึกษาที่ 1 ({sem2:.1f}% vs {sem1:.1f}%)"
+            elif sem1 > sem2:
+                sem_compare_text = f"ภาพรวมภาคการศึกษาที่ 1 มีระดับการมีส่วนร่วมเฉลี่ยสูงกว่าภาคการศึกษาที่ 2 ({sem1:.1f}% vs {sem2:.1f}%)"
             else:
-                st.warning("ไม่พบคอลัมน์ข้อมูลกิจกรรมการเรียนรู้")
-        else:
-            st.info("ไม่พบข้อมูลรายวิชาสำหรับแสดงผล")
+                sem_compare_text = f"ทั้งสองภาคการศึกษามีอัตราการมีส่วนร่วมเฉลี่ยเท่ากันที่ {sem1:.1f}%"
+
+            # แสดงผลกล่องคำอธิบาย
+            st.markdown(f"""
+            <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:15px; margin-top: 10px; margin-bottom: 15px;">
+                <div style="font-size:0.95rem; font-weight:700; color:#1E293B; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    📌 สรุปจากข้อมูล
+                </div>
+                <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:#334155; line-height:1.6;">
+                    <li><b>วิชาที่มีการมีส่วนร่วมสูงสุด:</b> วิชา {max_row['Topic_TH']} ชั้น {max_row['Grade_TH']} ({max_row['Semester_TH']}) เฉลี่ยสูงถึง <b>{max_row['Avg_Engagement']:.1f}%</b></li>
+                    <li><b>วิชาที่มีการมีส่วนร่วมต่ำสุด:</b> วิชา {min_row['Topic_TH']} ชั้น {min_row['Grade_TH']} ({min_row['Semester_TH']}) เฉลี่ยอยู่ที่ <b>{min_row['Avg_Engagement']:.1f}%</b></li>
+                    <li><b>ระดับชั้นที่มีปฏิสัมพันธ์รวมสูงสุด:</b> ชั้น <b>{top_grade_info['Grade_TH']}</b> (คะแนนเฉลี่ยรวม {top_grade_info['Avg_Engagement']:.1f}%)</li>
+                    <li><b>แนวโน้มรายภาคเรียน:</b> {sem_compare_text}</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
 
 # =====================================================
 # พฤติกรรมการเรียนรู้
@@ -2075,7 +2361,6 @@ elif menu == "พฤติกรรมการเรียนรู้":
         st.warning("ไม่พบข้อมูลสำหรับการแสดงผล")
         st.stop()
 
-    # ทำสำเนาข้อมูลเพื่อป้องกันการแก้ไข filtered_df เดิม
     behavior_df = filtered_df.copy()
 
     # =================================================
@@ -2088,46 +2373,85 @@ elif menu == "พฤติกรรมการเรียนรู้":
         "Discussion"
     ]
 
-    behavior_names = {
-        "raisedhands": "Raised Hands",
-        "VisITedResources": "Visited Resources",
-        "AnnouncementsView": "Announcements View",
-        "Discussion": "Discussion"
-    }
-
     # =================================================
     # CSS
     # =================================================
     st.markdown("""
     <style>
-
-    .behavior-card {
-        border: 1px solid #8BA4BE;
-        border-radius: 25px;
-        padding: 10px 6px;
-        min-height: 90px;
-        background: white;
-        text-align: center;
-    }
-
-    .behavior-icon {
-        font-size: 24px;
-        margin-bottom: 2px;
-    }
-
-    .behavior-title {
-        font-size: 12px;
-        color: #2463A5;
-        line-height: 1.25;
-        min-height: 32px;
-    }
-
-    .behavior-value {
-        font-size: 15px;
-        font-weight: 600;
-        color: #333333;
-    }
-
+        /* =========================================
+           KPI CARD
+           ========================================= */
+        .behavior-card {
+            background-color: #FFFFFF;
+            border: 2px solid #03254C;
+            border-radius: 50px;
+            padding: 12px 15px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+        /* =========================================
+           วงกลมไอคอน
+           ========================================= */
+        .behavior-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        /* =========================================
+           สีไอคอน
+           ========================================= */
+        .behavior-blue {
+            background-color: #DBEAFE;
+        }
+        .behavior-green {
+            background-color: #D1FAE5;
+        }
+        .behavior-orange {
+            background-color: #FEF3C7;
+        }
+        .behavior-purple {
+            background-color: #EDE9FE;
+        }
+        /* =========================================
+           ข้อมูล KPI
+           ========================================= */
+        .behavior-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        /* =========================================
+           ชื่อ KPI
+           ========================================= */
+        .behavior-title {
+            font-size: 13px;
+            color: #2D3748;
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 0;
+            white-space: nowrap;
+        }
+        /* =========================================
+           ค่า KPI
+           ========================================= */
+        .behavior-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2B6CB0;
+            line-height: 1.2;
+            margin-top: 3px;
+            white-space: nowrap;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -2147,529 +2471,359 @@ elif menu == "พฤติกรรมการเรียนรู้":
         behavior_df["Discussion"]
     )
 
-    avg_participation = behavior_df["ParticipationScore"].mean()
-
     # =================================================
-    # 1. KPI CARDS
+    # KPI CARDS
     # =================================================
     card_cols = st.columns(4)
-
     cards = [
-        ("✋", "จำนวนการยกมือ", f"{avg_raised:.1f} ครั้ง/คน"),
-        ("👁️", "จำนวนการเข้าดูสื่อ", f"{avg_resource:.1f} ครั้ง/คน"),
-        ("📣", "จำนวนการดูประกาศ", f"{avg_announcement:.1f} ครั้ง/คน"),
-        ("💬", "จำนวนการมีร่วมอภิปราย", f"{avg_discussion:.1f} ครั้ง/คน")
+        ("✋",
+            "behavior-blue",
+            "จำนวนการยกมือ",
+            f"{avg_raised:.1f} ครั้ง/คน"
+        ),
+        ("👁️",
+            "behavior-green",
+            "จำนวนการเข้าดูสื่อ",
+            f"{avg_resource:.1f} ครั้ง/คน"
+        ),
+        ("📣",
+            "behavior-orange",
+            "จำนวนการดูประกาศ",
+            f"{avg_announcement:.1f} ครั้ง/คน"
+        ),
+        ("💬",
+            "behavior-purple",
+            "จำนวนการมีส่วนร่วมอภิปราย",
+            f"{avg_discussion:.1f} ครั้ง/คน"
+        )
     ]
-
-    for col, (icon, title, value) in zip(card_cols, cards):
+    for col, (icon, icon_color, title, value) in zip(card_cols, cards):
         with col:
             st.markdown(
                 f"""
                 <div class="behavior-card">
-                    <div class="behavior-icon">{icon}</div>
-                    <div class="behavior-title">{title}</div>
-                    <div class="behavior-value">{value}</div>
+                    <div class="behavior-icon {icon_color}">{icon}</div>
+                    <div class="behavior-info">
+                        <div class="behavior-title">{title}</div>
+                        <div class="behavior-value">{value}</div>
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
     st.markdown("<br>", unsafe_allow_html=True)
+    # =====================================================
+    # เตรียมข้อมูลสำหรับกราฟ (Mapping & Ordering)
+    # =====================================================
+    behavior_df["Semester_Label"] = behavior_df["Semester"].map({
+        "F": "ภาคการศึกษาที่ 1", 
+        "S": "ภาคการศึกษาที่ 2"
+    }).fillna(behavior_df["Semester"])
 
-    # Map ชื่อพฤติกรรมภาษาไทย
-    thai_behavior_names = {
-        "raisedhands": "การยกมือตอบคำถาม",
-        "VisITedResources": "การเข้าดูสื่อการเรียน",
-        "AnnouncementsView": "การดูประกาศ",
-        "Discussion": "การร่วมอภิปราย"
+    stage_map = {
+        "lowerlevel": "ประถม",
+        "MiddleSchool": "มัธยมต้น",
+        "HighSchool": "มัธยมปลาย"
+    }
+    behavior_df["Stage_Name"] = behavior_df["StageID"].map(stage_map).fillna(behavior_df["StageID"])
+    stage_order = ["ประถม", "มัธยมต้น", "มัธยมปลาย"]
+
+    class_map = {
+        "L": "ระดับต่ำ (Low)",
+        "M": "ระดับปานกลาง (Medium)",
+        "H": "ระดับสูง (High)"
+    }
+    behavior_df["Class_Label"] = behavior_df["Class"].map(class_map).fillna(behavior_df["Class"])
+    class_order = ["ระดับต่ำ (Low)", "ระดับปานกลาง (Medium)", "ระดับสูง (High)"]
+
+    color_class_map = {
+        "ระดับต่ำ (Low)": "#FCA5A5",
+        "ระดับปานกลาง (Medium)": "#FDE68A",
+        "ระดับสูง (High)": "#7BF3C3"
     }
 
-    # =================================================
-    # 2. เปรียบเทียบค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกตามมิติต่างๆ
-    # =================================================
-    with st.container(border=True):
-        st.markdown("### 📊 เปรียบเทียบค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกตามมิติต่าง ๆ")
-
-        # Dictionary สำหรับแปลงชื่อระดับชั้น (GradeID) เป็นภาษาไทย
-        grade_mapping = {
-            "G-01": "ป.1",
-            "G-02": "ป.2",
-            "G-03": "ป.3",
-            "G-04": "ป.4",
-            "G-05": "ป.5",
-            "G-06": "ป.6",
-            "G-07": "ม.1",
-            "G-08": "ม.2",
-            "G-09": "ม.3",
-            "G-10": "ม.4",
-            "G-11": "ม.5",
-            "G-12": "ม.6"
-        }
-
-        # Order การเรียงลำดับระดับชั้นภาษาไทย
-        grade_order = [
-            "ป.1", "ป.2", "ป.3",
-            "ป.4", "ป.5", "ป.6",
-            "ม.1", "ม.2", "ม.3",
-            "ม.4", "ม.5", "ม.6"
-        ]
-
-        # -------------------------------------------------
-        # ส่วนที่ 1: 3 มิติหลัก (ระดับผลการเรียน, ช่วงชั้น, ภาคการศึกษา)
-        # -------------------------------------------------
-        main_dimensions = {
-            "Class": ("ระดับผลการเรียน", {"L": "ระดับต่ำ", "M": "ระดับปานกลาง", "H": "ระดับสูง"}),
-            "StageID": ("ช่วงชั้น", {"lowerlevel": "ประถม", "MiddleSchool": "มัธยมต้น", "HighSchool": "มัธยมปลาย"}),
-            "Semester": ("ภาคการศึกษา", {"F": "ภาคการศึกษาที่ 1", "S": "ภาคการศึกษาที่ 2"})
-        }
-
-        main_list = []
-        for dim_col, (dim_label, mapping) in main_dimensions.items():
-            if dim_col in behavior_df.columns:
-                avg_temp = behavior_df.groupby(dim_col)[behavior_cols].mean().reset_index()
-                long_temp = avg_temp.melt(id_vars=dim_col, value_vars=behavior_cols, var_name="Behavior", value_name="Average")
-                long_temp["Dimension"] = dim_label
-                long_temp["Group"] = long_temp[dim_col].replace(mapping).astype(str)
-                long_temp["Behavior"] = long_temp["Behavior"].replace(thai_behavior_names)
-                main_list.append(long_temp[["Dimension", "Group", "Behavior", "Average"]])
-
-        if main_list:
-            main_df = pd.concat(main_list, ignore_index=True)
-
-            # กำหนดลำดับการแสดงผล
-            order_map = {
-                "ระดับต่ำ": 1,
-                "ระดับปานกลาง": 2,
-                "ระดับสูง": 3,
-                "ประถม": 1,
-                "มัธยมต้น": 2,
-                "มัธยมปลาย": 3,
-                "ภาคการศึกษาที่ 1": 1,
-                "ภาคการศึกษาที่ 2": 2
-            }
-
-            main_df["Order"] = main_df["Group"].map(order_map)
-            main_df = main_df.sort_values(["Dimension", "Order"])
-
-            fig_main = px.bar(
-                main_df,
-                x="Group",
-                y="Average",
-                color="Behavior",
-                barmode="group",
-                facet_col="Dimension",
-                facet_col_spacing=0.06,
-                text_auto=".1f",
-                title="ค่าเฉลี่ยพฤติกรรมจำแนกตาม ระดับผลการเรียน, ช่วงชั้น และภาคการศึกษา",
-                labels={
-                    "Group": "",
-                    "Average": "ค่าเฉลี่ย (ครั้ง)",
-                    "Behavior": "พฤติกรรม",
-                    "Dimension": ""
-                },
-                category_orders={
-                    "Dimension": [
-                    "ระดับผลการเรียน",
-                    "ช่วงชั้น",
-                    "ภาคการศึกษา"
-                    ],
-                    "Group": [
-                        "ระดับต่ำ",
-                        "ระดับปานกลาง",
-                        "ระดับสูง",
-                        "ประถม",
-                        "มัธยมต้น",
-                        "มัธยมปลาย",
-                        "ภาคการศึกษาที่ 1",
-                        "ภาคการศึกษาที่ 2"
-                    ]
-                },
-                color_discrete_map={
-                    "การยกมือตอบคำถาม": "#DDA4F1",
-                    "การเข้าดูสื่อการเรียน": "#8EDB8A",
-                    "การดูประกาศ": "#F7C363",
-                    "การอภิปราย": "#FF8A4C"
-                },
-                template="plotly_white"
-            )
-
-            fig_main.for_each_annotation(
-                lambda a: a.update(text=f"<b>{a.text.split('=')[-1]}</b>")
-            )
-
-            fig_main.update_xaxes(matches=None, showticklabels=True)
-            fig_main.update_yaxes(range=[0, main_df["Average"].max() * 1.18])
-            fig_main.update_traces(textposition="outside")
-
-            fig_main.update_layout(
-                height=380,
-                margin=dict(l=30, r=20, t=60, b=60),
-                font=dict(family="Plus Jakarta Sans, sans-serif"),
-                legend=dict(
-                    orientation="h",
-                    y=-0.22,
-                    x=0.5,
-                    xanchor="center"
-                )
-            )
-
-            st.plotly_chart(
-                fig_main,
-                use_container_width=True,
-                config={"displayModeBar": False}
-            )
-            st.markdown(
-                """
-                <div style="background-color:#F8EFFE; border-left:6px solid #DDA4F1;
-                    padding:15px 20px; border-radius:10px; margin-top:20px; margin-bottom:20px;
-                ">
-
-                <div style="color:#1E40AF; font-size:22; margin-bottom:15px; font-weight:800;">
-                🔍 จากข้อมูล</div>
-                <p style="font-size:15px; color:#334155; line-height:1.8; margin-bottom:8px;">
-                📈 <b>นักเรียนที่มีผลการเรียนระดับสูง</b> มีค่าเฉลี่ยพฤติกรรมการเรียนรู้สูงกว่ากลุ่มอื่นในทุกด้าน 
-                โดยเฉพาะการเข้าดูสื่อการเรียนและการยกมือตอบคำถาม</p>
-
-                <p style="font-size:15px; color:#334155; line-height:1.8; margin-bottom:8px;">
-                🏫 <b>นักเรียนระดับมัธยมต้น</b> 
-                มีการมีส่วนร่วมในการเรียนรู้สูงที่สุดเมื่อเทียบกับระดับประถมศึกษาและมัธยมปลาย</p>
-
-                <p style="font-size:15px; color:#334155; line-height:1.8; margin-bottom:8px;">
-                📚 <b>ภาคการศึกษาที่ 2</b> 
-                มีค่าเฉลี่ยพฤติกรรมการเรียนรู้สูงกว่าภาคการศึกษาที่ 1 ในเกือบทุกด้าน</p>
-
-                <p style="font-size:15px; color:#334155; line-height:1.8;">
-                👁️ <b>การเข้าดูสื่อการเรียน</b> 
-                เป็นพฤติกรรมที่มีค่าเฉลี่ยสูงที่สุดในทุกกลุ่ม สะท้อนถึงความสำคัญของทรัพยากรการเรียนรู้ต่อผลสัมฤทธิ์ทางการเรียน</p>
-
-                </div>
-                """, 
-                    unsafe_allow_html=True
-            )
-
-        # -------------------------------------------------
-        # ส่วนที่ 2: มิติ "ระดับชั้น (GradeID)" ภาษาไทย แยกออกมากราฟแนวยาว
-        # -------------------------------------------------
-        if "GradeID" in behavior_df.columns:
-            st.markdown("---")
-            avg_grade = behavior_df.groupby("GradeID")[behavior_cols].mean().reset_index()
-            long_grade = avg_grade.melt(id_vars="GradeID", value_vars=behavior_cols, var_name="Behavior", value_name="Average")
-            
-            # แปลงชื่อระดับชั้นและพฤติกรรมเป็นภาษาไทย
-            long_grade["Grade_Name"] = long_grade["GradeID"].replace(grade_mapping).astype(str)
-            long_grade["Behavior"] = long_grade["Behavior"].replace(thai_behavior_names)
-
-            fig_grade = px.bar(
-                long_grade,
-                x="Grade_Name",
-                y="Average",
-                color="Behavior",
-                barmode="group",
-                text_auto=".1f",
-                title="ค่าเฉลี่ยพฤติกรรมการเรียนรู้จำแนกรายระดับชั้น",
-                labels={"Grade_Name": "ระดับชั้น", "Average": "ค่าเฉลี่ย (ครั้ง)", "Behavior": "พฤติกรรม"},
-                category_orders={"Grade_Name": grade_order}, # เรียงลำดับ ป.1 -> ม.6 ให้ถูกต้อง
-                color_discrete_map={
-                    "การยกมือตอบคำถาม": "#DDA4F1",
-                    "การเข้าดูสื่อการเรียน": "#8EDB8A",
-                    "การดูประกาศ": "#F7C363",
-                    "การอภิปราย": "#FF8A4C"
-                },
-                template="plotly_white"
-            )
-
-            fig_grade.update_yaxes(range=[0, long_grade["Average"].max() * 1.18])
-            fig_grade.update_traces(textposition="outside")
-            
-            fig_grade.update_layout(
-                height=450, # ปรับความสูงเล็กน้อยเพื่อรองรับชื่อแกน X ภาษาไทยที่ยาวขึ้น
-                margin=dict(l=30, r=20, t=60, b=80),
-                font=dict(family="Plus Jakarta Sans, sans-serif"),
-                showlegend=False
-            )
-
-            st.plotly_chart(fig_grade, use_container_width=True, config={"displayModeBar": False})
-
-        # -------------------------------------------------
-        # ส่วนที่ 3: สรุป Insight
-        # -------------------------------------------------
-        all_data = pd.concat([main_df, long_grade.rename(columns={"Grade_Name": "Group"}).assign(Dimension="ระดับชั้น")], ignore_index=True)
-        max_row = all_data.loc[all_data["Average"].idxmax()]
-        min_row = all_data.loc[all_data["Average"].idxmin()]
-        st.markdown(
-            f"""
-            <div style="
-                background-color:#FFFBEB;
-                border-left:6px solid #F7C363;
-                padding:15px 20px;
-                border-radius:10px;
-                margin-top:20px;
-                margin-bottom:20px;
-            ">
-                <div style="color:#166534; font-size:16px;
-                    font-weight:700; margin-bottom:10px;
-                ">
-                    📌 สรุปภาพรวมการกระจายตัว</div>
-                <div style="color:#334155; line-height:1.9;">
-                * พฤติกรรมที่มีค่าเฉลี่ยสูงสุดในภาพรวม คือ {max_row['Behavior']} ในกลุ่ม {max_row['Group']} 
-                ({max_row['Dimension']}) เฉลี่ย {max_row['Average']:.1f} ครั้ง<br>
-                * พฤติกรรมที่มีค่าเฉลี่ยต่ำสุดในภาพรวม คือ {min_row['Behavior']} ในกลุ่ม {min_row['Group']}
-                ({min_row['Dimension']}) เฉลี่ย {min_row['Average']:.1f} ครั้ง
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-   
-    # =================================================
-    # 2. GROUPED BAR CHART: การกระจายความถี่ (นำโค้ดใหม่มาวางตรงนี้ได้เลย)
-    # =================================================
-    with st.container(border=True):
-        st.markdown("### 📈 การกระจายความถี่ของพฤติกรรมการเรียนรู้ทั้งหมด")
-
-        behavior_cols = ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"]
-        bins = [-1, 10, 20, 30, 45, float("inf")]
-        labels = ["0–10 ครั้ง", "11–20 ครั้ง", "21–30 ครั้ง", "31–45 ครั้ง", "มากกว่า 45 ครั้ง"]
-
-        # 1. จัดกลุ่มช่วงคะแนนของทุกพฤติกรรมพร้อมกัน
-        dist_list = []
-        for col in behavior_cols:
-            b_range = pd.cut(behavior_df[col], bins=bins, labels=labels, include_lowest=True)
-            counts = b_range.value_counts().sort_index().reset_index()
-            counts.columns = ["ช่วงจำนวนครั้ง", "จำนวนผู้เรียน"]
-            counts["Behavior"] = thai_behavior_names[col]
-            dist_list.append(counts)
-
-        # รวม Dataframe เข้าด้วยกัน
-        all_dist_df = pd.concat(dist_list, ignore_index=True)
-
-        # 2. สร้าง Grouped Bar Chart รวมในกราฟเดียว
-        fig_all_dist = px.bar(
-            all_dist_df,
-            x="ช่วงจำนวนครั้ง",
-            y="จำนวนผู้เรียน",
-            color="Behavior",
+    # ฟังก์ชั่นช่วยสร้างกราฟพฤติกรรม
+    def create_behavior_effect_chart(df, y_col, title_text, y_label):
+        avg_df = df.groupby(["Stage_Name", "Class_Label", "Semester_Label"])[y_col].mean().reset_index()
+        fig = px.bar(
+            avg_df,
+            x="Stage_Name",
+            y=y_col,
+            color="Class_Label",
             barmode="group",
-            text_auto=True,
-            title="การเปรียบเทียบการกระจายความถี่จำแนกตามพฤติกรรมการเรียนรู้",
+            facet_col="Semester_Label",
+            facet_col_spacing=0.08,
+            text_auto=".1f",
+            title=title_text,
             labels={
-                "ช่วงจำนวนครั้ง": "ช่วงความถี่การทำพฤติกรรม",
-                "จำนวนผู้เรียน": "จำนวนผู้เรียน (คน)",
-                "Behavior": "พฤติกรรมการเรียนรู้"
+                "Stage_Name": "ช่วงชั้น",
+                y_col: y_label,
+                "Class_Label": "ผลสัมฤทธิ์ทางการเรียน",
+                "Semester_Label": ""
+            },
+            category_orders={
+                "Stage_Name": stage_order,
+                "Class_Label": class_order,
+                "Semester_Label": ["ภาคการศึกษาที่ 1", "ภาคการศึกษาที่ 2"]
+            },
+            color_discrete_map=color_class_map,
+            template="plotly_white"
+        )
+        fig.for_each_annotation(lambda a: a.update(text=f"<b>{a.text.split('=')[-1]}</b>"))
+        fig.update_xaxes(matches=None, showticklabels=True)
+        fig.update_yaxes(range=[0, avg_df[y_col].max() * 1.25 if not avg_df.empty else 100])
+        fig.update_traces(textposition="outside")
+        fig.update_layout(
+            height=390,
+            margin=dict(l=30, r=20, t=60, b=70),
+            font=dict(family="Plus Jakarta Sans, sans-serif"),
+            legend=dict(orientation="h", y=-0.28, x=0.5, xanchor="center", title_text="")
+        )
+        return fig, avg_df
+
+    # ฟังก์ชั่นช่วยสร้างคำอธิบาย Insight
+    def generate_insight_html(avg_df, col_name, behavior_label, unit_label="ครั้ง"):
+        if avg_df.empty:
+            return ""
+        
+        class_avg = avg_df.groupby("Class_Label")[col_name].mean()
+        high_val = class_avg.get("ระดับสูง (High)", 0)
+        low_val = class_avg.get("ระดับต่ำ (Low)", 0)
+        diff_val = high_val - low_val
+        
+        sem_avg = avg_df.groupby("Semester_Label")[col_name].mean()
+        sem1_val = sem_avg.get("ภาคการศึกษาที่ 1", 0)
+        sem2_val = sem_avg.get("ภาคการศึกษาที่ 2", 0)
+        
+        sem_diff_text = ""
+        if sem2_val > sem1_val:
+            sem_diff_text = f"เพิ่มขึ้นในภาคการศึกษาที่ 2 ({sem2_val:.1f} {unit_label}) เมื่อเทียบกับภาคการศึกษาที่ 1 ({sem1_val:.1f} {unit_label})"
+        elif sem1_val > sem2_val:
+            sem_diff_text = f"สูงกว่าในภาคการศึกษาที่ 1 ({sem1_val:.1f} {unit_label}) เมื่อเทียบกับภาคการศึกษาที่ 2 ({sem2_val:.1f} {unit_label})"
+        else:
+            sem_diff_text = f"มีค่าใกล้เคียงกันทั้งสองภาคการศึกษา ({sem1_val:.1f} {unit_label})"
+
+        stage_avg = avg_df.groupby("Stage_Name")[col_name].mean()
+        max_stage = stage_avg.idxmax() if not stage_avg.empty else "-"
+        max_stage_val = stage_avg.max() if not stage_avg.empty else 0
+
+        html = f"""
+        <div class="insight-box">
+            <div class="insight-title">📌 สรุปข้อวิเคราะห์เชิงข้อมูล ({behavior_label})</div>
+            • <b>ความสัมพันธ์กับผลสัมฤทธิ์:</b> ผู้เรียนกลุ่มที่มีผลสัมฤทธิ์ทางการเรียนระดับสูง (High) มีอัตรา{behavior_label}เฉลี่ยอยู่ที่ <b>{high_val:.1f} {unit_label}</b> ซึ่งสูงกว่ากลุ่มระดับต่ำ (Low) ที่มีเฉลี่ย <b>{low_val:.1f} {unit_label}</b> (ต่างกันประมาณ <b>{diff_val:.1f} {unit_label}</b>)<br>
+            • <b>เปรียบเทียบภาคเรียน:</b> แนวโน้ม{behavior_label}{sem_diff_text}<br>
+            • <b>ช่วงชั้นที่มีส่วนร่วมสูงสุด:</b> นักเรียนระดับชั้น <b>{max_stage}</b> มีสถิติ{behavior_label}สูงสุด โดยมีค่าเฉลี่ยอยู่ที่ <b>{max_stage_val:.1f} {unit_label}</b>
+        </div>
+        """
+        return html
+
+    # =========================================================================
+    # 1. อัตราการขาดเรียน/การเข้าเรียน (StudentAbsenceDays)
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### อัตราการขาดเรียนที่ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        absence_map = {
+            "Under-7": "ขาดน้อยกว่า 7 วัน ",
+            "Above-7": "ขาดมากกว่า 7 วัน "
+        }
+        behavior_df["Absence_Label"] = behavior_df["StudentAbsenceDays"].map(absence_map).fillna(behavior_df["StudentAbsenceDays"])
+        absence_df = behavior_df.groupby(["Absence_Label", "Class_Label", "Semester_Label"]).size().reset_index(name="StudentCount")
+
+        fig1 = px.bar(
+            absence_df,
+            x="Absence_Label",
+            y="StudentCount",
+            color="Class_Label",
+            barmode="group",
+            facet_col="Semester_Label",
+            facet_col_spacing=0.08,
+            text="StudentCount",
+            title="จำนวนนักเรียนจำแนกตามอัตราการขาดเรียน ผลสัมฤทธิ์ทางการเรียน และภาคการศึกษา",
+            labels={
+                "Absence_Label": "",  # ซ่อนชื่อแกน X จากตัว px.bar เพื่อไม่ให้เกิดคำซ้ำใต้แต่ละ Facet
+                "StudentCount": "จำนวนนักเรียน (คน)",
+                "Class_Label": "ผลสัมฤทธิ์ทางการเรียน",
+                "Semester_Label": ""
+            },
+            category_orders={
+                "Absence_Label": ["ขาดน้อยกว่า 7 วัน", "ขาดมากกว่า 7 วัน "],
+                "Class_Label": class_order,
+                "Semester_Label": ["ภาคการศึกษาที่ 1", "ภาคการศึกษาที่ 2"]
+            },
+            color_discrete_map=color_class_map,
+            template="plotly_white"
+        )
+        fig1.for_each_annotation(lambda a: a.update(text=f"<b>{a.text.split('=')[-1]}</b>"))
+        fig1.update_traces(textposition="outside")
+        fig1.update_yaxes(range=[0, absence_df["StudentCount"].max() * 1.25 if not absence_df.empty else 10])
+        # เพิ่มคำว่า "อัตราการขาดเรียน" แบบ centered ตรงกลางกราฟเพียงจุดเดียว
+        fig1.update_layout(
+            height=400,
+            margin=dict(l=30, r=20, t=60, b=80),
+            font=dict(family="Plus Jakarta Sans, sans-serif"),
+            legend=dict(orientation="h", y=-0.32, x=0.5, xanchor="center", title_text=""),
+            annotations=list(fig1.layout.annotations) + [
+                dict(
+                    text="อัตราการขาดเรียน",
+                    x=0.5,
+                    y=-0.18,
+                    xref="paper",
+                    yref="paper",
+                    showarrow=False,
+                    font=dict(size=12, color="#4A5568")
+                )
+            ]
+        )
+        st.plotly_chart(fig1, use_container_width=True, config={"displayModeBar": False})
+        if not absence_df.empty:
+            under7_high = absence_df[(absence_df["Absence_Label"].str.contains("น้อยกว่า")) & (absence_df["Class_Label"].str.contains("สูง"))]["StudentCount"].sum()
+            above7_low = absence_df[(absence_df["Absence_Label"].str.contains("มากกว่า")) & (absence_df["Class_Label"].str.contains("ต่ำ"))]["StudentCount"].sum()
+    
+            st.markdown(f"""
+            <div class="insight-box">
+                <div class="insight-title">📌 สรุปข้อวิเคราะห์อัตราการขาดเรียน (StudentAbsenceDays)</div>
+                • <b>กลุ่มขาดเรียนน้อยกว่า 7 วัน:</b> มีสัดส่วนผู้เรียนระดับผลสัมฤทธิ์สูง (High) และปานกลาง (Medium) ครองสัดส่วนส่วนใหญ่ (พบกลุ่ม High รวม <b>{under7_high} คน</b>)<br>
+                • <b>กลุ่มขาดเรียนมากกว่า 7 วัน:</b> มีความสัมพันธ์อย่างมีนัยสำคัญกับกลุ่มผลสัมฤทธิ์ระดับต่ำ (Low) โดยตรง (พบกลุ่ม Low รวม <b>{above7_low} คน</b>)<br>
+                • <b>การนำไปใช้:</b> จำนวนวันขาดเรียนเกิน 7 วัน ถือเป็นดัชนีชี้วัดความเสี่ยงที่ครูผู้สอนควรติดตามและช่วยเหลือเป็นพิเศษ
+            </div>
+            """, 
+            unsafe_allow_html=True
+            )
+    # =========================================================================
+    # 2. การยกมือตอบคำถาม
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### การยกมือตอบคำถามที่ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        fig2, df2 = create_behavior_effect_chart(
+            behavior_df, "raisedhands", 
+            "ค่าเฉลี่ยการยกมือตอบคำถาม จำแนกตามช่วงชั้น ผลการเรียน และภาคการศึกษา", 
+            "ค่าเฉลี่ยการยกมือ (ครั้ง)"
+        )
+        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+        st.markdown(generate_insight_html(df2, "raisedhands", "การยกมือตอบคำถาม"), unsafe_allow_html=True)
+
+    # =========================================================================
+    # 3. การเข้าดูสื่อ
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### การเข้าดูสื่อการเรียนที่ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        fig3, df3 = create_behavior_effect_chart(
+            behavior_df, "VisITedResources", 
+            "ค่าเฉลี่ยการเข้าดูสื่อการเรียน จำแนกตามช่วงชั้น ผลการเรียน และภาคการศึกษา", 
+            "ค่าเฉลี่ยการเข้าดูสื่อ (ครั้ง)"
+        )
+        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+        st.markdown(generate_insight_html(df3, "VisITedResources", "การเข้าดูสื่อการเรียน"), unsafe_allow_html=True)
+
+    # =========================================================================
+    # 4. การเข้าดูประกาศ
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### การเข้าดูประกาศ ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        fig4, df4 = create_behavior_effect_chart(
+            behavior_df, "AnnouncementsView", 
+            "ค่าเฉลี่ยการเข้าดูประกาศ จำแนกตามช่วงชั้น ผลการเรียน และภาคการศึกษา", 
+            "ค่าเฉลี่ยการดูประกาศ (ครั้ง)"
+        )
+        st.plotly_chart(fig4, use_container_width=True, config={"displayModeBar": False})
+        st.markdown(generate_insight_html(df4, "AnnouncementsView", "การเข้าดูประกาศข่าวสาร"), unsafe_allow_html=True)
+
+    # =========================================================================
+    # 5. การร่วมอภิปราย
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### การร่วมอภิปราย ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        fig5, df5 = create_behavior_effect_chart(
+            behavior_df, "Discussion", 
+            "ค่าเฉลี่ยการร่วมอภิปราย จำแนกตามช่วงชั้น ผลการเรียน และภาคการศึกษา", 
+            "ค่าเฉลี่ยการร่วมอภิปราย (ครั้ง)"
+        )
+        st.plotly_chart(fig5, use_container_width=True, config={"displayModeBar": False})
+        st.markdown(generate_insight_html(df5, "Discussion", "การเข้าร่วมอภิปราย"), unsafe_allow_html=True)
+
+    # =========================================================================
+    # 6. ภาพรวม (คะแนนรวม 4 ด้าน)
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### ภาพรวมการมีส่วนร่วมทั้งหมด ส่งผลต่อระดับผลสัมฤทธิ์ทางการเรียน")
+        fig6, df6 = create_behavior_effect_chart(
+            behavior_df, "ParticipationScore", 
+            "คะแนนการมีส่วนร่วมรวม (4 ด้าน) จำแนกตามช่วงชั้น ผลการเรียน และภาคการศึกษา", 
+            "คะแนนการมีส่วนร่วมรวม (คะแนนเฉลี่ย)"
+        )
+        st.plotly_chart(fig6, use_container_width=True, config={"displayModeBar": False})
+        st.markdown(generate_insight_html(df6, "ParticipationScore", "คะแนนการมีส่วนร่วมรวม", unit_label="คะแนน"), unsafe_allow_html=True)
+
+    # =========================================================================
+    # 7. เปรียบเทียบรายชั้นปี (ป.1 - ม.6)
+    # =========================================================================
+    with st.container(border=True):
+        st.markdown("### การเปรียบเทียบการมีส่วนร่วมรายชั้นปี จำแนกตามภาคเรียน")
+        
+        grade_mapping = {
+            "G-01": {"name": "ป.1", "order": 1},
+            "G-02": {"name": "ป.2", "order": 2},
+            "G-03": {"name": "ป.3", "order": 3},
+            "G-04": {"name": "ป.4", "order": 4},
+            "G-05": {"name": "ป.5", "order": 5},
+            "G-06": {"name": "ป.6", "order": 6},
+            "G-07": {"name": "ม.1", "order": 7},
+            "G-08": {"name": "ม.2", "order": 8},
+            "G-09": {"name": "ม.3", "order": 9},
+            "G-10": {"name": "ม.4", "order": 10},
+            "G-11": {"name": "ม.5", "order": 11},
+            "G-12": {"name": "ม.6", "order": 12},
+        }
+
+        grade_df = behavior_df.groupby(["GradeID", "Semester_Label"])["ParticipationScore"].mean().reset_index()
+        grade_df["Grade_Name"] = grade_df["GradeID"].map(lambda x: grade_mapping.get(x, {}).get("name", x))
+        grade_df["Order"] = grade_df["GradeID"].map(lambda x: grade_mapping.get(x, {}).get("order", 99))
+        grade_df = grade_df.sort_values(by="Order")
+
+        fig7 = px.bar(
+            grade_df,
+            x="Grade_Name",
+            y="ParticipationScore",
+            color="Semester_Label",
+            barmode="group",
+            text_auto=".1f",
+            title="คะแนนเฉลี่ยการมีส่วนร่วมรายระดับชั้น (ป.1 - ม.6) จำแนกตามภาคการศึกษา",
+            labels={
+                "Grade_Name": "ระดับชั้น",
+                "ParticipationScore": "คะแนนการมีส่วนร่วมเฉลี่ย",
+                "Semester_Label": "ภาคการศึกษา"
             },
             color_discrete_map={
-                "การยกมือตอบคำถาม": "#DDA4F1",
-                "การเข้าดูสื่อการเรียน": "#8EDB8A",
-                "การดูประกาศ": "#F7C363",
-                "การอภิปราย": "#FF8A4C"
+                "ภาคการศึกษาที่ 1": "#35A6DB",
+                "ภาคการศึกษาที่ 2": "#383AB5"
             },
             template="plotly_white"
         )
 
-        fig_all_dist.update_traces(textposition="outside")
-        fig_all_dist.update_layout(
-            height=450,
-            margin=dict(l=40, r=30, t=60, b=80),
+        fig7.update_traces(textposition="outside")
+        fig7.update_yaxes(range=[0, grade_df["ParticipationScore"].max() * 1.18 if not grade_df.empty else 100])
+        fig7.update_layout(
+            height=400,
+            margin=dict(l=30, r=20, t=60, b=70),
             font=dict(family="Plus Jakarta Sans, sans-serif"),
-            legend=dict(
-                orientation="h",
-                y=-0.25,
-                x=0.5,
-                xanchor="center"
-            )
+            legend=dict(orientation="h", y=-0.25, x=0.5, xanchor="center", title_text="")
         )
 
-        st.plotly_chart(fig_all_dist, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig7, use_container_width=True, config={"displayModeBar": False})
 
-        # คำนวณ Insight คำอธิบายสรุปภาพรวม
-        total_students = len(behavior_df)
-        
-        high_freq_df = all_dist_df[all_dist_df["ช่วงจำนวนครั้ง"] == "มากกว่า 45 ครั้ง"]
-        max_high = high_freq_df.loc[high_freq_df["จำนวนผู้เรียน"].idxmax()]
-
-        low_freq_df = all_dist_df[all_dist_df["ช่วงจำนวนครั้ง"] == "0–10 ครั้ง"]
-        max_low = low_freq_df.loc[low_freq_df["จำนวนผู้เรียน"].idxmax()]
-        st.markdown(
-            f"""
-            <div style="
-                background-color:#F0FDF4;
-                border-left:6px solid #16A34A;
-                padding:15px 20px;
-                border-radius:10px;
-                margin-top:20px;
-                margin-bottom:20px;
-            ">
-                <div style="color:#166534; font-size:16px;
-                    font-weight:700; margin-bottom:10px;
-                ">
-                    📌 สรุปภาพรวมการกระจายตัว</div>
-                <div style="color:#334155; line-height:1.9;">
-                *พฤติกรรมที่มีผู้เรียนทำในระดับสูงมาก (มากกว่า 45 ครั้ง) มากที่สุด คือ {max_high['Behavior']}
-                จำนวน {max_high['จำนวนผู้เรียน']} คน
-                (คิดเป็น {(max_high['จำนวนผู้เรียน']/total_students)*100:.1f}%)<br>
-                * พฤติกรรมที่มีผู้เรียนทำในระดับต่ำ (0–10 ครั้ง) มากที่สุด คือ {max_low['Behavior']}
-                จำนวน {max_low['จำนวนผู้เรียน']} คน 
-                (คิดเป็น {(max_low['จำนวนผู้เรียน']/total_students)*100:.1f}%)
-                </div>
+        if not grade_df.empty and grade_df["ParticipationScore"].notna().any():
+            top_grade_row = grade_df.loc[grade_df["ParticipationScore"].idxmax()]
+            low_grade_row = grade_df.loc[grade_df["ParticipationScore"].idxmin()]
+            
+            st.markdown(f"""
+            <div class="insight-box">
+                <div class="insight-title">📌 สรุปข้อวิเคราะห์รายชั้นปี</div>
+                • <b>ระดับชั้นที่มีส่วนร่วมสูงสุด:</b> ชั้น <b>{top_grade_row['Grade_Name']}</b> ใน{top_grade_row['Semester_Label']} มีคะแนนการมีส่วนร่วมเฉลี่ยสูงที่สุดอยู่ที่ <b>{top_grade_row['ParticipationScore']:.1f} คะแนน</b><br>
+                • <b>ระดับชั้นที่มีส่วนร่วมน้อยที่สุด:</b> ชั้น <b>{low_grade_row['Grade_Name']}</b> ใน{low_grade_row['Semester_Label']} มีคะแนนการมีส่วนร่วมเฉลี่ยอยู่ที่ <b>{low_grade_row['ParticipationScore']:.1f} คะแนน</b><br>
+                • <b>ข้อสังเกตเพิ่มเติม:</b> ช่วยให้ผู้สอนสามารถระบุระดับชั้นที่ต้องได้รับการกระตุ้นการมีส่วนร่วมหรือปรับเปลี่ยนรูปแบบกิจกรรมในแต่ละภาคเรียนได้อย่างแม่นยำ
             </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-#---------------------------------------------------------------------------------------------------------
-# การมาเรียน
-#---------------------------------------------------------------------------------------------------------        
-elif menu == "การเข้าเรียน":
-    
-    st.title("🗓️ Attendance Analysis")
-    st.caption("แสดงสัดส่วนการขาดเรียนจำแนกตาม ผลการเรียน, ช่วงชั้น, ชั้นเรียน และภาคการศึกษา")
-    st.markdown("---")
-    
-    # Mapping Dictionary สำหรับแปลงชื่อกลุ่มเป็นภาษาไทย
-    absence_map = {"Under-7": "ขาดเรียน < 7 วัน", "Above-7": "ขาดเรียน ≥ 7 วัน"}
-    class_map = {"L": "ระดับต่ำ (L)", "M": "ระดับปานกลาง (M)", "H": "ระดับสูง (H)"}
-    stage_map = {"lowerlevel": "ประถมศึกษา", "MiddleSchool": "มัธยมศึกษาตอนต้น", "HighSchool": "มัธยมศึกษาตอนปลาย"}
-    semester_map = {"F": "ภาคเรียนที่ 1", "S": "ภาคเรียนที่ 2"}
-    grade_map = {
-        "G-01": "ป.1", "G-02": "ป.2", "G-03": "ป.3", "G-04": "ป.4", "G-05": "ป.5", "G-06": "ป.6",
-        "G-07": "ม.1", "G-08": "ม.2", "G-09": "ม.3", "G-10": "ม.4", "G-11": "ม.5", "G-12": "ม.6"
-    }
-
-    with st.container(border=True):
-        st.markdown(
-            """
-            <div style='text-align: left; margin-bottom: 16px;'>
-                <h3 style='color: #1E293B; margin: 0; font-size: 20px; font-weight: 700;'>
-                    🚨 ภาพรวมการขาดเรียน (Student Absence Days)
-                </h3>
-                <p style='color: #64748B; font-size: 14px; margin: 2px 0 0 0;'>
-                    เปรียบเทียบสัดส่วนนักเรียนขาดเรียนน้อย (< 7 วัน) และขาดเรียนมาก (≥ 7 วัน)
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-        # 1. การคำนวณสถิติภาพรวม (KPI)
-        absence_counts = filtered_df["StudentAbsenceDays"].value_counts().reset_index()
-        absence_counts.columns = ["AbsenceCategory", "Count"]
-        absence_counts["Absence_TH"] = absence_counts["AbsenceCategory"].map(absence_map)
-        
-        total_filtered = len(filtered_df)
-        absence_counts["Percent"] = (absence_counts["Count"] / total_filtered * 100) if total_filtered > 0 else 0
-    
-        under_7_row = absence_counts[absence_counts["AbsenceCategory"] == "Under-7"]
-        above_7_row = absence_counts[absence_counts["AbsenceCategory"] == "Above-7"]
-    
-        count_under7 = under_7_row["Count"].values[0] if not under_7_row.empty else 0
-        pct_under7 = under_7_row["Percent"].values[0] if not under_7_row.empty else 0
-        count_above7 = above_7_row["Count"].values[0] if not above_7_row.empty else 0
-        pct_above7 = above_7_row["Percent"].values[0] if not above_7_row.empty else 0
-    
-        # KPI Cards
-        kpi_col1, kpi_col2 = st.columns(2)
-        with kpi_col1:
-            st.markdown(
-                f"""
-                <div style='background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 12px; text-align: center;'>
-                    <span style='color: #166534; font-size: 13px; font-weight: 600;'>🟢 ขาดเรียน < 7 วัน</span>
-                    <div style='color: #15803D; font-size: 22px; font-weight: 800; margin-top: 2px;'>
-                        {count_under7:,} คน <span style='font-size: 14px; font-weight: 500;'>({pct_under7:.1f}%)</span>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
+            """, unsafe_allow_html=True
             )
-        with kpi_col2:
-            st.markdown(
-                f"""
-                <div style='background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; padding: 12px; text-align: center;'>
-                    <span style='color: #991B1B; font-size: 13px; font-weight: 600;'>🔴 ขาดเรียน ≥ 7 วัน</span>
-                    <div style='color: #DC2626; font-size: 22px; font-weight: 800; margin-top: 2px;'>
-                        {count_above7:,} คน <span style='font-size: 14px; font-weight: 500;'>({pct_above7:.1f}%)</span>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # -------------------------------------------------
-        # 2. กราฟจำแนกตามมิติต่างๆ (Descriptive Bar Charts)
-        # -------------------------------------------------
-        
-        # ฟังก์ชันช่วยสร้าง Bar Chart แบบ Grouped
-        def create_absence_bar(df, group_col, title_text, label_map=None, category_order=None):
-            temp_df = df.groupby([group_col, "StudentAbsenceDays"]).size().reset_index(name="Count")
-            temp_df["Absence_TH"] = temp_df["StudentAbsenceDays"].map(absence_map)
-            if label_map:
-                temp_df["Group_TH"] = temp_df[group_col].map(label_map).fillna(temp_df[group_col])
-            else:
-                temp_df["Group_TH"] = temp_df[group_col]
-
-            fig = px.bar(
-                temp_df,
-                x="Group_TH",
-                y="Count",
-                color="Absence_TH",
-                barmode="group",
-                text="Count",
-                title=f"<b>{title_text}</b>",
-                labels={"Group_TH": "", "Count": "จำนวน (คน)", "Absence_TH": "การขาดเรียน"},
-                color_discrete_map={"ขาดเรียน < 7 วัน": "#22C55E", "ขาดเรียน ≥ 7 วัน": "#EF4444"},
-                category_orders={"Group_TH": category_order} if category_order else {}
-            )
-            fig.update_traces(textposition="outside")
-            fig.update_yaxes(range=[0, temp_df["Count"].max() * 1.25])
-            fig.update_layout(
-                template="plotly_white",
-                height=320,
-                margin=dict(l=10, r=10, t=40, b=10),
-                legend=dict(orientation="h", y=-0.25, x=0.5, xanchor="center")
-            )
-            return fig
-
-        # แถวที่ 1: ผลการเรียน (Class) & ภาคการศึกษา (Semester)
-        row1_col1, row1_col2 = st.columns(2)
-        with row1_col1:
-            if "Class" in filtered_df.columns:
-                fig_class = create_absence_bar(filtered_df, "Class", "จำแนกตามระดับผลการเรียน", class_map, ["ระดับต่ำ (L)", "ระดับปานกลาง (M)", "ระดับสูง (H)"])
-                st.plotly_chart(fig_class, use_container_width=True, config={"displayModeBar": False})
-
-        with row1_col2:
-            if "Semester" in filtered_df.columns:
-                fig_sem = create_absence_bar(filtered_df, "Semester", "จำแนกตามภาคการศึกษา", semester_map, ["ภาคเรียนที่ 1", "ภาคเรียนที่ 2"])
-                st.plotly_chart(fig_sem, use_container_width=True, config={"displayModeBar": False})
-
-        # แถวที่ 2: ช่วงชั้น (StageID) & ระดับชั้นเรียน (GradeID)
-        row2_col1, row2_col2 = st.columns(2)
-        with row2_col1:
-            if "StageID" in filtered_df.columns:
-                fig_stage = create_absence_bar(filtered_df, "StageID", "จำแนกตามช่วงชั้น", stage_map, ["ประถมศึกษา", "มัธยมศึกษาตอนต้น", "มัธยมศึกษาตอนปลาย"])
-                st.plotly_chart(fig_stage, use_container_width=True, config={"displayModeBar": False})
-
-        with row2_col2:
-            if "GradeID" in filtered_df.columns:
-                grade_order_list = ["ป.1", "ป.2", "ป.3", "ป.4", "ป.5", "ป.6", "ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"]
-                fig_grade = create_absence_bar(filtered_df, "GradeID", "จำแนกตามชั้นเรียน (Grade)", grade_map, grade_order_list)
-                st.plotly_chart(fig_grade, use_container_width=True, config={"displayModeBar": False})
-
-        # -------------------------------------------------
-        # 3. สรุปสถิติเชิงพรรณนา (Descriptive Summary)
-        # -------------------------------------------------
-        st.markdown(
-            f"""
-            <div style='background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #0EA5E9; border-radius: 8px; 
-                        padding: 12px; font-size: 13px; color: #334155; padding: 12px 16px; margin-top: 10px; margin-bottom: 15px; '>
-                📌 <b>สรุปภาพรวม:</b> จากนักเรียนทั้งหมด <b>{total_filtered:,} คน</b> 
-                มีผู้เรียนที่อยู่ในกลุ่มขาดเรียนน้อยกว่า 7 วัน จำนวน <b>{count_under7:,} คน ({pct_under7:.1f}%)</b> 
-                และกลุ่มขาดเรียนตั้งแต่ 7 วันขึ้นไป จำนวน <b>{count_above7:,} คน ({pct_above7:.1f}%)</b> 
-                โดยสามารถแยกดูสัดส่วนตามมิติต่างๆ ในกราฟด้านบนเพื่อเปรียบเทียบจำนวนนักเรียนในแต่ละกลุ่มได้ทันที
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 # =====================================================
 # การมีส่วนร่วมของผู้ปกครอง (ดีไซน์ตามรูปตัวอย่าง)
 # =====================================================
@@ -2715,10 +2869,12 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 names="ผู้ดูแลหลัก",
                 hole=0.62,
                 color="ผู้ดูแลหลัก",
-                color_discrete_map={"บิดา": "#3B82F6", "มารดา": "#8B5CF6"} # สีน้ำเงินฟ้า และ สีม่วงอ่อน ตามรูปตัวอย่าง
+                color_discrete_map={"บิดา": "#2285B0", "มารดา": "#36BCAA"} # สีน้ำเงินฟ้า และ สีม่วงอ่อน ตามรูปตัวอย่าง
             )
             
             fig_donut.update_traces(
+                rotation=180,
+                direction="clockwise",
                 textposition="inside",
                 textinfo="percent+value",
                 texttemplate="<b>%{percent:.0%}</b><br>%{value} คน",
@@ -2767,9 +2923,9 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 # บล็อกที่ 1: บิดา
                 st.markdown(
                     f"""
-                    <div style='background-color: #EFF6FF; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border-left: 5px solid #3B82F6;'>
+                    <div style='background-color: #EFF6FF; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border-left: 5px solid #38BDF8;'>
                         <span style='color: #1E3A8A; font-weight: bold; font-size: 14px;'>🟦 บิดา (ผู้ดูแลหลัก)</span><br>
-                        <b style='color: #2563EB; font-size: 22px;'>{father_cnt:,} คน</b><br>
+                        <b style='color: #2285B0; font-size: 22px;'>{father_cnt:,} คน</b><br>
                         <span style='color: #64748B; font-size: 12px;'>คิดเป็น {father_pct:.1f}%</span>
                     </div>
                     """, 
@@ -2779,9 +2935,9 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 # บล็อกที่ 2: มารดา
                 st.markdown(
                     f"""
-                    <div style='background-color: #F5F3FF; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #8B5CF6;'>
+                    <div style='background-color: #F5F3FF; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #2DD4BF;'>
                         <span style='color: #4C1D95; font-weight: bold; font-size: 14px;'>🟪 มารดา (ผู้ดูแลหลัก)</span><br>
-                        <b style='color: #7C3AED; font-size: 22px;'>{mother_cnt:,} คน</b><br>
+                        <b style='color: #36BCAA; font-size: 22px;'>{mother_cnt:,} คน</b><br>
                         <span style='color: #64748B; font-size: 12px;'>คิดเป็น {mother_pct:.1f}%</span>
                     </div>
                     """, 
@@ -2791,7 +2947,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 # บล็อกข้อสังเกตเชิงสถิติ ด้านล่างสุด
                 st.markdown(
                     f"""
-                    <div style='background-color: #FEF3C7; padding: 12px 14px; border-radius: 8px; 
+                    <div style='background-color: #F6F2FF; padding: 12px 14px; border-radius: 8px; 
                     border: 1px solid #FCD34D; margin-top: 0px; margin-bottom: 10px;'>
                         <span style='color: #92400E; font-size: 13px;'>
                             💡 <b>ข้อสังเกตเชิงสถิติ:</b> ผู้เรียนส่วนใหญ่มีผู้ดูแลหลักเป็น <b>บิดา</b> จำนวน {father_cnt:,} คน ({father_pct:.1f}%) จากผู้เรียนทั้งหมด {total_parents:,} คน
@@ -2850,7 +3006,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 color="ผู้ดูแลหลัก",
                 barmode="group",
                 text="จำนวน",
-                color_discrete_map={"บิดา": "#3B82F6", "มารดา": "#8B5CF6"}, # คุมโทนสีตามแถวแรก
+                color_discrete_map={"บิดา": "#2285B0", "มารดา": "#36BCAA"}, # คุมโทนสีตามแถวแรก
                 labels={"หัวข้อ": "", "จำนวน": "จำนวน (คน)", "ผู้ดูแลหลัก": "ผู้ดูแลหลัก"}
             )
         
@@ -2905,7 +3061,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
 
                 st.markdown(
                     f"""
-                    <div style='background-color: #FEF3C7; padding: 10px 12px; border-radius: 8px; 
+                    <div style='background-color: #FEF3FF; padding: 10px 12px; border-radius: 8px; 
                     border: 1px solid #FCD34D; margin-top: 10px; margin-top: 0px; margin-bottom: 10px;'>
                         <span style='color: #92400E; font-size: 12px;'>
                             💡 <b>ข้อสังเกต:</b> มารดามีสัดส่วนในการตอบแบบสำรวจ ({ (m_surv_yes/(m_surv_yes+m_surv_no))*100:.1f}% ) และความพึงพอใจ ({ (m_sat_good/(m_sat_good+m_sat_bad))*100:.1f}% ) สูงกว่าบิดาอย่างมีนัยสำคัญ
@@ -2954,7 +3110,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 barmode="group",
                 text="ค่าเฉลี่ย",
                 title="<b>🏃‍♂️ พฤติกรรมเรียนจำแนกตามผู้ดูแลหลัก</b>",
-                color_discrete_map={"บิดา": "#3B82F6", "มารดา": "#8B5CF6"}
+                color_discrete_map={"บิดา": "#2285B0", "มารดา": "#36BCAA"}
             )
             fig_act.update_traces(
                 texttemplate='<b>%{y:.1f}</b>',
@@ -2986,7 +3142,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
             # สรุป Insight ฝั่งซ้าย
             st.markdown(
                 """
-                <div style='background-color: #FEF3C7; padding: 10px 12px; border-radius: 8px; 
+                <div style='background-color: #F7F8FF; padding: 10px 12px; border-radius: 8px; 
                 border: 1px solid #FCD34D; margin-top: 0px; margin-bottom: 10px'>
                     <span style='color: #92400E; font-size: 12px; line-height: 1.4; display: block;'>
                         💡 <b>ข้อสังเกต:</b> นักเรียนที่มี <b>มารดา</b> ดูแลหลัก มีอัตราการเข้าดูสื่อการเรียน (69.1 ครั้ง) และยกมือตอบคำถามสูงกว่ามีบิดาดูแลหลักอย่างมีนัยสำคัญ
@@ -2995,9 +3151,8 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 """,
                 unsafe_allow_html=True
             )
-
     # -----------------------------------------------------
-    # 👉 กราฟฝั่งขวา: แก้ไขอักษรซ้อนทับ
+    # 👉 กราฟฝั่งขวา
     # -----------------------------------------------------
     with col_right:
         with st.container(border=True):
@@ -3026,8 +3181,8 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 color="ParentAnsweringSurvey",
                 barmode="group",
                 text="สัดส่วน (%)",
-                title="<b>🎓 ความสัมพันธ์กับผลการเรียน</b>",
-                color_discrete_map={"ตอบแบบสำรวจ": "#10B981", "ไม่ตอบแบบสำรวจ": "#F59E0B"}
+                title="<b>🎓 ความสัมพันธ์กับผลสัมฤทธิ์ทางการเรียน</b>",
+                color_discrete_map={"ตอบแบบสำรวจ": "#D3B820", "ไม่ตอบแบบสำรวจ": "#E6970F"}
             )
             fig_class.update_traces(
                 texttemplate='<b>%{y:.1f}%</b>',
@@ -3058,7 +3213,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
             # สรุป Insight ฝั่งขวา
             st.markdown(
                 """
-                <div style='background-color: #EFF6FF; padding: 10px 12px; border-radius: 8px; 
+                <div style='background-color: #F6F4FF; padding: 10px 12px; border-radius: 8px; 
                 border: 1px solid #93C5FD; margin-top: 0px; margin-bottom: 10px;'>
                     <span style='color: #1E3A8A; font-size: 12px; line-height: 1.4; display: block;'>
                         🎯 <b>ข้อสังเกต:</b> กลุ่ม <b>ระดับสูง (High)</b> ผู้ปกครองตอบแบบสำรวจสูงถึง 80.3% ในขณะที่กลุ่ม <b>ระดับต่ำ (Low)</b> ผู้ปกครองไม่ตอบแบบสำรวจสูงถึง 78.0%
@@ -3068,222 +3223,1497 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 unsafe_allow_html=True
             )
 
-# =====================================================
-# การทำนายผลการเรียนรู้
-# =====================================================
-elif menu == "การทำนายผลการเรียนรู้":
-
-    st.title("🤖 โมเดลทำนายผลการเรียนรู้ (Random Forest)")
-    st.caption("ประเมินประสิทธิภาพโมเดล และทำนายระดับผลการเรียนสำหรับผู้เรียนรายบุคคล")
-    st.markdown("---")
-
-    # =========================================================
-    # 🛠️ 1. เตรียมข้อมูล และ Encode แบบปลอดภัย
-    # =========================================================
-    model_df = df.copy()
-    encoders = {}
-    
-    # ลบคอลัมน์ที่ไม่เกี่ยวหรือเป็น ID ออก
-    drop_cols = ["Class", "Student_ID", "Name", "StudentName", "id"]
-    feature_cols = [c for c in model_df.columns if c not in drop_cols]
-
-    # Encode เฉพาะคอลัมน์ที่เป็นข้อความ
-    for col in model_df.columns:
-        if model_df[col].dtype == "object" or model_df[col].dtype.name == "category":
-            le = LabelEncoder()
-            model_df[col] = le.fit_transform(model_df[col].astype(str).fillna("Unknown"))
-            encoders[col] = le
-
-    X = model_df[feature_cols]
-    y = model_df["Class"]
-
-    # บังคับให้เป็นตัวเลข และเติมค่าว่างด้วย 0
-    X = X.apply(pd.to_numeric, errors='coerce').fillna(0)
-
-    # Split ข้อมูล
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+# ================================================================
+# 🔗 การวิเคราะห์ความสัมพันธ์ของตัวแปร
+# ================================================================
+elif menu == "การวิเคราะห์ความสัมพันธ์ของตัวแปร":
+    # ============================================================
+    # 🎨 CSS ตกแต่งหน้า
+    # ============================================================
+    st.markdown(
+        """
+        <style>
+        /* กรอบของแต่ละส่วน */
+        div[data-testid="stVerticalBlockBorderWrapper"] > div {
+            border: 1.5px solid #1E3A5F !important;
+            border-radius: 18px !important;
+            background-color: #FFFFFF !important;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.04) !important;
+        }
+        /* หัวข้อหลัก */
+        .relationship-title {
+            color: #0A2540;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        /* คำอธิบายใต้หัวข้อ */
+        .relationship-subtitle {
+            color: #64748B;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        /* หัวข้อกราฟ */
+        .chart-title {
+            color: #1E3A5F;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        /* คำอธิบายกราฟ */
+        .chart-description {
+            color: #64748B;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        /* กล่องคำอธิบาย */
+        .analysis-note {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-left: 4px solid #3B82F6;
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #334155;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
     )
 
-    # Fit Model
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
+    # ============================================================
+    # 🏷️ หัวข้อหน้า
+    # ============================================================
+    st.markdown(
+        """
+        <div class="relationship-title">
+            🔗 การวิเคราะห์ความสัมพันธ์ของตัวแปร
+        </div>
+        <div class="relationship-subtitle">
+            วิเคราะห์ความสัมพันธ์ระหว่างพฤติกรรมการเรียนรู้
+            และระดับผลการเรียนของผู้เรียน
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, pred)
+    # ============================================================
+    # 📌 กำหนดตัวแปร
+    # ============================================================
+    # ตัวแปรอิสระ
+    independent_cols = [
+        "raisedhands",
+        "VisITedResources",
+        "AnnouncementsView",
+        "Discussion"
+    ]
+    # ชื่อตัวแปรภาษาไทย
+    variable_names = {
+        "raisedhands": "การยกมือ",
+        "VisITedResources": "การเข้าดูสื่อ",
+        "AnnouncementsView": "การดูประกาศ",
+        "Discussion": "การอภิปราย"
+    }
+    # ตัวแปรตาม
+    dependent_col = "Class"
+    # ชื่อระดับผลการเรียน
+    class_names = {
+        "L": "ระดับต่ำ",
+        "M": "ระดับปานกลาง",
+        "H": "ระดับสูง"
+    }
+    # ลำดับระดับผลการเรียน
+    class_order = [
+        "L",
+        "M",
+        "H"
+    ]
+    # ============================================================
+    # 🎨 กำหนดสีของระดับผลการเรียน
+    # ============================================================
 
-    # =========================================================
-    # 📊 2. สร้าง Tabs
-    # =========================================================
-    tab1, tab2 = st.tabs(["📊 ประสิทธิภาพโมเดล (Model Performance)", "🔮 ทำนายผลการเรียนผู้เรียนใหม่ (Live Prediction)"])
+    class_colors = {
+        "ระดับสูง": "#7BF3C3",       # 🟦 น้ำเงิน
+        "ระดับปานกลาง": "#FDE68A",   # 🟨 เหลือง/ส้ม
+        "ระดับต่ำ": "#FCA5A5"        # 🟥 แดง
+    }
+    # ============================================================
+    # 📊 ส่วนที่ 1 : Correlation Heatmap
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                📊 เมทริกซ์ความสัมพันธ์ของพฤติกรรมการเรียน
+            </div>
+            <div class="chart-description">
+                แสดงระดับความสัมพันธ์ระหว่างตัวแปรอิสระแต่ละคู่
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        # --------------------------------------------------------
+        # คำนวณค่าสหสัมพันธ์
+        # --------------------------------------------------------
+        corr_matrix = filtered_df[
+            independent_cols
+        ].corr()
+        # --------------------------------------------------------
+        # เปลี่ยนชื่อแถวและคอลัมน์เป็นภาษาไทย
+        # --------------------------------------------------------
+        corr_matrix.index = [
+            variable_names[col]
+            for col in corr_matrix.index
+        ]
+        corr_matrix.columns = [
+            variable_names[col]
+            for col in corr_matrix.columns
+        ]
 
-    with tab1:
-        with st.container(border=True):
-            col_acc, col_cm = st.columns([1, 2])
-        
-            with col_acc:
-                st.metric("🎯 ความแม่นยำโมเดล (Accuracy)", f"{accuracy:.2%}")
-                st.info("""
-                **คำอธิบายโมเดล:**
-                โมเดลประมวลผลข้อมูลจากปัจจัย 16 ตัวแปร เพื่อจำแนกผลการเรียนออกเป็น:
-                * **H (High):** ผลการเรียนสูง
-                * **M (Medium):** ผลการเรียนปานกลาง
-                * **L (Low):** ผลการเรียนต่ำ
-                """)
+        # --------------------------------------------------------
+        # สร้าง Heatmap
+        # --------------------------------------------------------
+        fig_corr = px.imshow(
+            corr_matrix,
+            text_auto=".2f",
+            aspect="equal",
+            color_continuous_scale=[
+                "#EFF6FF",
+                "#BFDBFE",
+                "#93C5FD",
+                "#60A5FA",
+                "#3B82F6",
+                "#1E3A8A"
+            ],
+            labels={
+                "x": "",
+                "y": "",
+                "color": "ค่าความสัมพันธ์"
+            }
+        )
 
-            with col_cm:
-                cm = confusion_matrix(y_test, pred)
-                class_names = encoders["Class"].classes_ if "Class" in encoders else ["L", "M", "H"]
-            
-                fig_cm = px.imshow(
-                    cm,
-                    x=class_names,
-                    y=class_names,
-                    text_auto=True,
-                    color_continuous_scale="Blues",
-                    title="Confusion Matrix Heatmap",
-                    labels=dict(x="ผลคาดการณ์ (Predicted)", y="ผลจริง (Actual)")
-                )
-                fig_cm.update_layout(
-                    height=320,
-                    font=dict(family="Plus Jakarta Sans, sans-serif"),
-                    template="plotly_white"
-                )
-                st.plotly_chart(fig_cm, use_container_width=True)
-
-        with st.container(border=True):
-            importance = pd.DataFrame({
-                "Feature": X.columns,
-                "Importance": model.feature_importances_
-            }).sort_values(by="Importance", ascending=True)
-
-            fig_imp = px.bar(
-                importance.tail(10),
-                x="Importance",
-                y="Feature",
-                orientation="h",
-                title="10 ปัจจัยสำคัญที่สุดที่มีผลต่อเกรดของนักเรียน (Top Feature Importance)",
-                color="Importance",
-                color_continuous_scale="Blugrn",
-                template="plotly_white"
+        # --------------------------------------------------------
+        # ปรับตัวเลขใน Heatmap
+        # --------------------------------------------------------
+        fig_corr.update_traces(
+            textfont=dict(
+                size=14
             )
-            fig_imp.update_layout(
-                height=380,
-                font=dict(family="Plus Jakarta Sans, sans-serif")
-            )
-            st.plotly_chart(fig_imp, use_container_width=True)
+        )
 
-    with tab2:
-        with st.container(border=True):
-            st.markdown("### 📝 ป้อนข้อมูลพฤติกรรมของนักเรียนใหม่")
-            st.caption("กรอกข้อมูลการเรียนและการมีส่วนร่วมด้านล่างเพื่อประเมินเกรดคาดการณ์")
-
-            with st.form("prediction_form"):
-                col_f1, col_f2, col_f3 = st.columns(3)
-
-                with col_f1:
-                    st.markdown("**👤 ข้อมูลทั่วไป**")
-                    input_gender = st.selectbox("Gender (เพศ)", df["gender"].unique() if "gender" in df else ["M", "F"])
-                    input_national = st.selectbox("NationalITy (สัญชาติ)", df["NationalITy"].unique() if "NationalITy" in df else ["KW"])
-                    input_place = st.selectbox("PlaceofBirth (สถานที่เกิด)", df["PlaceofBirth"].unique() if "PlaceofBirth" in df else ["KuwaIT"])
-                    input_stage = st.selectbox("StageID (ระดับชั้น)", df["StageID"].unique() if "StageID" in df else ["lowerlevel"])
-                    input_grade = st.selectbox("GradeID (ชั้นปี)", df["GradeID"].unique() if "GradeID" in df else ["G-04"])
-                    input_section = st.selectbox("SectionID (ห้องเรียน)", df["SectionID"].unique() if "SectionID" in df else ["A"])
-
-                with col_f2:
-                    st.markdown("**📚 พฤติกรรมการเรียน**")
-                    input_hands = st.number_input("Raised Hands (จำนวนครั้งที่ยกมือ)", min_value=0, max_value=100, value=25)
-                    input_resources = st.number_input("Visited Resources (การเข้าดูสื่อ)", min_value=0, max_value=100, value=50)
-                    input_announcements = st.number_input("Announcements View (การดูประกาศ)", min_value=0, max_value=100, value=20)
-                    input_discussion = st.number_input("Discussion (การพูดคุยแลกเปลี่ยน)", min_value=0, max_value=100, value=15)
-                    input_topic = st.selectbox("Topic (วิชาเรียน)", df["Topic"].unique() if "Topic" in df else ["IT"])
-
-                with col_f3:
-                    st.markdown("**👨‍👩‍👧 ข้อมูลการขาดเรียน & ผู้ปกครอง**")
-                    input_semester = st.selectbox("Semester (ภาคเรียน)", df["Semester"].unique() if "Semester" in df else ["F"])
-                    input_relation = st.selectbox("Relation (ผู้ดูแลหลัก)", df["Relation"].unique() if "Relation" in df else ["Father"])
-                    input_absence = st.selectbox("StudentAbsenceDays (วันขาดเรียน)", df["StudentAbsenceDays"].unique() if "StudentAbsenceDays" in df else ["Under-7"])
-                    input_parent_sat = st.selectbox("ParentschoolSatisfaction (ความพึงพอใจผู้ปกครอง)", df["ParentschoolSatisfaction"].unique() if "ParentschoolSatisfaction" in df else ["Good"])
-                    input_parent_survey = st.selectbox("ParentAnsweringSurvey (การตอบแบบสอบถาม)", df["ParentAnsweringSurvey"].unique() if "ParentAnsweringSurvey" in df else ["Yes"])
-
-                submit_button = st.form_submit_button("🔮 ประมวลผลการทำนาย (Predict Performance)", use_container_width=True)
-
-            if submit_button:
-                input_dict = {
-                    "gender": input_gender,
-                    "NationalITy": input_national,
-                    "PlaceofBirth": input_place,
-                    "StageID": input_stage,
-                    "GradeID": input_grade,
-                    "SectionID": input_section,
-                    "Topic": input_topic,
-                    "Semester": input_semester,
-                    "Relation": input_relation,
-                    "raisedhands": input_hands,
-                    "VisITedResources": input_resources,
-                    "AnnouncementsView": input_announcements,
-                    "Discussion": input_discussion,
-                    "ParentAnsweringSurvey": input_parent_survey,
-                    "ParentschoolSatisfaction": input_parent_sat,
-                    "StudentAbsenceDays": input_absence
-                }
-
-                input_data = pd.DataFrame([input_dict])
-                
-                # กรองเอาเฉพาะคอลัมน์ที่มีใน feature_cols
-                for col in feature_cols:
-                    if col not in input_data.columns:
-                        input_data[col] = 0
-
-                input_data = input_data[feature_cols]
-
-                # Encode ข้อมูลอินพุตใหม่
-                for col in input_data.columns:
-                    if col in encoders:
-                        try:
-                            input_data[col] = encoders[col].transform(input_data[col].astype(str))
-                        except Exception:
-                            input_data[col] = 0
-
-                input_data = input_data.apply(pd.to_numeric, errors='coerce').fillna(0)
-
-                prediction_encoded = model.predict(input_data)[0]
-                probabilities = model.predict_proba(input_data)[0]
-                
-                if "Class" in encoders:
-                    predicted_class = encoders["Class"].inverse_transform([prediction_encoded])[0]
-                else:
-                    predicted_class = str(prediction_encoded)
-
-                st.markdown("---")
-                st.markdown("### 🎯 ผลการทำนาย (Prediction Result)")
-
-                res_col1, res_col2 = st.columns([1, 2])
-
-                with res_col1:
-                    if predicted_class in ["H", 2]:
-                        st.success("🎉 **ระดับผลการเรียนคาดการณ์: High (H)**")
-                    elif predicted_class in ["M", 1]:
-                        st.warning("⚡ **ระดับผลการเรียนคาดการณ์: Medium (M)**")
-                    else:
-                        st.error("🚨 **ระดับผลการเรียนคาดการณ์: Low (L)**")
-
-                with res_col2:
-                    class_labels = encoders["Class"].classes_ if "Class" in encoders else ["L", "M", "H"]
-                    prob_df = pd.DataFrame({
-                        "Class": class_labels,
-                        "Probability": probabilities
-                    })
-                    fig_prob = px.bar(
-                        prob_df,
-                        x="Probability",
-                        y="Class",
-                        orientation="h",
-                        title="ความน่าจะเป็นของผลทำนาย (Confidence Rate)",
-                        text_auto=".1%",
-                        color="Class",
-                        color_discrete_map={"L": "#EF4444", "M": "#F59E0B", "H": "#10B981"},
-                        template="plotly_white"
+        # --------------------------------------------------------
+        # ปรับรูปแบบ Heatmap
+        # --------------------------------------------------------
+        fig_corr.update_layout(
+            height=500,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=20
+            ),
+            coloraxis_colorbar=dict(
+                title=dict(
+                    text="ค่าความสัมพันธ์",
+                    font=dict(
+                        color="#1E3A5F",
+                        size=13
                     )
-                    fig_prob.update_layout(height=180, showlegend=False)
-                    st.plotly_chart(fig_prob, use_container_width=True)
+                ),
+                tickfont=dict(
+                    color="#64748B",
+                    size=11
+                )
+            ),
+            xaxis=dict(
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                )
+            ),
+            yaxis=dict(
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                )
+            )
+        )
+        st.plotly_chart(
+            fig_corr,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+    # ============================================================
+    # 📊 คำนวณค่าเฉลี่ยของพฤติกรรมการเรียน
+    # ============================================================
+    class_mean = (
+        filtered_df
+        .groupby(dependent_col)[independent_cols]
+        .mean()
+        .reindex(class_order)
+    )
+
+    # ============================================================
+    # 📊 กราฟที่ 1 : การยกมือ
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                📊 การยกมือกับระดับผลการเรียน
+            </div>
+            <div class="chart-description">
+                เปรียบเทียบค่าเฉลี่ยการยกมือของผู้เรียนแต่ละระดับผลการเรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        chart_df = class_mean[
+            ["raisedhands"]
+        ].reset_index()
+        chart_df["Class_TH"] = (
+            chart_df["Class"]
+            .map(class_names)
+        )
+        # --------------------------------------------------------
+        # สร้างกราฟ
+        # --------------------------------------------------------
+        fig_raisedhands = px.bar(
+            chart_df,
+            x="Class_TH",
+            y="raisedhands",
+            color="Class_TH",
+            # 🎨 กำหนดสีแต่ละระดับ
+            color_discrete_map=class_colors,
+            text="raisedhands",
+            labels={
+                "Class_TH": "ระดับผลการเรียน",
+                "raisedhands": "ค่าเฉลี่ยการยกมือ"
+            },
+            category_orders={
+                "Class_TH": [
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ]
+            }
+        )
+        fig_raisedhands.update_traces(
+            texttemplate="%{text:.2f}",
+            textposition="outside",
+            marker_line_width=0
+        )
+        fig_raisedhands.update_layout(
+            height=420,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                title="ระดับผลการเรียน",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                showgrid=False
+            ),
+            yaxis=dict(
+                title="ค่าเฉลี่ยการยกมือ",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                gridcolor="#E2E8F0",
+                zeroline=False
+            ),
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=40
+            )
+        )
+        st.plotly_chart(
+            fig_raisedhands,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 📊 กราฟที่ 2 : การเข้าดูสื่อ
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                📊 การเข้าดูสื่อกับระดับผลการเรียน
+            </div>
+            <div class="chart-description">
+                เปรียบเทียบค่าเฉลี่ยการเข้าดูสื่อของผู้เรียนแต่ละระดับผลการเรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        chart_df = class_mean[
+            ["VisITedResources"]
+        ].reset_index()
+        chart_df["Class_TH"] = (
+            chart_df["Class"]
+            .map(class_names)
+        )
+        fig_resources = px.bar(
+            chart_df,
+            x="Class_TH",
+            y="VisITedResources",
+            color="Class_TH",
+            # 🎨 กำหนดสีแต่ละระดับ
+            color_discrete_map=class_colors,
+            text="VisITedResources",
+            labels={
+                "Class_TH": "ระดับผลการเรียน",
+                "VisITedResources": "ค่าเฉลี่ยการเข้าดูสื่อ"
+            },
+            category_orders={
+                "Class_TH": [
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ]
+            }
+        )
+        fig_resources.update_traces(
+            texttemplate="%{text:.2f}",
+            textposition="outside",
+            marker_line_width=0
+        )
+        fig_resources.update_layout(
+            height=420,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                title="ระดับผลการเรียน",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                showgrid=False
+            ),
+            yaxis=dict(
+                title="ค่าเฉลี่ยการเข้าดูสื่อ",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                gridcolor="#E2E8F0",
+                zeroline=False
+            ),
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=40
+            )
+        )
+        st.plotly_chart(
+            fig_resources,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 📊 กราฟที่ 3 : การดูประกาศ
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                📊 การดูประกาศกับระดับผลการเรียน
+            </div>
+
+            <div class="chart-description">
+                เปรียบเทียบค่าเฉลี่ยการดูประกาศของผู้เรียนแต่ละระดับผลการเรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        chart_df = class_mean[
+            ["AnnouncementsView"]
+        ].reset_index()
+        chart_df["Class_TH"] = (
+            chart_df["Class"]
+            .map(class_names)
+        )
+        fig_announcements = px.bar(
+            chart_df,
+            x="Class_TH",
+            y="AnnouncementsView",
+            color="Class_TH",
+            # 🎨 กำหนดสีแต่ละระดับ
+            color_discrete_map=class_colors,
+            text="AnnouncementsView",
+            labels={
+                "Class_TH": "ระดับผลการเรียน",
+                "AnnouncementsView": "ค่าเฉลี่ยการดูประกาศ"
+            },
+            category_orders={
+                "Class_TH": [
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ]
+            }
+        )
+        fig_announcements.update_traces(
+            texttemplate="%{text:.2f}",
+            textposition="outside",
+            marker_line_width=0
+        )
+
+        fig_announcements.update_layout(
+            height=420,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                title="ระดับผลการเรียน",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                showgrid=False
+            ),
+            yaxis=dict(
+                title="ค่าเฉลี่ยการดูประกาศ",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                gridcolor="#E2E8F0",
+                zeroline=False
+            ),
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=40
+            )
+        )
+        st.plotly_chart(
+            fig_announcements,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 📊 กราฟที่ 4 : การอภิปราย
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                📊 การอภิปรายกับระดับผลการเรียน
+            </div>
+            <div class="chart-description">
+                เปรียบเทียบค่าเฉลี่ยการอภิปรายของผู้เรียนแต่ละระดับผลการเรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        chart_df = class_mean[
+            ["Discussion"]
+        ].reset_index()
+        chart_df["Class_TH"] = (
+            chart_df["Class"]
+            .map(class_names)
+        )
+        fig_discussion = px.bar(
+            chart_df,
+            x="Class_TH",
+            y="Discussion",
+            color="Class_TH",
+            # 🎨 กำหนดสีแต่ละระดับ
+            color_discrete_map=class_colors,
+            text="Discussion",
+            labels={
+                "Class_TH": "ระดับผลการเรียน",
+                "Discussion": "ค่าเฉลี่ยการอภิปราย"
+            },
+            category_orders={
+                "Class_TH": [
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ]
+            }
+        )
+        fig_discussion.update_traces(
+            texttemplate="%{text:.2f}",
+            textposition="outside",
+            marker_line_width=0
+        )
+        fig_discussion.update_layout(
+            height=420,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                title="ระดับผลการเรียน",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                showgrid=False
+            ),
+            yaxis=dict(
+                title="ค่าเฉลี่ยการอภิปราย",
+                tickfont=dict(
+                    color="#64748B",
+                    size=12
+                ),
+                gridcolor="#E2E8F0",
+                zeroline=False
+            ),
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=40
+            )
+        )
+        st.plotly_chart(
+            fig_discussion,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 🔍 ส่วนที่ 3 : คำอธิบายผลการวิเคราะห์
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="chart-title">
+                🔍 คำอธิบายผลการวิเคราะห์
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # ========================================================
+        # 📌 หาค่าเฉลี่ยของแต่ละพฤติกรรมตามระดับผลการเรียน
+        # ========================================================
+        analysis_mean = (
+            filtered_df
+            .groupby("Class")[independent_cols]
+            .mean()
+            .reindex(["L", "M", "H"])
+        )
+        # ========================================================
+        # 📌 คำนวณค่าความสัมพันธ์
+        # ========================================================
+        analysis_corr = filtered_df[
+            independent_cols
+        ].corr()
+
+        # ========================================================
+        # 📌 หาคู่ตัวแปรที่มีความสัมพันธ์สูงสุด
+        # ========================================================
+        max_corr = -1
+        max_pair = None
+
+        for i in range(len(independent_cols)):
+            for j in range(i + 1, len(independent_cols)):
+                corr_value = analysis_corr.iloc[i, j]
+                if corr_value > max_corr:
+                    max_corr = corr_value
+                    max_pair = (
+                        independent_cols[i],
+                        independent_cols[j]
+                    )
+        max_var1 = variable_names[max_pair[0]]
+        max_var2 = variable_names[max_pair[1]]
+
+        # ========================================================
+        # 📌 หาพฤติกรรมที่มีค่าเฉลี่ยสูงสุดในแต่ละระดับ
+        # ========================================================
+        highest_behavior = {}
+        for class_code in class_order:
+            row = analysis_mean.loc[class_code]
+            highest_col = row.idxmax()
+            highest_behavior[class_code] = (
+                variable_names[highest_col],
+                row[highest_col]
+            )
+
+        # ========================================================
+        # 📌 ดึงค่าเฉลี่ยแต่ละพฤติกรรม
+        # ========================================================
+        raised_L = analysis_mean.loc[
+            "L",
+            "raisedhands"
+        ]
+        raised_M = analysis_mean.loc[
+            "M",
+            "raisedhands"
+        ]
+        raised_H = analysis_mean.loc[
+            "H",
+            "raisedhands"
+        ]
+        resources_L = analysis_mean.loc[
+            "L",
+            "VisITedResources"
+        ]
+        resources_M = analysis_mean.loc[
+            "M",
+            "VisITedResources"
+        ]
+        resources_H = analysis_mean.loc[
+            "H",
+            "VisITedResources"
+        ]
+        announcement_L = analysis_mean.loc[
+            "L",
+            "AnnouncementsView"
+        ]
+        announcement_M = analysis_mean.loc[
+            "M",
+            "AnnouncementsView"
+        ]
+        announcement_H = analysis_mean.loc[
+            "H",
+            "AnnouncementsView"
+        ]
+        discussion_L = analysis_mean.loc[
+            "L",
+            "Discussion"
+        ]
+        discussion_M = analysis_mean.loc[
+            "M",
+            "Discussion"
+        ]
+        discussion_H = analysis_mean.loc[
+            "H",
+            "Discussion"
+        ]
+
+        # ========================================================
+        # 📝 แสดงผลการวิเคราะห์
+        # ========================================================
+        st.markdown(
+            f"""
+            <div class="analysis-note">
+            <b>📌 ผลการวิเคราะห์จากข้อมูล</b>
+            <br>
+            จากข้อมูลพบว่า
+            <b>พฤติกรรมการเรียนรู้มีแนวโน้มเพิ่มขึ้นตามระดับผลการเรียน</b>
+            โดยเมื่อเปรียบเทียบค่าเฉลี่ยของผู้เรียนระดับต่ำ
+            ระดับปานกลาง และระดับสูง
+            พบว่าค่าของพฤติกรรมทั้ง 4 ด้าน
+            มีแนวโน้มสูงขึ้นตามลำดับ
+            <br>
+            <b>1. การยกมือ</b><br>
+            ระดับต่ำมีค่าเฉลี่ย<b> {raised_L:.2f}</b> ครั้ง
+            ระดับปานกลางมีค่าเฉลี่ย <b>{raised_M:.2f}</b> ครั้ง
+            และระดับสูงมีค่าเฉลี่ย <b>{raised_H:.2f}</b> ครั้ง
+            <br>
+            <b>2. การเข้าดูสื่อ</b><br>
+            ระดับต่ำมีค่าเฉลี่ย <b>{resources_L:.2f}</b> ครั้ง
+            ระดับปานกลางมีค่าเฉลี่ย <b>{resources_M:.2f}</b> ครั้ง
+            และระดับสูงมีค่าเฉลี่ย <b>{resources_H:.2f}</b> ครั้ง
+            <br>
+            <b>3. การดูประกาศ</b><br>
+            ระดับต่ำมีค่าเฉลี่ย <b>{announcement_L:.2f}</b> ครั้ง
+            ระดับปานกลางมีค่าเฉลี่ย <b>{announcement_M:.2f}</b> ครั้ง
+            และระดับสูงมีค่าเฉลี่ย <b>{announcement_H:.2f}</b> ครั้ง
+            <br>
+            <b>4. การอภิปราย</b><br>
+            ระดับต่ำมีค่าเฉลี่ย <b>{discussion_L:.2f}</b> ครั้ง
+            ระดับปานกลางมีค่าเฉลี่ย <b>{discussion_M:.2f}</b> ครั้ง
+            และระดับสูงมีค่าเฉลี่ย <b>{discussion_H:.2f}</b> ครั้ง
+            <br>
+            <b>🔗 ความสัมพันธ์ระหว่างตัวแปรอิสระ</b><br>
+            ตัวแปรที่มีความสัมพันธ์กันสูงที่สุดคือ <b>{max_var1}</b> กับ <b>{max_var2}</b>
+            โดยมีค่าสหสัมพันธ์เท่ากับ <b>{max_corr:.2f}</b>
+            <br>
+            <b>💡 ข้อสังเกต</b><br>
+            จากข้อมูลพบว่า ผู้เรียนที่อยู่ในระดับผลการเรียนสูง
+            มีค่าเฉลี่ยพฤติกรรมการเรียนรู้ทั้ง 4 ด้าน สูงกว่าผู้เรียนระดับปานกลางและระดับต่ำอย่างชัดเจน
+            โดยพฤติกรรมที่มีค่าเฉลี่ยสูงที่สุดของผู้เรียนเป็นดังนี้
+            <b>ระดับสูง</b> คือ <b>{highest_behavior["H"][0]}</b>
+            มีค่าเฉลี่ย <b>{highest_behavior["H"][1]:.2f}</b>
+            <br>
+            <b>หมายเหตุ:</b>
+            ผลการวิเคราะห์นี้เป็นการแสดงความสัมพันธ์ และการเปรียบเทียบค่าเฉลี่ยของข้อมูล
+            ไม่สามารถสรุปได้ว่าพฤติกรรมการเรียนรู้เป็นสาเหตุโดยตรงที่ทำให้ระดับผลการเรียนสูงขึ้น
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+# ================================================================
+# 🤖 การทำนายผลการเรียนของนักเรียน
+# ================================================================
+elif menu == "การทำนายผลการเรียนของนักเรียน":
+
+    st.title("🤖 โมเดลทำนายผลการเรียนรู้")
+    st.caption(
+        "ใช้พฤติกรรมการเรียนรู้ของผู้เรียนเพื่อทำนายระดับผลการเรียนด้วย Random Forest"
+    )
+    st.markdown("---")
+    # ============================================================
+    # 1. กำหนดตัวแปรที่ใช้ในการทำนาย
+    # ============================================================
+    feature_cols = [
+        "raisedhands",
+        "VisITedResources",
+        "AnnouncementsView",
+        "Discussion",
+        "StudentAbsenceDays"
+    ]
+    target_col = "Class"
+    feature_labels = {
+        "raisedhands": "การยกมือ",
+        "VisITedResources": "การเข้าดูแหล่งเรียนรู้",
+        "AnnouncementsView": "การดูประกาศ",
+        "Discussion": "การอภิปราย",
+        "StudentAbsenceDays": "จำนวนวันที่ขาดเรียน"
+    }
+    # สีของระดับผลการเรียน
+    class_labels = {
+        "L": "ระดับต่ำ",
+        "M": "ระดับปานกลาง",
+        "H": "ระดับสูง"
+    }
+    class_colors = {
+        "L": "#FCA5A5",
+        "M": "#FDE68A",
+        "H": "#7BF3C3"
+    }
+    # ============================================================
+    # 2. เตรียมข้อมูลสำหรับสร้างโมเดล
+    # ============================================================
+    model_df = df[
+        feature_cols + [target_col]
+    ].copy()
+    # ============================================================
+    # แปลงตัวแปรพฤติกรรมเป็นตัวเลข
+    # ============================================================
+    numeric_cols = [
+        "raisedhands",
+        "VisITedResources",
+        "AnnouncementsView",
+        "Discussion"
+    ]
+    for col in numeric_cols:
+        model_df[col] = pd.to_numeric(
+            model_df[col],
+            errors="coerce"
+        )
+    # ============================================================
+    # แปลงข้อมูลการขาดเรียน
+    # Under-7  = ขาดเรียนน้อยกว่า 7 วัน
+    # Above-7  = ขาดเรียนมากกว่า 7 วัน
+    # ============================================================
+    absence_mapping = {
+        "Under-7": 0,
+        "Above-7": 1
+    }
+    model_df["StudentAbsenceDays"] = (
+        model_df["StudentAbsenceDays"]
+        .map(absence_mapping)
+    )
+    # ============================================================
+    # ลบข้อมูลที่ไม่สมบูรณ์
+    # ============================================================
+    model_df = model_df.dropna(
+        subset=feature_cols + [target_col]
+    )
+    X = model_df[feature_cols]
+    y = model_df[target_col].astype(str)
+
+    # ============================================================
+    # 3. แบ่งข้อมูล Train / Test
+    # ============================================================
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    # ============================================================
+    # 4. สร้างโมเดล Random Forest
+    # ============================================================
+    model = RandomForestClassifier(
+        n_estimators=100,
+        random_state=42
+    )
+    model.fit(
+        X_train,
+        y_train
+    )
+
+    # ============================================================
+    # 5. ทำนายข้อมูลชุดทดสอบ
+    # ============================================================
+    pred = model.predict(X_test)
+    accuracy = accuracy_score(
+        y_test,
+        pred
+    )
+
+    # ============================================================
+    # 6. KPI
+    # ============================================================
+    total_data = len(model_df)
+    train_data = len(X_train)
+    accuracy_percent = accuracy * 100
+    # ============================================================
+    # 🎨 CSS
+    # ============================================================
+    st.markdown(
+        """
+        <style>
+        /* =========================================
+           KPI Container
+           ========================================= */
+        .kpi-container {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: nowrap;
+        }
+
+
+        /* =========================================
+           KPI Card
+           ========================================= */
+        .kpi-card {
+            flex: 1 1 0;
+            width: 33.33%;
+            min-width: 0;
+            background-color: #FFFFFF;
+            border: 2px solid #03254C;
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+        /* =========================================
+           วงกลมไอคอน
+           ========================================= */
+        .kpi-icon-circle {
+            width: 55px;
+            height: 55px;
+            min-width: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+        /* สี KPI */
+        .kpi-blue {
+            background-color: #DBEAFE;
+        }
+       .kpi-green {
+            background-color: #D1FAE5;
+        }
+        .kpi-orange {
+            background-color: #FEF3C7;
+        }
+        /* =========================================
+           ข้อมูล KPI
+           ========================================= */
+        .kpi-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .kpi-title {
+            color: #2D3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .kpi-value {
+            color: #2B6CB0;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 3px;
+            line-height: 1.2;
+        }
+        .kpi-unit {
+            font-size: 16px;
+            font-weight: 600;
+            margin-left: 2px;
+        }
+        .kpi-description {
+            color: #718096;
+            font-size: 11px;
+            margin-top: 2px;
+            line-height: 1.2;            
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    # ============================================================
+    # 📊 แสดง KPI
+    # ============================================================
+    st.markdown(
+        f"""
+        <div class="kpi-container">
+            <!-- KPI 1 -->
+            <div class="kpi-card">
+            <div class="kpi-icon-circle kpi-blue">👥</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">จำนวนข้อมูลทั้งหมด</div>
+                    <div class="kpi-value">
+                        {total_data:,}
+                        <span class="kpi-unit">คน</span>
+                    </div>
+                    <div class="kpi-description">
+                        100% ของข้อมูลทั้งหมด
+                    </div>
+                </div>
+            </div>
+            <!-- KPI 2 -->
+            <div class="kpi-card">
+            <div class="kpi-icon-circle kpi-green">🎓</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">ข้อมูลสำหรับฝึกโมเดล</div>
+                    <div class="kpi-value">
+                        {train_data:,}
+                        <span class="kpi-unit">คน</span>
+                    </div>
+                </div>
+            </div>
+            <!-- KPI 3 -->
+            <div class="kpi-card">
+            <div class="kpi-icon-circle kpi-orange">🎯</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">ความแม่นยำของโมเดล</div>
+                    <div class="kpi-value">
+                        {accuracy_percent:.2f}
+                        <span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-description">
+                        ผลการทำนายถูกต้อง
+                    </div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ============================================================
+    # 📊 Confusion Matrix
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            "### 📊 Confusion Matrix"
+        )
+        cm = confusion_matrix(
+            y_test,
+            pred,
+            labels=["L", "M", "H"]
+        )
+        cm_df = pd.DataFrame(
+            cm,
+            index=[
+                "ระดับต่ำ",
+                "ระดับปานกลาง",
+                "ระดับสูง"
+            ],
+            columns=[
+                "ระดับต่ำ",
+                "ระดับปานกลาง",
+                "ระดับสูง"
+            ]
+        )
+        fig_cm = px.imshow(
+            cm_df,
+            text_auto=True,
+            aspect="auto",
+            labels={
+                "x": "ผลการทำนาย",
+                "y": "ผลจริง",
+                "color": "จำนวนผู้เรียน"
+            },
+            color_continuous_scale=[
+            "#EFF6FF",
+            "#BFDBFE",
+            "#60A5FA",
+            "#2563EB",
+            "#1E3A8A"
+            ],
+            zmin=0,
+            zmax=cm.max()
+        )
+        fig_cm.update_layout(
+            height=450,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=20
+            )
+        )
+        fig_cm.update_traces(
+            textfont=dict(
+            size=16,
+            color="#1E293B"
+            )
+        )
+        st.plotly_chart(
+            fig_cm,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 🌟 Feature Importance
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            "### 🌟 ความสำคัญของตัวแปรที่ใช้ในการทำนาย"
+        )
+        importance_df = pd.DataFrame({
+            "Feature": feature_cols,
+            "Importance": model.feature_importances_
+        })
+        importance_df["ตัวแปร"] = (
+            importance_df["Feature"]
+            .map(feature_labels)
+        )
+        importance_df = importance_df.sort_values(
+            "Importance",
+            ascending=True
+        )
+        fig_importance = px.bar(
+            importance_df,
+            x="Importance",
+            y="ตัวแปร",
+            orientation="h",
+            text="Importance"
+        )
+        fig_importance.update_traces(
+            texttemplate="%{text:.3f}",
+            textposition="outside",
+            marker=dict(
+                color="#7BF3C3",
+                cornerradius=6
+            )
+        )
+        fig_importance.update_layout(
+            height=400,
+            template="plotly_white",
+            showlegend=False,
+            xaxis=dict(
+                title="ค่าความสำคัญของตัวแปร",
+                range=[
+                    0,
+                    max(
+                        importance_df["Importance"].max() * 1.25,
+                        0.1
+                    )
+                ]
+            ),
+            yaxis=dict(
+                title=""
+            ),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(
+                l=20,
+                r=60,
+                t=20,
+                b=20
+            )
+        )
+        st.plotly_chart(
+            fig_importance,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+
+    # ============================================================
+    # 💡 รายละเอียดตัวแปร
+    # ============================================================
+    st.markdown(
+        """
+        <div style="
+            background-color:#F8FAFC;
+            border:1px solid #E2E8F0;
+            border-left:4px solid #3B82F6;
+            border-radius:8px;
+            padding:12px 15px;
+            color:#334155;
+            line-height:1.7;
+            font-size:14px;
+        ">
+        💡 <strong>คำอธิบาย:</strong><br>
+        โมเดล Random Forest ใช้ข้อมูลพฤติกรรมการเรียนรู้
+        5 ตัวแปร ได้แก่ การยกมือ การเข้าดูแหล่งเรียนรู้
+        การดูประกาศ การอภิปราย และการขาดเรียน
+        เพื่อทำนายระดับผลการเรียนของผู้เรียน
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+    # ============================================================
+    # 🔮 ส่วนทำนายผลผู้เรียนใหม่
+    # ============================================================
+    with st.container(border=True):
+        st.markdown(
+            "### 🔮 ทำนายระดับผลการเรียนของผู้เรียน"
+        )
+        st.markdown(
+            """
+            <div style="
+            background-color:#EFF6FF;
+            border:1px solid #BFDBFE;
+            border-left:4px solid #3B82F6;
+            border-radius:8px;
+            padding:12px 15px;
+            margin-bottom:18px;
+            color:#334155;
+            line-height:1.6;
+            font-size:14px;
+            ">
+            กรอกข้อมูลพฤติกรรมการเรียนรู้ของผู้เรียน
+            แล้วกดปุ่ม <strong>ทำนายผลการเรียน</strong>
+            เพื่อให้โมเดลประเมินระดับผลการเรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        # ============================================================
+        # ค่าเริ่มต้นของช่องกรอก
+        # ============================================================
+        if "raisedhands_input" not in st.session_state:
+            st.session_state["raisedhands_input"] = 0
+
+        if "visited_input" not in st.session_state:
+            st.session_state["visited_input"] = 0
+
+        if "announcements_input" not in st.session_state:
+            st.session_state["announcements_input"] = 0
+
+        if "discussion_input" not in st.session_state:
+            st.session_state["discussion_input"] = 0
+
+        if "absence_input" not in st.session_state:
+            st.session_state["absence_input"] = 0
+        # ========================================================
+        # ช่องกรอกข้อมูล
+        # ========================================================
+        col1, col2 = st.columns(2)
+        with col1:
+            raisedhands_input = st.number_input(
+                "🙋 การยกมือ",
+                min_value=0,
+                max_value=100,
+                step=1,
+                key="raisedhands_input",
+                help="จำนวนครั้งที่ผู้เรียนยกมือในชั้นเรียน"
+            )
+            visited_input = st.number_input(
+                "📚 การเข้าดูแหล่งเรียนรู้",
+                min_value=0,
+                max_value=100,
+                step=1,
+                key="visited_input",
+                help="จำนวนครั้งที่ผู้เรียนเข้าดูแหล่งเรียนรู้"
+            )
+            absence_input = st.number_input(
+                "📅 การขาดเรียน",
+                min_value=0,
+                max_value=30,
+                step=1,
+                key="absence_input",
+                help="จำนวนวันที่ผู้เรียนขาดเรียน"
+            )
+        with col2:
+            announcements_input = st.number_input(
+                "📢 การดูประกาศ",
+                min_value=0,
+                max_value=100,
+                step=1,
+                key="announcements_input",
+                help="จำนวนครั้งที่ผู้เรียนดูประกาศ"
+            )
+            discussion_input = st.number_input(
+                "💬 การอภิปราย",
+                min_value=0,
+                max_value=100,
+                step=1,
+                key="discussion_input",
+                help="จำนวนครั้งที่ผู้เรียนมีส่วนร่วมในการอภิปราย"
+            )
+        st.markdown("<br>", unsafe_allow_html=True)
+        # ========================================================
+        # ปุ่มทำนาย
+        # ========================================================
+        def predict_student():
+            # ====================================================
+            # เตรียมข้อมูลผู้เรียน
+            # ====================================================
+            # แปลงจำนวนวันขาดเรียนให้ตรงกับข้อมูลที่ใช้ฝึกโมเดล
+            if st.session_state["absence_input"] <= 7:
+                absence_model_value = 0
+            else:
+                absence_model_value = 1
+            # ====================================================
+            # สร้างข้อมูลสำหรับทำนาย
+            # ====================================================
+            input_data = pd.DataFrame([
+                {
+                    "raisedhands": st.session_state["raisedhands_input"],
+                    "VisITedResources": st.session_state["visited_input"],
+                    "AnnouncementsView": st.session_state["announcements_input"],
+                    "Discussion": st.session_state["discussion_input"],
+                    "StudentAbsenceDays": absence_model_value
+                }
+            ])
+            # ====================================================
+            # ทำนาย
+            # ====================================================
+            predicted_class = model.predict(
+                input_data
+            )[0]
+            probabilities = model.predict_proba(
+                input_data
+            )[0]
+            # ====================================================
+            # เก็บผลการทำนาย
+            # ====================================================
+            st.session_state["prediction_result"] = predicted_class
+            st.session_state["prediction_probabilities"] = probabilities
+            # ====================================================
+            # รีเซ็ตช่องกรอกกลับเป็น 0
+            # ====================================================
+            st.session_state["raisedhands_input"] = 0
+            st.session_state["visited_input"] = 0
+            st.session_state["announcements_input"] = 0
+            st.session_state["discussion_input"] = 0
+            st.session_state["absence_input"] = 0
+
+        predict_button = st.button(
+            "🔮 ทำนายผลการเรียน",
+            use_container_width=True,
+            type="primary",
+            on_click=predict_student
+        )
+        # ========================================================
+        # แสดงผลการทำนาย
+        # ========================================================
+        if "prediction_result" in st.session_state:
+            predicted_class = st.session_state["prediction_result"]
+            probabilities = st.session_state["prediction_probabilities"]
+            # ====================================================
+            # แปลงชื่อระดับผลการเรียน
+            # ====================================================
+            predicted_label = class_labels.get(
+                predicted_class,
+                predicted_class
+            )
+            result_color = class_colors.get(
+                predicted_class,
+                "#7BF3C3"
+            )
+            # ====================================================
+            # แสดงผลการทำนาย
+            # ====================================================
+            st.markdown(
+                "<br>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color:#FFFFFF;
+                    border:2px solid {result_color};
+                    border-radius:16px;
+                    padding:20px;
+                    text-align:center;
+                    margin-bottom:20px;
+                ">
+                    <div style="
+                        color:#64748B;
+                        font-size:14px;
+                        font-weight:600;
+                    ">
+                        ผลการทำนาย
+                    </div>
+                    <div style="
+                        color:#334155;
+                        font-size:14px;
+                        margin-top:8px;
+                    ">
+                        ระดับผลการเรียนที่คาดการณ์
+                    </div>
+                    <div style="
+                        color:#1E3A5F;
+                        font-size:32px;
+                        font-weight:800;
+                        margin-top:5px;
+                    ">
+                        {predicted_label}
+                    </div>
+                    <div style="
+                        color:#64748B;
+                        font-size:13px;
+                        margin-top:5px;
+                    ">
+                        รหัสระดับผลการเรียน: {predicted_class}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            # ====================================================
+            # 📊 ความน่าจะเป็นของแต่ละระดับ
+            # ====================================================
+            probability_df = pd.DataFrame({
+                "Class": model.classes_,
+                "Probability": probabilities
+            })
+            probability_df["ระดับผลการเรียน"] = (
+                probability_df["Class"]
+                .map(class_labels)
+            )
+            probability_df["ร้อยละ"] = (
+                probability_df["Probability"] * 100
+            )
+            probability_df["ระดับผลการเรียน"] = pd.Categorical(
+                probability_df["ระดับผลการเรียน"],
+                categories=[
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ],
+                ordered=True
+            )
+            probability_df = (
+                probability_df
+                .sort_values("ระดับผลการเรียน")
+                .reset_index(drop=True)
+            )
+            # ====================================================
+            # กราฟความน่าจะเป็น
+            # ====================================================
+            st.markdown(
+                "### 📊 ความน่าจะเป็นของแต่ละระดับผลการเรียน"
+            )
+            fig_probability = px.bar(
+                probability_df,
+                x="ระดับผลการเรียน",
+                y="ร้อยละ",
+                text="ร้อยละ",
+                color="ระดับผลการเรียน",
+                # ใช้สีเดียวกับที่กำหนด
+                color_discrete_map={
+                    "ระดับต่ำ": "#FCA5A5",
+                    "ระดับปานกลาง": "#FDE68A",
+                    "ระดับสูง": "#7BF3C3"
+                },
+                category_orders={
+                    "ระดับผลการเรียน": [
+                        "ระดับต่ำ",
+                        "ระดับปานกลาง",
+                        "ระดับสูง"
+                    ]
+                }
+            )
+            fig_probability.update_traces(
+                texttemplate="<b>%{y:.1f}%</b>",
+                textposition="outside"
+            )
+            fig_probability.update_layout(
+                height=400,
+                template="plotly_white",
+                showlegend=False,
+                yaxis=dict(
+                    title="ความน่าจะเป็น (%)",
+                    range=[
+                        0,
+                        110
+                    ]
+                ),
+                xaxis=dict(
+                    title=""
+                ),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=20,
+                    b=30
+                )
+            )
+            st.plotly_chart(
+                fig_probability,
+                use_container_width=True,
+                config={
+                    "displayModeBar": False
+                }
+            )
+            # ====================================================
+            # 💡 คำอธิบายกราฟ
+            # ====================================================
+            st.markdown(
+                """
+                <div style="
+                    background-color:#F8FAFC;
+                    border:1px solid #E2E8F0;
+                    border-left:4px solid #3B82F6;
+                    border-radius:8px;
+                    padding:12px 15px;
+                    margin-top:10px;
+                    margin-bottom:20px;
+                    color:#334155;
+                    line-height:1.7;
+                    font-size:14px;
+                ">
+                    💡 <strong>คำอธิบาย:</strong><br>
+                    กราฟแสดงความน่าจะเป็นที่โมเดล Random Forest
+                    คาดการณ์ว่าผู้เรียนจะอยู่ในแต่ละระดับผลการเรียน
+                    โดยค่าร้อยละที่สูงกว่าแสดงถึงระดับที่โมเดลมีความมั่นใจมากกว่า
+                    และระดับที่มีค่าความน่าจะเป็นสูงสุดจะเป็นผลการทำนายของโมเดล
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
