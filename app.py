@@ -697,12 +697,12 @@ if menu == "ภาพรวม":
                 orientation="h",
                 text="Count",
                 color="Count",
-               color_continuous_scale=[
-                    [0.00, "#F8F7FF"],  # อ่อนสุด (ม่วงสว่างสบายตา)
-                    [0.25, "#D0D7DE"],  # อ่อน (ม่วงเทานุ่มนวล)
-                    [0.50, "#8C92AC"],  # กลาง (ม่วงหม่นเย็น/Cool Slate Purple)
-                    [0.75, "#5A639C"],  # เข้ม (ม่วงครามเย็นตา)
-                    [1.00, "#2B3160"]   # เข้มสุด (ม่วงน้ำเงินเข้มลึก)
+                color_continuous_scale=[
+                    [0.00, "#B8B3D0"],
+                    [0.25, "#9A95BB"],
+                    [0.50, "#7A75A2"],
+                    [0.75, "#59558A"],
+                    [1.00, "#35305F"]
                 ],
                 custom_data=["Percent"]
 
@@ -882,21 +882,14 @@ if menu == "ภาพรวม":
                 "HighSchool": "มัธยมปลาย"
             })
             # ================================================================
-            # 🔢 เรียงช่วงชั้นตามลำดับการศึกษา
+            # 🔢 เรียงช่วงชั้นตามจำนวนจริงจากน้อย → มาก
             # ================================================================
-            stage_order = [
-                "ประถม",
-                "มัธยมต้น",
-                "มัธยมปลาย"
-            ]
-            stage_count["Stage"] = pd.Categorical(
-                stage_count["Stage"],
-                categories=stage_order,
-                ordered=True
-            )
             stage_count = stage_count.sort_values(
-                "Stage"
+                "Count",
+                ascending=True
                 ).reset_index(drop=True)
+
+            stage_order = stage_count["Stage"].tolist()
             # ================================================================
             # 📊 จำนวนผู้เรียนทั้งหมด
             # ================================================================
@@ -1084,30 +1077,14 @@ if menu == "ภาพรวม":
                 "Count"
             ]
             # ================================================================
-            # 🔽 เรียงระดับชั้น
+            # 🔽 เรียงระดับชั้นตามจำนวนจริงจากน้อย → มาก
             # ================================================================
-            grade_order = [
-                "G-01",
-                "G-02",
-                "G-03",
-                "G-04",
-                "G-05",
-                "G-06",
-                "G-07",
-                "G-08",
-                "G-09",
-                "G-10",
-                "G-11",
-                "G-12"
-            ]
-            grade_count["Grade"] = pd.Categorical(
-                grade_count["Grade"],
-                categories=grade_order,
-                ordered=True
-            )
             grade_count = (
                 grade_count
-                .sort_values("Grade")
+                .sort_values(
+                    "Count",
+                    ascending=True
+                )
                 .reset_index(drop=True)
             )
             # ================================================================
@@ -1155,35 +1132,22 @@ if menu == "ภาพรวม":
                 color="GradeLabel",
                 custom_data=["Percent"],
                 category_orders={
-                        "GradeLabel": [
-                        "ชั้นประถมศึกษาปีที่ 1",
-                        "ชั้นประถมศึกษาปีที่ 2",
-                        "ชั้นประถมศึกษาปีที่ 3",
-                        "ชั้นประถมศึกษาปีที่ 4",
-                        "ชั้นประถมศึกษาปีที่ 5",
-                        "ชั้นประถมศึกษาปีที่ 6",
-                        "ชั้นมัธยมศึกษาปีที่ 1",
-                        "ชั้นมัธยมศึกษาปีที่ 2",
-                        "ชั้นมัธยมศึกษาปีที่ 3",
-                        "ชั้นมัธยมศึกษาปีที่ 4",
-                        "ชั้นมัธยมศึกษาปีที่ 5",
-                        "ชั้นมัธยมศึกษาปีที่ 6"
-                    ]
+                    "GradeLabel": grade_count["GradeLabel"].tolist()
                 },
                 color_discrete_sequence=[
-                    "#E6F4F1",  # เขียวพาสเทลอ่อนมาก
-                    "#CCECE6",  # เขียวมิ้นต์อ่อน
-                    "#99D8C9",  # เขียวมิ้นต์
-                    "#66C2A4",  # เขียวหยกอ่อน
-                    "#41AE76",  # เขียวมรกตสด
+                    "#B7E4D8",  # เขียวอ่อน ชัดเจน
+                    "#8FD3C1",  # เขียวมิ้นต์อ่อน
+                    "#68C2AA",  # เขียวมิ้นต์
+                    "#4CAF8A",  # เขียวหยกอ่อน
+                    "#41AE76",      # เขียวมรกตสด
                     "#238B45",  # เขียวมรกตกลาง
                     "#006D2C",  # เขียวมรกตเข้ม
                     "#00441B",  # เขียวไพน์เข้ม
-                    "#003615",  # เขียวอมฟ้าเข้ม
+                    "#003615",  # เขียวเข้ม
                     "#00280F",  # เขียวเข้มลึก
                     "#001F0B",  # เขียวเกือบดำ
-                    "#001407"   # เขียวเข้มสุด                                          
-                ]
+                    "#001407"   # เขียวเข้มสุด
+                ]   
             )
             fig_grade.update_traces(
                 texttemplate=
@@ -6741,6 +6705,124 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 "displayModeBar": False
             }
         )
+        # ========================================================
+        # 🔍 คำอธิบายจากข้อมูลใน Heatmap
+        # ========================================================
+        # คำนวณจากข้อมูลเดียวกับที่ใช้สร้าง Heatmap
+        corr_data = filtered_df[independent_cols].corr()
+
+        # หาคู่ตัวแปรที่มีความสัมพันธ์สูงสุดและต่ำสุด
+        corr_pairs = []
+
+        for i in range(len(independent_cols)):
+            for j in range(i + 1, len(independent_cols)):
+
+                var1 = independent_cols[i]
+                var2 = independent_cols[j]
+                corr_value = corr_data.loc[var1, var2]
+
+                if pd.notna(corr_value):
+                    corr_pairs.append(
+                        {
+                            "var1": var1,
+                            "var2": var2,
+                            "corr": corr_value
+                        }
+                    )
+        if corr_pairs:
+
+            # ความสัมพันธ์สูงสุด
+            max_pair_data = max(
+                corr_pairs,
+                key=lambda x: abs(x["corr"])
+            )
+
+            # ความสัมพันธ์ต่ำสุด
+            min_pair_data = min(
+                corr_pairs,
+                key=lambda x: abs(x["corr"])
+            )
+
+            max_var1 = variable_names[max_pair_data["var1"]]
+            max_var2 = variable_names[max_pair_data["var2"]]
+            max_corr_value = max_pair_data["corr"]
+
+            min_var1 = variable_names[min_pair_data["var1"]]
+            min_var2 = variable_names[min_pair_data["var2"]]
+            min_corr_value = min_pair_data["corr"]
+
+            # ----------------------------------------------------
+            # แปลระดับความสัมพันธ์
+            # ----------------------------------------------------
+            if abs(max_corr_value) >= 0.70:
+                max_level = "ค่อนข้างสูง"
+            elif abs(max_corr_value) >= 0.40:
+                max_level = "ปานกลาง"
+            elif abs(max_corr_value) >= 0.20:
+                max_level = "ค่อนข้างต่ำ"
+            else:
+                max_level = "ต่ำ"
+
+            if abs(min_corr_value) >= 0.70:
+                min_level = "ค่อนข้างสูง"
+            elif abs(min_corr_value) >= 0.40:
+                min_level = "ปานกลาง"
+            elif abs(min_corr_value) >= 0.20:
+                min_level = "ค่อนข้างต่ำ"
+            else:
+                min_level = "ต่ำ"
+
+            # ----------------------------------------------------
+            # ทิศทางความสัมพันธ์
+            # ----------------------------------------------------
+            max_direction = (
+                "ทิศทางเดียวกัน"
+                if max_corr_value > 0
+                else "ทิศทางตรงข้าม"
+                if max_corr_value < 0
+                else "ไม่มีทิศทาง"
+            )
+
+            min_direction = (
+                "ทิศทางเดียวกัน"
+                if min_corr_value > 0
+                else "ทิศทางตรงข้าม"
+                if min_corr_value < 0
+                else "ไม่มีทิศทาง"
+            )
+
+            # ----------------------------------------------------
+            # แสดงคำอธิบายใต้กราฟ
+            # ----------------------------------------------------
+            st.markdown(
+                f"""
+                <div class="analysis-note">
+                <b>🔍 คำอธิบายจากกราฟ</b>
+                <br>
+                จากเมทริกซ์ความสัมพันธ์ พบว่า
+                <b>{max_var1}</b> กับ <b>{max_var2}</b>
+                มีความสัมพันธ์มากที่สุด
+                โดยมีค่าสหสัมพันธ์ <b>{max_corr_value:.2f}</b>
+                ซึ่งเป็นความสัมพันธ์ใน<b>{max_direction}</b>
+                และอยู่ในระดับ<b>{max_level}</b>
+                <br>
+                ขณะที่ <b>{min_var1}</b> กับ <b>{min_var2}</b>
+                มีความสัมพันธ์น้อยที่สุดในชุดข้อมูล
+                โดยมีค่าสหสัมพันธ์ <b>{min_corr_value:.2f}</b>
+                ซึ่งเป็นความสัมพันธ์ใน<b>{min_direction}</b>
+                และอยู่ในระดับ<b>{min_level}</b>
+                <br>
+                <span style="color:#64748B; font-size:13px;">
+                💡 ค่าสหสัมพันธ์มีค่าอยู่ระหว่าง -1 ถึง 1
+                โดยค่าที่เข้าใกล้ 1 หรือ -1
+                แสดงถึงความสัมพันธ์ที่มากขึ้น
+                ส่วนค่าที่เข้าใกล้ 0
+                แสดงถึงความสัมพันธ์ที่น้อยลง
+                </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )        
     # ============================================================
     # 📊 คำนวณค่าเฉลี่ยของพฤติกรรมการเรียน
     # ============================================================
@@ -7260,7 +7342,6 @@ elif menu == "การวิเคราะห์ความสัมพัน
 # 🤖 การทำนายผลการเรียนของนักเรียน
 # ================================================================
 elif menu == "การทำนายผลการเรียนของนักเรียน":
-
     st.title("🤖 โมเดลทำนายผลการเรียนรู้")
     st.caption(
         "ใช้พฤติกรรมการเรียนรู้ของผู้เรียนเพื่อทำนายระดับผลการเรียนด้วย Random Forest"
@@ -7557,11 +7638,11 @@ elif menu == "การทำนายผลการเรียนของน
                 "color": "จำนวนผู้เรียน"
             },
             color_continuous_scale=[
-            "#EFF6FF",
-            "#BFDBFE",
-            "#60A5FA",
-            "#2563EB",
-            "#1E3A8A"
+                "#D9F2E6",
+                "#A7DDBF",
+                "#6BC18E",
+                "#3A9D63",
+                "#1F6B43"
             ],
             zmin=0,
             zmax=cm.max()
@@ -7590,7 +7671,91 @@ elif menu == "การทำนายผลการเรียนของน
                 "displayModeBar": False
             }
         )
-
+        # ============================================================
+        # 🔍 คำอธิบาย Confusion Matrix จากข้อมูลในกราฟ
+        # ============================================================
+        # ชื่อระดับผลการเรียน
+        cm_labels = {
+            "L": "ระดับต่ำ",
+            "M": "ระดับปานกลาง",
+            "H": "ระดับสูง"
+        }
+        # ------------------------------------------------------------
+        # จำนวนการทำนายถูกต้องของแต่ละระดับ
+        # ------------------------------------------------------------
+        correct_low = int(cm[0, 0])
+        correct_mid = int(cm[1, 1])
+        correct_high = int(cm[2, 2])
+        # ------------------------------------------------------------
+        # จำนวนทั้งหมดของแต่ละระดับจริง
+        # ------------------------------------------------------------
+        actual_low = int(cm[0, :].sum())
+        actual_mid = int(cm[1, :].sum())
+        actual_high = int(cm[2, :].sum())
+        # ------------------------------------------------------------
+        # หาเปอร์เซ็นต์การทำนายถูกต้องในแต่ละระดับ
+        # ------------------------------------------------------------
+        low_percent = (
+            correct_low / actual_low * 100
+            if actual_low > 0 else 0
+        )
+        mid_percent = (
+            correct_mid / actual_mid * 100
+            if actual_mid > 0 else 0
+        )
+        high_percent = (
+            correct_high / actual_high * 100
+            if actual_high > 0 else 0
+        )       
+        # ------------------------------------------------------------
+        # หา cell ที่มีจำนวนมากที่สุดใน Confusion Matrix
+        # ------------------------------------------------------------
+        max_row, max_col = divmod(cm.argmax(), cm.shape[1])
+        actual_class = cm_labels[
+            ["L", "M", "H"][max_row]
+        ]
+        predicted_class = cm_labels[
+            ["L", "M", "H"][max_col]
+        ]
+        max_value = int(cm[max_row, max_col])
+        # ------------------------------------------------------------
+        # แสดงคำอธิบาย
+        # ------------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="
+                background-color:#F8FAFC;
+                border:1px solid #E2E8F0;
+                border-left:4px solid #3B82F6;
+                border-radius:8px;
+                padding:12px 15px;
+                margin-top:10px;
+                margin-bottom:20px;
+                color:#334155;
+                line-height:1.8;
+                font-size:14px;
+            ">
+            💡 <strong>คำอธิบายจาก Confusion Matrix:</strong><br>
+            โมเดลทำนายผู้เรียนที่มีผลการเรียน
+            <b>ระดับต่ำ</b> ถูกต้อง
+            <b>{correct_low:,} คน</b>
+            จากทั้งหมด {actual_low:,} คน
+            คิดเป็น <b>{low_percent:.1f}%</b><br>
+            ระดับปานกลางทำนายถูกต้อง
+            <b>{correct_mid:,} คน</b>
+            จากทั้งหมด {actual_mid:,} คน
+            คิดเป็น <b>{mid_percent:.1f}%</b><br>
+            ระดับสูงทำนายถูกต้อง
+            <b>{correct_high:,} คน</b>
+            จากทั้งหมด {actual_high:,} คน
+            คิดเป็น <b>{high_percent:.1f}%</b><br>
+            โดยช่องที่มีจำนวนข้อมูลมากที่สุดในตารางคือ
+            <b>{actual_class} → {predicted_class}</b>
+            จำนวน <b>{max_value:,} คน</b>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     # ============================================================
     # 🌟 Feature Importance
     # ============================================================
@@ -7621,7 +7786,7 @@ elif menu == "การทำนายผลการเรียนของน
             texttemplate="%{text:.3f}",
             textposition="outside",
             marker=dict(
-                color="#7BF3C3",
+                color="#F97AB6",
                 cornerradius=6
             )
         )
@@ -7658,32 +7823,31 @@ elif menu == "การทำนายผลการเรียนของน
                 "displayModeBar": False
             }
         )
-
-    # ============================================================
-    # 💡 รายละเอียดตัวแปร
-    # ============================================================
-    st.markdown(
-        """
-        <div style="
-            background-color:#F8FAFC;
-            border:1px solid #E2E8F0;
-            border-left:4px solid #3B82F6;
-            border-radius:8px;
-            padding:12px 15px;
-            color:#334155;
-            line-height:1.7;
-            font-size:14px;
-        ">
-        💡 <strong>คำอธิบาย:</strong><br>
-        โมเดล Random Forest ใช้ข้อมูลพฤติกรรมการเรียนรู้
-        5 ตัวแปร ได้แก่ การยกมือ การเข้าดูแหล่งเรียนรู้
-        การดูประกาศ การอภิปราย และการขาดเรียน
-        เพื่อทำนายระดับผลการเรียนของผู้เรียน
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown("<br>", unsafe_allow_html=True)
+        # ============================================================
+        # 💡 รายละเอียดตัวแปร
+        # ============================================================
+        st.markdown(
+            """
+            <div style="
+                background-color:#F8FAFC;
+                border:1px solid #E2E8F0;
+                border-left:4px solid #3B82F6;
+                border-radius:8px;
+                padding:12px 15px;
+                color:#334155;
+                line-height:1.7;
+                font-size:14px;
+            ">
+            💡 <strong>คำอธิบาย:</strong><br>
+                โมเดล Random Forest ใช้ข้อมูลพฤติกรรมการเรียนรู้
+                5 ตัวแปร ได้แก่ การยกมือ การเข้าดูแหล่งเรียนรู้
+                การดูประกาศ การอภิปราย และการขาดเรียน
+                เพื่อทำนายระดับผลการเรียนของผู้เรียน
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown("<br>", unsafe_allow_html=True)
     # ============================================================
     # 🔮 ส่วนทำนายผลผู้เรียนใหม่
     # ============================================================
@@ -7767,7 +7931,7 @@ elif menu == "การทำนายผลการเรียนของน
                 help="จำนวนครั้งที่ผู้เรียนดูประกาศ"
             )
             discussion_input = st.number_input(
-                "💬 การอภิปราย",
+                "💬 การร่วมอภิปราย",
                 min_value=0,
                 max_value=100,
                 step=1,
@@ -7821,7 +7985,24 @@ elif menu == "การทำนายผลการเรียนของน
             st.session_state["announcements_input"] = 0
             st.session_state["discussion_input"] = 0
             st.session_state["absence_input"] = 0
-
+        st.markdown(
+            """
+            <style>
+                div.stButton > button {
+                    background-color: #33691e !important;
+                    color: white !important;
+                    border: none !important;
+                    border-radius: 10px !important;
+                    font-weight: 700 !important;
+                }
+                div.stButton > button:hover {
+                    background-color: #2a5718 !important;
+                    color: white !important;
+                }   
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         predict_button = st.button(
             "🔮 ทำนายผลการเรียน",
             use_container_width=True,
@@ -7918,9 +8099,12 @@ elif menu == "การทำนายผลการเรียนของน
                 ],
                 ordered=True
             )
+            # ====================================================
+            # 🔽 เรียงค่าความน่าจะเป็นจากน้อย → มาก
+            # ====================================================
             probability_df = (
                 probability_df
-                .sort_values("ระดับผลการเรียน")
+                .sort_values("ร้อยละ", ascending=True)
                 .reset_index(drop=True)
             )
             # ====================================================
@@ -7929,24 +8113,20 @@ elif menu == "การทำนายผลการเรียนของน
             st.markdown(
                 "### 📊 ความน่าจะเป็นของแต่ละระดับผลการเรียน"
             )
+            class_colors = {
+                "ระดับต่ำ": "#b0120a",
+                "ระดับปานกลาง": "#f57f17",
+                "ระดับสูง": "#33691e"
+            }
             fig_probability = px.bar(
                 probability_df,
                 x="ระดับผลการเรียน",
                 y="ร้อยละ",
                 text="ร้อยละ",
                 color="ระดับผลการเรียน",
-                # ใช้สีเดียวกับที่กำหนด
-                color_discrete_map={
-                    "ระดับต่ำ": "#FCA5A5",
-                    "ระดับปานกลาง": "#FDE68A",
-                    "ระดับสูง": "#7BF3C3"
-                },
+                color_discrete_map=class_colors,
                 category_orders={
-                    "ระดับผลการเรียน": [
-                        "ระดับต่ำ",
-                        "ระดับปานกลาง",
-                        "ระดับสูง"
-                    ]
+                    "ระดับผลการเรียน": probability_df["ระดับผลการเรียน"].tolist()
                 }
             )
             fig_probability.update_traces(
