@@ -4677,33 +4677,33 @@ elif menu == "พฤติกรรมการเรียนรู้":
             st.markdown(
                 f"""
                 <div style="
-                    border-left: 5px solid #35A6DB;
-                    background: #F0F9FF;
-                    padding: 15px 18px;
-                    border-radius: 8px;
-                    margin-top: 12px;
-                    margin-bottom: 25px;
+                border-left: 5px solid #35A6DB;
+                background: #F0F9FF;
+                padding: 15px 18px;
+                border-radius: 8px;
+                margin-top: 12px;
+                margin-bottom: 25px;
                 ">
                 <div style="
-                    font-weight: 700;
-                    color: #1E3A5F;
-                    margin-bottom: 6px;
+                font-weight: 700;
+                color: #1E3A5F;
+                margin-bottom: 6px;
                 ">
-                    🔍 จากข้อมูล
+                🔍 จากข้อมูล
                 </div>
                 <div style="
-                    color: #334155;
-                    line-height: 1.8;
+                color: #334155;
+                line-height: 1.8;
                 ">
-                    เมื่อจำแนกตามช่วงชั้น พบว่า
-                    <b>{highest_stage["Stage_TH"]}</b>
-                    ใน{highest_stage["Semester_Label"]}
-                    มีคะแนนเฉลี่ยการมีส่วนร่วมสูงที่สุด
-                    ({highest_stage["ParticipationScore"]:.2f} คะแนน)
-                    ขณะที่ค่าต่ำที่สุดพบใน
-                    <b>{lowest_stage["Stage_TH"]}</b>
-                    ใน{lowest_stage["Semester_Label"]}
-                    ({lowest_stage["ParticipationScore"]:.2f} คะแนน)
+                เมื่อจำแนกตามช่วงชั้น พบว่า
+                <b>{highest_stage["Stage_TH"]}</b>
+                ใน{highest_stage["Semester_Label"]}
+                มีคะแนนเฉลี่ยการมีส่วนร่วมสูงที่สุด
+                ({highest_stage["ParticipationScore"]:.2f} คะแนน)
+                ขณะที่ค่าต่ำที่สุดพบใน
+                <b>{lowest_stage["Stage_TH"]}</b>
+                ใน{lowest_stage["Semester_Label"]}
+                ({lowest_stage["ParticipationScore"]:.2f} คะแนน)
                 </div>
                 </div>
                 """,
@@ -4992,17 +4992,17 @@ elif menu == "พฤติกรรมการเรียนรู้":
                     st.markdown(
                         f"""
                         <div style="
-                            border-left: 5px solid #383AB5;
-                            background: #F5F5FF;
-                            padding: 15px 18px;
-                            border-radius: 8px;
-                            margin-top: 12px;
-                            margin-bottom: 25px;
+                        border-left: 5px solid #383AB5;
+                        background: #F5F5FF;
+                        padding: 15px 18px;
+                        border-radius: 8px;
+                        margin-top: 12px;
+                        margin-bottom: 25px;
                         ">
                         <div style="
-                            font-weight: 700;
-                            color: #1E3A5F;
-                            margin-bottom: 6px;
+                        font-weight: 700;
+                        color: #1E3A5F;
+                        margin-bottom: 6px;
                         ">
                         🔍 จากข้อมูลในกราฟ
                         </div>
@@ -5027,8 +5027,8 @@ elif menu == "พฤติกรรมการเรียนรู้":
                         ({lowest_semester2["ParticipationScore"]:.2f} คะแนน)
                         <br>
                         <span style="
-                            color: #64748B;
-                            font-size: 13px;
+                        color: #64748B;
+                        font-size: 13px;
                         ">
                         หมายเหตุ: ข้อความสรุปนี้ดึงจากข้อมูลชุดเดียวกับ
                         ที่ใช้แสดงในกราฟ และจะปรับเปลี่ยนตามข้อมูลในไฟล์ CSV
@@ -5082,31 +5082,23 @@ elif menu == "พฤติกรรมการเรียนรู้":
                             ">
                                 🔍 จากข้อมูลในกราฟ
                             </div>
-
                             <div style="
                                 color: #334155;
                                 line-height: 1.8;
                             ">
-
                                 ข้อมูลที่แสดงในกราฟเป็น
                                 <b>{available_semester}</b>
                                 โดยมีคะแนนเฉลี่ยการมีส่วนร่วม
                                 <b>{available_avg:.2f} คะแนน</b>
-
-                                <br><br>
-
+                                <br>
                                 ระดับชั้นที่มีคะแนนเฉลี่ยการมีส่วนร่วมสูงที่สุด คือ
                                 <b>{highest_grade["Grade_TH"]}</b>
                                 ({highest_grade["ParticipationScore"]:.2f} คะแนน)
-
                                 <br>
-
                                 ระดับชั้นที่มีคะแนนเฉลี่ยการมีส่วนร่วมต่ำที่สุด คือ
                                 <b>{lowest_grade["Grade_TH"]}</b>
                                 ({lowest_grade["ParticipationScore"]:.2f} คะแนน)
-
-                                <br><br>
-
+                                <br>
                                 <span style="
                                     color: #64748B;
                                     font-size: 13px;
@@ -5115,7 +5107,6 @@ elif menu == "พฤติกรรมการเรียนรู้":
                                     ที่ใช้แสดงในกราฟ และจะปรับเปลี่ยนตามข้อมูลในไฟล์ CSV
                                     โดยอัตโนมัติ
                                 </span>
-
                             </div>
                         </div>
                         """,
