@@ -6231,7 +6231,8 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                         <div style='background-color: #FEF3FF; padding: 10px 12px; border-radius: 8px; 
                         border: 1px solid #FCD34D; margin-top: 10px; margin-top: 0px; margin-bottom: 10px;'>
                                 <span style='color: #92400E; font-size: 12px;'>
-                            💡 <b>ข้อสังเกต:</b> มารดามีสัดส่วนในการตอบแบบสำรวจ ({ (m_surv_yes/(m_surv_yes+m_surv_no))*100:.1f}% ) และความพึงพอใจ ({ (m_sat_good/(m_sat_good+m_sat_bad))*100:.1f}% ) สูงกว่าบิดาอย่างมีนัยสำคัญ
+                            💡 <b>ข้อสังเกต:</b> มารดามีสัดส่วนการตอบแบบสำรวจ ({ (m_surv_yes/(m_surv_yes+m_surv_no))*100:.1f}% ) 
+                                และความพึงพอใจ ({ (m_sat_good/(m_sat_good+m_sat_bad))*100:.1f}% ) สูงกว่าบิดา
                             </span>
                         </div>
                         """,
@@ -6305,70 +6306,97 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 )
             )
             st.plotly_chart(fig_act, use_container_width=True, config={"displayModeBar": False})
+            mother_resource_avg = plot_df.loc[
+                plot_df["Relation"] == "Mum",
+                "VisITedResources"
+            ].mean()
 
+            father_resource_avg = plot_df.loc[
+                plot_df["Relation"] == "Father",
+                "VisITedResources"
+            ].mean()
+
+            mother_hand_avg = plot_df.loc[
+                plot_df["Relation"] == "Mum",
+                "raisedhands"
+            ].mean()
+
+            father_hand_avg = plot_df.loc[
+                plot_df["Relation"] == "Father",
+                "raisedhands"
+            ].mean()
             # สรุป Insight ฝั่งซ้าย
             st.markdown(
-                """
-                <div style='background-color: #F7F8FF; padding: 10px 12px; border-radius: 8px; 
-                border: 1px solid #FCD34D; margin-top: 0px; margin-bottom: 10px'>
-                    <span style='color: #92400E; font-size: 12px; line-height: 1.4; display: block;'>
-                        💡 <b>ข้อสังเกต:</b> นักเรียนที่มี <b>มารดา</b> ดูแลหลัก มีอัตราการเข้าดูสื่อการเรียน (69.1 ครั้ง) และยกมือตอบคำถามสูงกว่ามีบิดาดูแลหลักอย่างมีนัยสำคัญ
+                f"""
+                <div style='background-color: #F7F8FF; padding: 10px 12px; border-radius: 8px;
+                    border: 1px solid #FCD34D; margin-top: 0px; margin-bottom: 10px'>
+                    <span style='color: #92400E; font-size: 12px; line-height: 1.5; display: block;'>
+                    💡 <b>ข้อสังเกต:</b>
+                        นักเรียนที่มี <b>มารดา</b> เป็นผู้ดูแลหลัก
+                    มีค่าเฉลี่ยการเข้าดูสื่อการเรียน
+                    <b>{mother_resource_avg:.1f}</b> ครั้ง และการยกมือตอบคำถาม
+                    <b>{mother_hand_avg:.1f}</b> ครั้ง เทียบกับบิดาที่มีค่าเฉลี่ย
+                    <b>{father_resource_avg:.1f}</b> และ <b>{father_hand_avg:.1f}</b> ครั้ง ตามลำดับ
                     </span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+
     # -----------------------------------------------------
     # 👉 กราฟฝั่งขวา ความสัมพันธ์กับผลสัมฤทธิ์
     # -----------------------------------------------------
     with col_right:
         with st.container(border=True):
+            # =====================================================
+            # 📌 ความสัมพันธ์กับผลสัมฤทธิ์ทางการเรียน
+            # =====================================================
             ct_survey_class = pd.crosstab(
                 plot_df["Class"],
                 plot_df["ParentAnsweringSurvey"],
                 normalize="index"
             ) * 100
-            
             ct_survey_class = ct_survey_class.reset_index()
+            # แปลงชื่อระดับผลการเรียน
             ct_survey_class["Class"] = ct_survey_class["Class"].replace({
-                "L": "ระดับต่ำ (L)",
-                "M": "ระดับปานกลาง (M)",
-                "H": "ระดับสูง (H)"
+                "L": "ระดับต่ำ",
+                "M": "ระดับปานกลาง",
+                "H": "ระดับสูง"
             })
+            # กำหนดลำดับของ Class
             ct_survey_class["Class"] = pd.Categorical(
-                ct_survey_class["Class"], 
+                ct_survey_class["Class"],
                 categories=[
-                    "ระดับต่ำ (L)", 
-                    "ระดับปานกลาง (M)", 
-                    "ระดับสูง (H)"
-                ], 
+                    "ระดับต่ำ",
+                    "ระดับปานกลาง",
+                    "ระดับสูง"
+                ],
                 ordered=True
             )
             ct_survey_class = ct_survey_class.sort_values("Class")
-
+            # =====================================================
+            # 📊 แปลงข้อมูลสำหรับกราฟ
+            # =====================================================
             melted_survey = ct_survey_class.melt(
-                id_vars=[
-                    "Class"
-                ], 
-                var_name="ParentAnsweringSurvey", 
+                id_vars=["Class"],
+                var_name="ParentAnsweringSurvey",
                 value_name="สัดส่วน (%)"
             )
-            melted_survey[
-                "ParentAnsweringSurvey"
-            ] = melted_survey[
-                "ParentAnsweringSurvey"
-                ].replace({
-                    "Yes": "ตอบแบบสำรวจ", 
+            melted_survey["ParentAnsweringSurvey"] = (
+                melted_survey["ParentAnsweringSurvey"]
+                .replace({
+                    "Yes": "ตอบแบบสำรวจ",
                     "No": "ไม่ตอบแบบสำรวจ"
-            })
+                })
+            )
             # =====================================================
-            # 🔽 เรียงทุกแท่งตามข้อมูลจริงจากน้อย → มาก
+            # ⭐ เรียงแท่งตามค่าจริงจากน้อย → มาก
             # =====================================================
             melted_survey = melted_survey.sort_values(
                 by="สัดส่วน (%)",
                 ascending=True
             ).reset_index(drop=True)
-            # สร้างตำแหน่งสำหรับแต่ละแท่ง
+            # สร้างตำแหน่งแท่ง
             melted_survey["ตำแหน่ง"] = range(len(melted_survey))
             # =====================================================
             # 📊 สร้างกราฟ
@@ -6396,19 +6424,20 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
             fig_class.update_xaxes(
                 tickmode="array",
                 tickvals=melted_survey["ตำแหน่ง"].tolist(),
-                # ใต้แท่งแสดงระดับผลการเรียน
                 ticktext=(
                     melted_survey["Class"]
+                    .astype(str)
                     .replace({
-                        "ระดับต่ำ (L)": "ระดับต่ำ",
-                        "ระดับปานกลาง (M)": "ระดับกลาง",
-                        "ระดับสูง (H)": "ระดับสูง"
-                    }).tolist()
+                        "ระดับต่ำ": "L",
+                        "ระดับปานกลาง": "M",
+                        "ระดับสูง": "H"
+                    })
+                    .tolist()
                 ),
                 showgrid=False
             )
             # =====================================================
-            # 🖱️ Hover
+            # 🖱️ Hover + ตัวเลขบนแท่ง
             # =====================================================
             fig_class.update_traces(
                 texttemplate="<b>%{y:.1f}%</b>",
@@ -6465,18 +6494,52 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 use_container_width=True,
                 config={"displayModeBar": False}
             )
+
+            father_survey_total = f_surv_yes + f_surv_no
+            mother_survey_total = m_surv_yes + m_surv_no
+
+            father_sat_total = f_sat_good + f_sat_bad
+            mother_sat_total = m_sat_good + m_sat_bad
+
+            father_survey_pct = (
+                f_surv_yes / father_survey_total * 100
+                if father_survey_total > 0 else 0
+            )
+
+            mother_survey_pct = (
+                m_surv_yes / mother_survey_total * 100
+                if mother_survey_total > 0 else 0
+            )
+
+            father_sat_pct = (
+                f_sat_good / father_sat_total * 100
+                if father_sat_total > 0 else 0
+            )
+
+            mother_sat_pct = (
+                m_sat_good / mother_sat_total * 100
+                if mother_sat_total > 0 else 0
+            )
             # สรุป Insight ฝั่งขวา
             st.markdown(
-                """
-                <div style='background-color: #F6F4FF; padding: 10px 12px; border-radius: 8px; 
-                border: 1px solid #93C5FD; margin-top: 0px; margin-bottom: 10px;'>
-                    <span style='color: #1E3A8A; font-size: 12px; line-height: 1.4; display: block;'>
-                        🎯 <b>ข้อสังเกต:</b> กลุ่ม <b>ระดับสูง</b> ผู้ปกครองตอบแบบสำรวจสูงถึง 80.3% ในขณะที่กลุ่ม <b>ระดับต่ำ </b> ผู้ปกครองไม่ตอบแบบสำรวจสูงถึง 78.0%
+                f"""
+                <div style='background-color: #FEF3FF; padding: 10px 12px; border-radius: 8px;
+                    border: 1px solid #FCD34D; margin-top: 0px; margin-bottom: 10px;'>
+                    <span style='color: #92400E; font-size: 12px; line-height: 1.5;'>
+                    💡 <b>ข้อสังเกต:</b>
+                        มารดามีสัดส่วนการตอบแบบสำรวจ
+                    <b>{mother_survey_pct:.1f}%</b>
+                    และความพึงพอใจต่อโรงเรียน
+                    <b>{mother_sat_pct:.1f}%</b>
+                    เทียบกับบิดาที่มีสัดส่วน
+                    <b>{father_survey_pct:.1f}%</b>
+                    และ <b>{father_sat_pct:.1f}%</b> ตามลำดับ
                     </span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+
 
 # ================================================================
 # 🔗 การวิเคราะห์ความสัมพันธ์ของตัวแปร
