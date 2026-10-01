@@ -271,7 +271,7 @@ with st.sidebar:
             "พฤติกรรมการเรียนรู้",
             "การมีส่วนร่วมของผู้ปกครอง",
             "การวิเคราะห์ความสัมพันธ์ของตัวแปร",
-            "การทำนายผลการเรียนของนักเรียน"
+            "การทำนายผลสัมฤทธิ์ทางการเรียนของนักเรียน"
         ],
         icons=[
             "house-fill",
@@ -950,7 +950,7 @@ if menu == "ภาพรวม":
                     categoryarray=nationality_count["Nationality"].tolist()[::-1],
                     title="",
                     tickfont=dict(
-                        size=13,
+                        size=15,
                         color="#1E293B",
                         family="Arial"
                     ),
@@ -962,7 +962,7 @@ if menu == "ภาพรวม":
                 xaxis=dict(
                     title="จำนวนนักเรียน (คน)",
                     title_font=dict(
-                        size=12,
+                        size=16,
                         color="#64748B"
                     ),
                     gridcolor="#F1F5F9",
@@ -1168,11 +1168,11 @@ if menu == "ภาพรวม":
                 xaxis=dict(
                     title="ช่วงชั้น",
                     title_font=dict(
-                        size=13,
+                        size=16,
                         color="#64748B"
                     ),
                     tickfont=dict(
-                        size=12,
+                        size=15,
                         color="#1E293B"
                     ),
                     showgrid=False
@@ -1400,11 +1400,11 @@ if menu == "ภาพรวม":
                 xaxis=dict(
                     title="ระดับชั้น",
                     title_font=dict(
-                        size=13,
+                        size=16,
                         color="#64748B"
                     ),
                     tickfont=dict(
-                        size=11,
+                        size=15,
                         color="#1E293B"
                     ),
                     showgrid=False
@@ -1412,7 +1412,7 @@ if menu == "ภาพรวม":
                 yaxis=dict(
                     title="จำนวนนักเรียน (คน)",
                     title_font=dict(
-                        size=13,
+                        size=16,
                         color="#64748B"
                     ),
                     gridcolor="#F1F5F9",
@@ -1939,7 +1939,7 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #E0F2FE;'>🏃</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียนระดับสูง (High)</div>
+                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนระดับสูง (High)</div>
                     <div class='kpi-text-value'>{high_count:,} คน</div>
                     <div class='kpi-text-sub'>คิดเป็น <b>{high_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
@@ -1951,7 +1951,7 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #FCE7F3;'>🙋‍♀️</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียนปานกลาง (Medium)</div>
+                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนปานกลาง (Medium)</div>
                     <div class='kpi-text-value'>{mid_count:,} คน</div>
                     <div class='kpi-text-sub'>คิดเป็น <b>{mid_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
@@ -1963,7 +1963,7 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             <div class='kpi-card-custom'>
                 <div class='kpi-icon-bg' style='background-color: #FEF3C7;'>🙋‍♂️</div>
                 <div>
-                    <div class='kpi-text-title'>ผลการเรียนระดับต่ำ (Low)</div>
+                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนระดับต่ำ (Low)</div>
                     <div class='kpi-text-value'>{low_count:,} คน</div>
                     <div class='kpi-text-sub'>คิดเป็น <b>{low_pct:.1f}%</b> ของทั้งหมด</div>
                 </div>
@@ -2173,6 +2173,9 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                         name=class_name,
                         text=text_data,
                         textposition="outside",
+                        textfont=dict(
+                            size=14
+                        ),
                         marker_color=color_class_map.get(
                             class_name,
                             "#64748B"
@@ -2199,13 +2202,13 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                 else 0
             )
             fig_bar.update_layout(
-                height=380,
+                height=400,
                 barmode="group",
                 margin=dict(
-                    l=10,
-                    r=10,
-                    t=35,
-                    b=50
+                    l=20,
+                    r=20,
+                    t=45,
+                    b=60
                 ),
                 legend=dict(
                     orientation="h",
@@ -2213,22 +2216,37 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                     y=1.02,
                     xanchor="right",
                     x=1,
-                    title_text=""
+                    title_text="",
+                    font=dict(
+                        size=14
+                    )
                 ),
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)"
             )
+
             fig_bar.update_xaxes(
                 title_text="ช่วงชั้น",
+                title_font=dict(
+                    size=15
+                ),
                 tickmode="array",
                 tickvals=tick_positions,
                 ticktext=tick_labels,
-                tickfont=dict(size=11),
+                tickfont=dict(
+                    size=15
+                ),
                 showgrid=False
             )
+
             fig_bar.update_yaxes(
                 title_text="สัดส่วน (%)",
-                tickfont=dict(size=10),
+                title_font=dict(
+                    size=15
+                ),
+                tickfont=dict(
+                    size=15
+                ),
                 gridcolor="#E2E8F0",
                 rangemode="tozero",
                 range=[0, 100]
@@ -2330,50 +2348,108 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
             else:
                 highest_stage = "-"
                 highest_stage_count = 0
+            # ============================================================
+            # 📊 คำอธิบายภาพรวมผลสัมฤทธิ์ทางการเรียน
+            # ============================================================
+            total_academic_students = len(filtered_df)
+            academic_level_count = (
+                filtered_df["Class_TH"]
+                .value_counts()
+                .reindex(
+                    [
+                        "ระดับต่ำ",
+                        "ระดับปานกลาง",
+                        "ระดับสูง"
+                    ],
+                    fill_value=0
+                )
+            )
 
-            # =====================================================
-            # 🔍 ดึงค่าเปอร์เซ็นต์จากข้อมูลที่ใช้สร้างแท่งกราฟโดยตรง
-            # =====================================================
-            if bar_y:
-                max_index = bar_y.index(max(bar_y))
-                min_index = bar_y.index(min(bar_y))
-                highest_bar_class = bar_class[max_index]
-                highest_bar_percent = bar_y[max_index]
-                lowest_bar_class = bar_class[min_index]
-                lowest_bar_percent = bar_y[min_index]
+            if total_academic_students > 0:
+                academic_level_percent = (
+                    academic_level_count
+                    / total_academic_students
+                    * 100
+                )
+                highest_academic_level = (
+                    academic_level_count.idxmax()
+                )
+                highest_academic_count = int(
+                    academic_level_count.max()
+                )
+                highest_academic_percent = float(
+                    academic_level_percent.loc[
+                        highest_academic_level
+                    ]
+                )
+                lowest_academic_level = (
+                    academic_level_count.idxmin()
+                )
+                lowest_academic_count = int(
+                    academic_level_count.min()
+                )
+                lowest_academic_percent = float(
+                    academic_level_percent.loc[
+                        lowest_academic_level
+                    ]
+                )
             else:
-                highest_bar_class = "-"
-                highest_bar_percent = 0
-                lowest_bar_class = "-"
-                lowest_bar_percent = 0
+                academic_level_percent = academic_level_count * 0
+                highest_academic_level = "-"
+                highest_academic_count = 0
+                highest_academic_percent = 0
+                lowest_academic_level = "-"
+                lowest_academic_count = 0
+                lowest_academic_percent = 0
+
             st.markdown(
                 f"""
                 <div style="
                     background-color:#F8FAFC;
-                    border:1px solid #E2E8F0;
-                    border-left:4px solid #3B82F6;
-                    border-radius:12px;
-                    padding:14px 16px;
-                    margin-top:10px;
-                    margin-bottom:10px;
+                    border:1px solid #CBD5E1;
+                    border-left:5px solid #1E3A5F;
+                    border-radius:14px;
+                    padding:16px 18px;
+                    margin-top:12px;
+                    margin-bottom:12px;
                     line-height:1.8;
                 ">
                 <div style="
                     font-weight:700;
-                    color:#1E3A5F;
-                    margin-bottom:8px;
-                ">🔍 จากข้อมูล</div>
+                    color:#0A2540;
+                    font-size:16px;
+                    margin-bottom:10px;
+                ">
+                📊 คำอธิบายภาพรวมผลสัมฤทธิ์ทางการเรียน
+                </div>
                 <div style="
                     color:#334155;
                     font-size:14px;
                 ">
-                    • สัดส่วนที่สูงที่สุดจากแท่งกราฟ คือ
-                    <b>{highest_bar_class}</b>
-                    <b>{highest_bar_percent:.1f}%</b>
-                    ขณะที่สัดส่วนที่ต่ำที่สุด คือ
-                    <b>{lowest_bar_class}</b>
-                    <b>{lowest_bar_percent:.1f}%</b>
+                    จากข้อมูลผู้เรียนทั้งหมด
+                    <b>{total_academic_students:,} คน</b>
+                    พบว่า ผู้เรียนส่วนใหญ่อยู่ใน
+                    <b>{highest_academic_level}</b>
+                    จำนวน
+                    <b>{highest_academic_count:,} คน</b>
+                    คิดเป็นร้อยละ
+                    <b>{highest_academic_percent:.1f}</b>
+                    ของผู้เรียนทั้งหมด
                     <br>
+                    ขณะที่
+                    <b>{lowest_academic_level}</b>
+                    มีจำนวนผู้เรียน
+                    <b>{lowest_academic_count:,} คน</b>
+                    คิดเป็นร้อยละ
+                    <b>{lowest_academic_percent:.1f}</b>
+                    ของผู้เรียนทั้งหมด
+                    <br>
+                    เมื่อพิจารณาภาพรวมการกระจายของผลสัมฤทธิ์
+                    สามารถเห็นสัดส่วนของผู้เรียนในแต่ละระดับ
+                    ได้แก่ ระดับต่ำ ระดับปานกลาง และระดับสูง
+                    ซึ่งสามารถใช้เป็นข้อมูลพื้นฐานสำหรับการวิเคราะห์
+                    ผลสัมฤทธิ์ทางการเรียนและพฤติกรรมการเรียนรู้
+                    ในส่วนต่อไป
                 </div>
                 </div>
                 """,
@@ -3225,7 +3301,7 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
                                 "H"
                             ],
                             tickfont=dict(
-                                size=13,
+                                size=15,
                                 color="#64748B"
                             ),
                             showticklabels=True,
@@ -4419,7 +4495,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
     }
 
     # ================================================================
-    # 🏆 Mapping ระดับผลการเรียนรู้
+    # 🏆 Mapping ระดับผลสัมฤทธิ์ทางการเรียน
     # ================================================================
 
     class_map = {
@@ -5903,7 +5979,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
                 )
 
     # ================================================================
-    # 🏆 7. จำแนกตามระดับผลการเรียนรู้
+    # 🏆 7. จำแนกตามระดับผลสัมฤทธิ์ทางการเรียน
     # ================================================================
     st.markdown(
         """
@@ -5913,7 +5989,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
             margin-top: 30px;
             margin-bottom: 6px;
         ">
-            🏆 คะแนนเฉลี่ยการมีส่วนร่วมจำแนกตามระดับผลการเรียนรู้
+            🏆 คะแนนเฉลี่ยการมีส่วนร่วมจำแนกตามระดับผลสัมฤทธิ์ทางการเรียน
         </h2>
         <div style="
             color: #64748B;
@@ -5938,7 +6014,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
         )
     )
     # ================================================================
-    # 🔢 กำหนดลำดับระดับผลการเรียนรู้
+    # 🔢 กำหนดลำดับระดับผลสัมฤทธิ์ทางการเรียน
     # ระดับต่ำ → ระดับปานกลาง → ระดับสูง
     # ================================================================
     class_order = [
@@ -5958,7 +6034,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
     )
     if not class_df.empty:
         with st.container(border=True):
-            # กำหนดสีตามระดับผลการเรียนรู้
+            # กำหนดสีตามระดับผลสัมฤทธิ์ทางการเรียน
             color_map = { 
                 "ระดับต่ำ": "#C49A6C",    # น้ำตาลอ่อน 
                 "ระดับปานกลาง": "#8B5A2B", # น้ำตาลกลาง 
@@ -5970,7 +6046,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
                 y="ParticipationScore",
                 text="ParticipationScore",
                 labels={
-                    "Class_TH": "ระดับผลการเรียนรู้",
+                    "Class_TH": "ระดับผลสัมฤทธิ์ทางการเรียน",
                     "ParticipationScore": "คะแนนเฉลี่ยการมีส่วนร่วม (0–100)"
                 },
                 color="Class_TH",
@@ -5995,7 +6071,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
                     gridcolor="#E2E8F0"
                 ),
                 xaxis=dict(
-                    title="ระดับผลการเรียนรู้",
+                    title="ระดับผลสัมฤทธิ์ทางการเรียน",
                     showgrid=False
                 ),
                 plot_bgcolor="white",
@@ -6280,10 +6356,12 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
         plot_df["Relation"],
         plot_df["ParentAnsweringSurvey"]
     )
+
     sat_rel = pd.crosstab(
         plot_df["Relation"],
         plot_df["ParentschoolSatisfaction"]
-    )   
+    )
+
     # ดึงค่าจำนวนคน
     f_surv_yes = survey_rel.loc["Father", "Yes"] if "Father" in survey_rel.index and "Yes" in survey_rel.columns else 0
     f_surv_no = survey_rel.loc["Father", "No"] if "Father" in survey_rel.index and "No" in survey_rel.columns else 0
@@ -6310,28 +6388,32 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
         {"หัวข้อ": "ไม่พอใจ", "ผู้ดูแลหลัก": "บิดา", "จำนวน": f_sat_bad},
         {"หัวข้อ": "ไม่พอใจ", "ผู้ดูแลหลัก": "มารดา", "จำนวน": m_sat_bad},
     ])
+
     with st.container(border=True):
-        st.markdown("<h3 style='margin-bottom:0px;'>📊 เปรียบเทียบการมีส่วนร่วมจำแนกตามผู้ดูแลหลัก (บิดา / มารดา)</h3>", unsafe_allow_html=True)
+        st.markdown(
+            "<h3 style='margin-bottom:0px;'>📊 เปรียบเทียบการมีส่วนร่วมจำแนกตามผู้ดูแลหลัก (บิดา / มารดา)</h3>",
+            unsafe_allow_html=True
+        )
         st.caption("เปรียบเทียบการตอบแบบสำรวจและความพึงพอใจแยกระหว่างบิดาและมารดา")
         st.markdown("<br>", unsafe_allow_html=True)
-    
+
         # =====================================================
         # 🔽 กำหนดลำดับแท่งกราฟ
         # =====================================================
         bar_order = [
-            ("ตอบ", "บิดา"),
-            ("ตอบ", "มารดา"),
-            ("ไม่ตอบ", "บิดา"),
-            ("ไม่ตอบ", "มารดา"),
-            ("พอใจ", "บิดา"),
-            ("พอใจ", "มารดา"),
-            ("ไม่พอใจ", "บิดา"),
-            ("ไม่พอใจ", "มารดา")
+            ("บิดา", "ตอบ"),
+            ("บิดา", "ไม่ตอบ"),
+            ("บิดา", "พอใจ"),
+            ("บิดา", "ไม่พอใจ"),
+            ("มารดา", "ตอบ"),
+            ("มารดา", "ไม่ตอบ"),
+            ("มารดา", "พอใจ"),
+            ("มารดา", "ไม่พอใจ")
         ]
 
         bar_data_rel["ลำดับ"] = bar_data_rel.apply(
             lambda row: bar_order.index(
-                (row["หัวข้อ"], row["ผู้ดูแลหลัก"])
+                (row["ผู้ดูแลหลัก"], row["หัวข้อ"])
             ),
             axis=1
         )
@@ -6342,184 +6424,231 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
 
         bar_data_rel["ตำแหน่ง"] = range(len(bar_data_rel))
 
-        row2_left, row2_right = st.columns([1.5, 1])    
-        with row2_left:
         # =====================================================
         # 📊 กราฟ
         # =====================================================
-            fig_bar = px.bar(
-                bar_data_rel,
-                x="ตำแหน่ง",
-                y="จำนวน",
-                color="ผู้ดูแลหลัก",
-                text="จำนวน",
-                color_discrete_map={
-                    "บิดา": "#2285B0",
-                    "มารดา": "#36BCAA"
-                },
-                labels={
-                    "ตำแหน่ง": "",
-                    "จำนวน": "จำนวน (คน)",
-                    "ผู้ดูแลหลัก": "ผู้ดูแลหลัก"
-                }
+        fig_bar = px.bar(
+            bar_data_rel,
+            x="ตำแหน่ง",
+            y="จำนวน",
+            color="หัวข้อ",
+            text="จำนวน",
+            color_discrete_map={
+                # กลุ่มการตอบแบบสำรวจ — ม่วง
+                "ตอบ": "#7C6BB3",
+                "ไม่ตอบ": "#B8AED6",
+
+                # กลุ่มความพึงพอใจ — ฟ้าอมเขียว
+                "พอใจ": "#4F9D9D",
+                "ไม่พอใจ": "#A8D0D0"
+            },
+            labels={
+                "ตำแหน่ง": "",
+                "จำนวน": "จำนวน (คน)",
+                "หัวข้อ": "หัวข้อ"
+            },
+            category_orders={
+                "หัวข้อ": [
+                    "ตอบ",
+                    "ไม่ตอบ",
+                    "พอใจ",
+                    "ไม่พอใจ"
+                ]
+            }
+        )
+
+        # =====================================================
+        # 🏷️ แสดงชื่อกลุ่มใต้แกน X
+        # =====================================================
+        fig_bar.update_xaxes(
+            tickmode="array",
+            tickvals=[1.5, 5.5],
+            ticktext=["บิดา", "มารดา"],
+            showgrid=False,
+            tickfont=dict(
+                family="Sarabun, sans-serif",
+                size=15
             )
-            # =====================================================
-            # 🏷️ แสดงชื่อใต้แท่ง
-            # =====================================================
-            fig_bar.update_xaxes(
-                tickmode="array",
-                tickvals=bar_data_rel["ตำแหน่ง"].tolist(),
-                ticktext=bar_data_rel["หัวข้อ"].tolist(),
-                showgrid=False
-            )
-            fig_bar.update_traces(
-                texttemplate="<b>%{y:,} คน</b>",
-                textposition="outside",
-                textfont=dict(
-                    family="Sarabun, sans-serif",
-                    size=12
-                ),
-                hovertemplate=(
-                    "หัวข้อ: <b>%{customdata[0]}</b><br>"
-                    "ผู้ดูแลหลัก: <b>%{customdata[1]}</b><br>"
-                    "จำนวน: <b>%{y:,} คน</b>"
-                    "<extra></extra>"
-                ),
-                customdata=bar_data_rel[
-                    ["หัวข้อ", "ผู้ดูแลหลัก"]
-                ].values
-                )
-            max_y = bar_data_rel["จำนวน"].max()
-            fig_bar.update_layout(
-                height=390,
-                # ⭐ ไม่จัดกลุ่มบิดา-มารดา
-                # เพราะต้องเรียงแท่งจริงจากน้อย → มาก
-                bargap=0.25,
-                showlegend=True,
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.3,
-                    xanchor="center",
-                    x=0.5,
-                    font=dict(
-                        family="Sarabun, sans-serif",
-                        size=13
-                    )
-                ),
-                margin=dict(
-                    t=30,
-                    b=55,
-                    l=10,
-                    r=10
+        )
+
+        fig_bar.update_traces(
+            texttemplate="<b>%{y:,} คน</b>",
+            textposition="outside",
+            textfont=dict(
+                family="Sarabun, sans-serif",
+                size=12
+            ),
+            hovertemplate=(
+                "ผู้ดูแลหลัก: <b>%{customdata[0]}</b><br>"
+                "หัวข้อ: <b>%{customdata[1]}</b><br>"
+                "จำนวน: <b>%{y:,} คน</b>"
+                "<extra></extra>"
+            ),
+            customdata=bar_data_rel[
+                ["ผู้ดูแลหลัก", "หัวข้อ"]
+            ].values
+        )
+
+        max_y = bar_data_rel["จำนวน"].max()
+
+        fig_bar.update_layout(
+            height=420,
+            bargap=0.25,
+            showlegend=True,
+
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.32,
+                xanchor="center",
+                x=0.5,
+                title=dict(
+                    text=""
                 ),
                 font=dict(
                     family="Sarabun, sans-serif",
-                    size=12
-                ),
-                template="plotly_white",
-                yaxis=dict(
-                    range=[0, max_y * 1.22],
-                    tickformat=",d"
+                    size=13
                 )
-            )
-            st.plotly_chart(
-                fig_bar,
-                use_container_width=True,
-                config={"displayModeBar": False}
-            )   
+            ),
+
+            margin=dict(
+                t=30,
+                b=85,
+                l=10,
+                r=10
+            ),
+
+            font=dict(
+                family="Sarabun, sans-serif",
+                size=12
+            ),
+
+            template="plotly_white",
+
+            yaxis=dict(
+                range=[0, max_y * 1.22],
+                tickformat=",d",
+                title="จำนวน (คน)"
+            ),
+
+            # =================================================
+            # เส้นแบ่งระหว่างกลุ่ม บิดา | มารดา
+            # =================================================
+            shapes=[
+                dict(
+                    type="line",
+                    x0=3.5,
+                    x1=3.5,
+                    y0=0,
+                    y1=max_y * 1.12,
+                    line=dict(
+                        color="#9CA3AF",
+                        width=2,
+                        dash="dash"
+                    )
+                )
+            ]
+        )
+
+        st.plotly_chart(
+            fig_bar,
+            use_container_width=True,
+            config={"displayModeBar": False}
+        )
+
         # กรอบสรุปข้อมูลแถวที่ 2
-        with row2_right:
-            with st.container(border=True):
-                st.markdown(
-                    """
-                    <div style='background-color: #DCFCE7; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;'>
+        with st.container(border=True):
+            st.markdown(
+                """
+                <div style='background-color: #DCFCE7; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;'>
                     <b style='color: #166534; font-size: 16px;'>📝 สรุปเปรียบเทียบตามผู้ดูแล</b>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            st.markdown(f"""
+            * **การตอบแบบสำรวจ:**
+                * **บิดา:** ตอบ {f_surv_yes:,} คน / ไม่ตอบ {f_surv_no:,} คน
+                * **มารดา:** ตอบ {m_surv_yes:,} คน / ไม่ตอบ {m_surv_no:,} คน
+            * **ความพึงพอใจต่อโรงเรียน:**
+                * **บิดา:** พึงพอใจ {f_sat_good:,} คน / ไม่พึงพอใจ {f_sat_bad:,} คน
+                * **มารดา:** พึงพอใจ {m_sat_good:,} คน / ไม่พึงพอใจ {m_sat_bad:,} คน
+            """)
+
+            # =====================================================
+            # 💡 คำนวณสัดส่วนสำหรับข้อสังเกต
+            # =====================================================
+            father_survey_total = f_surv_yes + f_surv_no
+            mother_survey_total = m_surv_yes + m_surv_no
+
+            father_sat_total = f_sat_good + f_sat_bad
+            mother_sat_total = m_sat_good + m_sat_bad
+
+            father_survey_pct = (
+                (f_surv_yes / father_survey_total) * 100
+                if father_survey_total > 0 else 0
+            )
+
+            mother_survey_pct = (
+                (m_surv_yes / mother_survey_total) * 100
+                if mother_survey_total > 0 else 0
+            )
+
+            father_sat_pct = (
+                (f_sat_good / father_sat_total) * 100
+                if father_sat_total > 0 else 0
+            )
+
+            mother_sat_pct = (
+                (m_sat_good / mother_sat_total) * 100
+                if mother_sat_total > 0 else 0
+            )
+
+            # =====================================================
+            # 💡 สร้างข้อความข้อสังเกตแบบไดนามิก
+            # =====================================================
+            if mother_survey_pct > father_survey_pct and mother_sat_pct > father_sat_pct:
+                observation_text = (
+                    f"มารดามีสัดส่วนการตอบแบบสำรวจ "
+                    f"({mother_survey_pct:.1f}%) สูงกว่าบิดา ({father_survey_pct:.1f}%) "
+                    f"และมีสัดส่วนความพึงพอใจ "
+                    f"({mother_sat_pct:.1f}%) สูงกว่าบิดา ({father_sat_pct:.1f}%)"
                 )
-                st.markdown(f"""
-                * **การตอบแบบสำรวจ:**
-                    * **บิดา:** ตอบ {f_surv_yes:,} คน / ไม่ตอบ {f_surv_no:,} คน
-                    * **มารดา:** ตอบ {m_surv_yes:,} คน / ไม่ตอบ {m_surv_no:,} คน
-                * **ความพึงพอใจต่อโรงเรียน:**
-                    * **บิดา:** พึงพอใจ {f_sat_good:,} คน / ไม่พึงพอใจ {f_sat_bad:,} คน
-                    * **มารดา:** พึงพอใจ {m_sat_good:,} คน / ไม่พึงพอใจ {m_sat_bad:,} คน
-                    """)
-                # =====================================================
-                # 💡 คำนวณสัดส่วนสำหรับข้อสังเกต
-                # =====================================================
-                father_survey_total = f_surv_yes + f_surv_no
-                mother_survey_total = m_surv_yes + m_surv_no
 
-                father_sat_total = f_sat_good + f_sat_bad
-                mother_sat_total = m_sat_good + m_sat_bad
-
-                father_survey_pct = (
-                    (f_surv_yes / father_survey_total) * 100
-                    if father_survey_total > 0 else 0
+            elif mother_survey_pct > father_survey_pct:
+                observation_text = (
+                    f"มารดามีสัดส่วนการตอบแบบสำรวจ "
+                    f"({mother_survey_pct:.1f}%) สูงกว่าบิดา ({father_survey_pct:.1f}%)"
                 )
 
-                mother_survey_pct = (
-                    (m_surv_yes / mother_survey_total) * 100
-                    if mother_survey_total > 0 else 0
+            elif mother_sat_pct > father_sat_pct:
+                 observation_text = (
+                    f"มารดามีสัดส่วนความพึงพอใจ "
+                    f"({mother_sat_pct:.1f}%) สูงกว่าบิดา ({father_sat_pct:.1f}%)"
                 )
 
-                father_sat_pct = (
-                    (f_sat_good / father_sat_total) * 100
-                    if father_sat_total > 0 else 0
+            else:
+                observation_text = (
+                    "สัดส่วนการตอบแบบสำรวจและความพึงพอใจของบิดาและมารดา "
+                    "ไม่พบว่ามารดาสูงกว่าบิดาในทั้งสองด้าน"
                 )
 
-                mother_sat_pct = (
-                    (m_sat_good / mother_sat_total) * 100
-                    if mother_sat_total > 0 else 0
-                )
-
-                # =====================================================
-                # 💡 สร้างข้อความข้อสังเกตแบบไดนามิก
-                # =====================================================
-                if mother_survey_pct > father_survey_pct and mother_sat_pct > father_sat_pct:
-                    observation_text = (
-                        f"มารดามีสัดส่วนการตอบแบบสำรวจ "
-                        f"({mother_survey_pct:.1f}%) สูงกว่าบิดา ({father_survey_pct:.1f}%) "
-                        f"และมีสัดส่วนความพึงพอใจ "
-                        f"({mother_sat_pct:.1f}%) สูงกว่าบิดา ({father_sat_pct:.1f}%)"
-                    )
-
-                elif mother_survey_pct > father_survey_pct:
-                    observation_text = (
-                        f"มารดามีสัดส่วนการตอบแบบสำรวจ "
-                        f"({mother_survey_pct:.1f}%) สูงกว่าบิดา ({father_survey_pct:.1f}%)"
-                    )
-
-                elif mother_sat_pct > father_sat_pct:
-                    observation_text = (
-                        f"มารดามีสัดส่วนความพึงพอใจ "
-                        f"({mother_sat_pct:.1f}%) สูงกว่าบิดา ({father_sat_pct:.1f}%)"
-                    )
-
-                else:
-                    observation_text = (
-                        "สัดส่วนการตอบแบบสำรวจและความพึงพอใจของบิดาและมารดา "
-                        "ไม่พบว่ามารดาสูงกว่าบิดาในทั้งสองด้าน"
-                    )
-
-                # =====================================================
-                # 💡 แสดงข้อสังเกต
-                # =====================================================
-                st.markdown(
-                    f"""
-                    <div style='background-color: #FEF3FF; padding: 10px 12px;
-                    border-radius: 8px; border: 1px solid #FCD34D;
-                    margin-top: 0px; margin-bottom: 10px;'>
-                    <span style='color: #92400E; font-size: 12px;'>
-                        💡 <b>ข้อสังเกต:</b> {observation_text}
-                    </span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+            # =====================================================
+            # 💡 แสดงข้อสังเกต
+            # =====================================================
+            st.markdown(
+                f"""
+                <div style='background-color: #FEF3FF; padding: 10px 12px;
+                border-radius: 8px; border: 1px solid #FCD34D;
+                margin-top: 0px; margin-bottom: 10px;'>
+                <span style='color: #92400E; font-size: 12px;'>
+                    💡 <b>ข้อสังเกต:</b> {observation_text}
+                </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
     # =====================================================
     # 📌 ส่วนที่ 3 (ด้านล่างสุด): Descriptive Analysis (กราฟคู่ ซ้าย-ขวา)
     # =====================================================
@@ -6641,7 +6770,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
             ct_survey_class = ct_survey_class.reset_index()
 
             # =====================================================
-            # 🔤 แปลงชื่อระดับผลการเรียน
+            # 🔤 แปลงชื่อระดับผลสัมฤทธิ์ทางการเรียน
             # =====================================================
             ct_survey_class["Class"] = ct_survey_class["Class"].replace({
                 "L": "ระดับต่ำ",
@@ -6727,7 +6856,7 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                     size=11
                 ),
                 hovertemplate=(
-                    "กลุ่มผลการเรียน: <b>%{customdata[0]}</b><br>"
+                    "กลุ่มผลสัมฤทธิ์ทางการเรียน: <b>%{customdata[0]}</b><br>"
                     "%{customdata[1]}: <b>%{y:.1f}%</b>"
                     "<extra></extra>"
                 ),
@@ -6892,7 +7021,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
         </div>
         <div class="relationship-subtitle">
             วิเคราะห์ความสัมพันธ์ระหว่างพฤติกรรมการเรียนรู้
-            และระดับผลการเรียนของผู้เรียน
+            และระดับผลสัมฤทธิ์ทางการเรียนของผู้เรียน
         </div>
         """,
         unsafe_allow_html=True
@@ -6917,20 +7046,20 @@ elif menu == "การวิเคราะห์ความสัมพัน
     }
     # ตัวแปรตาม
     dependent_col = "Class"
-    # ชื่อระดับผลการเรียน
+    # ชื่อระดับผลสัมฤทธิ์ทางการเรียน
     class_names = {
         "L": "ระดับต่ำ",
         "M": "ระดับปานกลาง",
         "H": "ระดับสูง"
     }
-    # ลำดับระดับผลการเรียน
+    # ลำดับระดับผลสัมฤทธิ์ทางการเรียน
     class_order = [
         "L",
         "M",
         "H"
     ]
     # ============================================================
-    # 🎨 กำหนดสีของระดับผลการเรียน
+    # 🎨 กำหนดสีของระดับผลสัมฤทธิ์ทางการเรียน
     # ============================================================
 
     class_colors = {
@@ -7025,19 +7154,19 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 ),
                 tickfont=dict(
                     color="#64748B",
-                    size=11
+                    size=15
                 )
             ),
             xaxis=dict(
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 )
             ),
             yaxis=dict(
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 )
             )
         )
@@ -7181,10 +7310,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
         st.markdown(
             """
             <div class="chart-title">
-                📊 การยกมือตอบคำถามกับระดับผลการเรียน
+                📊 การยกมือตอบคำถามกับระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             <div class="chart-description">
-                เปรียบเทียบค่าเฉลี่ยการยกมือตอบคำถามของผู้เรียนแต่ละระดับผลการเรียน
+                เปรียบเทียบค่าเฉลี่ยการยกมือตอบคำถามของผู้เรียนแต่ละระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             """,
             unsafe_allow_html=True
@@ -7208,7 +7337,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
             color_discrete_map=class_colors,
             text="raisedhands",
             labels={
-                "Class_TH": "ระดับผลการเรียน",
+                "Class_TH": "ระดับผลสัมฤทธิ์ทางการเรียน",
                 "raisedhands": "ค่าเฉลี่ยการยกมือตอบคำถาม"
             },
             category_orders={
@@ -7230,10 +7359,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(
-                title="ระดับผลการเรียน",
+                title="ระดับผลสัมฤทธิ์ทางการเรียน",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 showgrid=False
             ),
@@ -7241,7 +7370,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 title="ค่าเฉลี่ยการยกมือตอบคำถาม",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 gridcolor="#E2E8F0",
                 zeroline=False
@@ -7268,10 +7397,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
         st.markdown(
             """
             <div class="chart-title">
-                📊 การเข้าดูสื่อการเรียนกับระดับผลการเรียน
+                📊 การเข้าดูสื่อการเรียนกับระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             <div class="chart-description">
-                เปรียบเทียบค่าเฉลี่ยการเข้าดูสื่อการเรียนของผู้เรียนแต่ละระดับผลการเรียน
+                เปรียบเทียบค่าเฉลี่ยการเข้าดูสื่อการเรียนของผู้เรียนแต่ละระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             """,
             unsafe_allow_html=True
@@ -7292,7 +7421,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
             color_discrete_map=class_colors,
             text="VisITedResources",
             labels={
-                "Class_TH": "ระดับผลการเรียน",
+                "Class_TH": "ระดับผลสัมฤทธิ์ทางการเรียน",
                 "VisITedResources": "ค่าเฉลี่ยการเข้าดูสื่อการเรียน"
             },
             category_orders={
@@ -7314,10 +7443,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(
-                title="ระดับผลการเรียน",
+                title="ระดับผลสัมฤทธิ์ทางการเรียน",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 showgrid=False
             ),
@@ -7325,7 +7454,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 title="ค่าเฉลี่ยการเข้าดูสื่อการเรียน",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 gridcolor="#E2E8F0",
                 zeroline=False
@@ -7352,11 +7481,11 @@ elif menu == "การวิเคราะห์ความสัมพัน
         st.markdown(
             """
             <div class="chart-title">
-                📊 การเข้าดูประกาศกับระดับผลการเรียน
+                📊 การเข้าดูประกาศกับระดับผลสัมฤทธิ์ทางการเรียน
             </div>
 
             <div class="chart-description">
-                เปรียบเทียบค่าเฉลี่ยการเข้าดูประกาศของผู้เรียนแต่ละระดับผลการเรียน
+                เปรียบเทียบค่าเฉลี่ยการเข้าดูประกาศของผู้เรียนแต่ละระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             """,
             unsafe_allow_html=True
@@ -7377,7 +7506,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
             color_discrete_map=class_colors,
             text="AnnouncementsView",
             labels={
-                "Class_TH": "ระดับผลการเรียน",
+                "Class_TH": "ระดับผลสัมฤทธิ์ทางการเรียน",
                 "AnnouncementsView": "ค่าเฉลี่ยการเข้าดูประกาศ"
             },
             category_orders={
@@ -7400,10 +7529,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(
-                title="ระดับผลการเรียน",
+                title="ระดับผลสัมฤทธิ์ทางการเรียน",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 showgrid=False
             ),
@@ -7411,7 +7540,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 title="ค่าเฉลี่ยการเข้าดูประกาศ",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 gridcolor="#E2E8F0",
                 zeroline=False
@@ -7438,10 +7567,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
         st.markdown(
             """
             <div class="chart-title">
-                📊 การร่วมอภิปรายกับระดับผลการเรียน
+                📊 การร่วมอภิปรายกับระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             <div class="chart-description">
-                เปรียบเทียบค่าเฉลี่ยการร่วมอภิปรายของผู้เรียนแต่ละระดับผลการเรียน
+                เปรียบเทียบค่าเฉลี่ยการร่วมอภิปรายของผู้เรียนแต่ละระดับผลสัมฤทธิ์ทางการเรียน
             </div>
             """,
             unsafe_allow_html=True
@@ -7462,7 +7591,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
             color_discrete_map=class_colors,
             text="Discussion",
             labels={
-                "Class_TH": "ระดับผลการเรียน",
+                "Class_TH": "ระดับผลสัมฤทธิ์ทางการเรียน",
                 "Discussion": "ค่าเฉลี่ยการร่วมอภิปราย"
             },
             category_orders={
@@ -7484,10 +7613,10 @@ elif menu == "การวิเคราะห์ความสัมพัน
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(
-                title="ระดับผลการเรียน",
+                title="ระดับผลสัมฤทธิ์ทางการเรียน",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 showgrid=False
             ),
@@ -7495,7 +7624,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
                 title="ค่าเฉลี่ยการร่วมอภิปราย",
                 tickfont=dict(
                     color="#64748B",
-                    size=12
+                    size=15
                 ),
                 gridcolor="#E2E8F0",
                 zeroline=False
@@ -7529,7 +7658,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
         )
 
         # ========================================================
-        # 📌 หาค่าเฉลี่ยของแต่ละพฤติกรรมตามระดับผลการเรียน
+        # 📌 หาค่าเฉลี่ยของแต่ละพฤติกรรมตามระดับผลสัมฤทธิ์ทางการเรียน
         # ========================================================
         analysis_mean = (
             filtered_df
@@ -7659,7 +7788,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
             โดยมีค่าสหสัมพันธ์เท่ากับ <b>{max_corr_value:.2f}</b>
             <br>
             <b>💡 ข้อสังเกต</b><br>
-            จากข้อมูลพบว่า ผู้เรียนที่อยู่ในระดับผลการเรียนสูง
+            จากข้อมูลพบว่า ผู้เรียนที่อยู่ในระดับผลสัมฤทธิ์ทางการเรียนสูง
             มีค่าเฉลี่ยพฤติกรรมการเรียนรู้ทั้ง 4 ด้าน สูงกว่าผู้เรียนระดับปานกลางและระดับต่ำอย่างชัดเจน
             โดยพฤติกรรมที่มีค่าเฉลี่ยสูงที่สุดของผู้เรียนเป็นดังนี้
             <b>ระดับสูง</b> คือ <b>{highest_behavior["H"][0]}</b>
@@ -7667,18 +7796,18 @@ elif menu == "การวิเคราะห์ความสัมพัน
             <br>
             <b>หมายเหตุ:</b>
             ผลการวิเคราะห์นี้เป็นการแสดงความสัมพันธ์ และการเปรียบเทียบค่าเฉลี่ยของข้อมูล
-            ไม่สามารถสรุปได้ว่าพฤติกรรมการเรียนรู้เป็นสาเหตุโดยตรงที่ทำให้ระดับผลการเรียนสูงขึ้น
+            ไม่สามารถสรุปได้ว่าพฤติกรรมการเรียนรู้เป็นสาเหตุโดยตรงที่ทำให้ระดับผลสัมฤทธิ์ทางการเรียนสูงขึ้น
             </div>
             """,
             unsafe_allow_html=True
         )
 # ================================================================
-# 🤖 การทำนายผลการเรียนของนักเรียน
+# 🤖 การทำนายผลสัมฤทธิ์ทางการเรียนของนักเรียน
 # ================================================================
-elif menu == "การทำนายผลการเรียนของนักเรียน":
-    st.title("🤖 โมเดลทำนายผลการเรียนรู้")
+elif menu == "การทำนายผลสัมฤทธิ์ทางการเรียนของนักเรียน":
+    st.title("🤖 โมเดลทำนายผลสัมฤทธิ์ทางการเรียน")
     st.caption(
-        "ใช้พฤติกรรมการเรียนรู้ของผู้เรียนเพื่อทำนายระดับผลการเรียนด้วย Random Forest"
+        "ใช้พฤติกรรมการเรียนรู้ของผู้เรียนเพื่อทำนายระดับผลสัมฤทธิ์ทางการเรียนด้วย Random Forest"
     )
     st.markdown("---")
     # ============================================================
@@ -7699,7 +7828,7 @@ elif menu == "การทำนายผลการเรียนของน
         "Discussion": "การร่วมอภิปราย",
         "StudentAbsenceDays": "จำนวนวันที่ขาดเรียน"
     }
-    # สีของระดับผลการเรียน
+    # สีของระดับผลสัมฤทธิ์ทางการเรียน
     class_labels = {
         "L": "ระดับต่ำ",
         "M": "ระดับปานกลาง",
@@ -7942,7 +8071,7 @@ elif menu == "การทำนายผลการเรียนของน
     # ============================================================
     with st.container(border=True):
         st.markdown(
-            "### 📊 Confusion Matrix"
+            "### 📊 การประเมินผลประสิทธิภาพการทำนายของโมเดลด้วย Confusion Matrix "
         )
         cm = confusion_matrix(
             y_test,
@@ -8008,7 +8137,7 @@ elif menu == "การทำนายผลการเรียนของน
         # ============================================================
         # 🔍 คำอธิบาย Confusion Matrix จากข้อมูลในกราฟ
         # ============================================================
-        # ชื่อระดับผลการเรียน
+        # ชื่อระดับผลสัมฤทธิ์ทางการเรียน
         cm_labels = {
             "L": "ระดับต่ำ",
             "M": "ระดับปานกลาง",
@@ -8070,7 +8199,7 @@ elif menu == "การทำนายผลการเรียนของน
                 font-size:14px;
             ">
             💡 <strong>คำอธิบายจาก Confusion Matrix:</strong><br>
-            โมเดลทำนายผู้เรียนที่มีผลการเรียน
+            โมเดลทำนายผู้เรียนที่มีผลสัมฤทธิ์
             <b>ระดับต่ำ</b> ถูกต้อง
             <b>{correct_low:,} คน</b>
             จากทั้งหมด {actual_low:,} คน
@@ -8095,7 +8224,7 @@ elif menu == "การทำนายผลการเรียนของน
     # ============================================================
     with st.container(border=True):
         st.markdown(
-            "### 🌟 ความสำคัญของตัวแปรที่ใช้ในการทำนาย"
+            "### 🌟 ความสำคัญของตัวแปรที่ใช้ในการทำนายผลสัมฤทธิ์ทางการศึกษา"
         )
         importance_df = pd.DataFrame({
             "Feature": feature_cols,
@@ -8176,7 +8305,7 @@ elif menu == "การทำนายผลการเรียนของน
                 โมเดล Random Forest ใช้ข้อมูลพฤติกรรมการเรียนรู้
                 5 ตัวแปร ได้แก่ การยกมือ การเข้าดูแหล่งเรียนรู้
                 การดูประกาศ การอภิปราย และการขาดเรียน
-                เพื่อทำนายระดับผลการเรียนของผู้เรียน
+                เพื่อทำนายระดับผลสัมฤทธิ์ของผู้เรียน
             </div>
             """,
             unsafe_allow_html=True
@@ -8187,7 +8316,7 @@ elif menu == "การทำนายผลการเรียนของน
     # ============================================================
     with st.container(border=True):
         st.markdown(
-            "### 🔮 ทำนายระดับผลการเรียนของผู้เรียน"
+            "### 🔮 ทำนายระดับผลสัมฤทธิ์ของผู้เรียน"
         )
         st.markdown(
             """
@@ -8203,8 +8332,8 @@ elif menu == "การทำนายผลการเรียนของน
             font-size:14px;
             ">
             กรอกข้อมูลพฤติกรรมการเรียนรู้ของผู้เรียน
-            แล้วกดปุ่ม <strong>ทำนายผลการเรียน</strong>
-            เพื่อให้โมเดลประเมินระดับผลการเรียน
+            แล้วกดปุ่ม <strong>ทำนายผลสัมฤทธิ์</strong>
+            เพื่อให้โมเดลประเมินระดับผลสัมฤทธิ์
             </div>
             """,
             unsafe_allow_html=True
@@ -8338,7 +8467,7 @@ elif menu == "การทำนายผลการเรียนของน
             unsafe_allow_html=True
         )
         predict_button = st.button(
-            "🔮 ทำนายผลการเรียน",
+            "🔮 ทำนายผลสัมฤทธิ์",
             use_container_width=True,
             type="primary",
             on_click=predict_student
@@ -8350,7 +8479,7 @@ elif menu == "การทำนายผลการเรียนของน
             predicted_class = st.session_state["prediction_result"]
             probabilities = st.session_state["prediction_probabilities"]
             # ====================================================
-            # แปลงชื่อระดับผลการเรียน
+            # แปลงชื่อระดับผลสัมฤทธิ์
             # ====================================================
             predicted_label = class_labels.get(
                 predicted_class,
@@ -8389,7 +8518,7 @@ elif menu == "การทำนายผลการเรียนของน
                         font-size:14px;
                         margin-top:8px;
                     ">
-                        ระดับผลการเรียนที่คาดการณ์
+                        ระดับผลสัมฤทธิ์ที่คาดการณ์
                     </div>
                     <div style="
                         color:#1E3A5F;
@@ -8404,7 +8533,7 @@ elif menu == "การทำนายผลการเรียนของน
                         font-size:13px;
                         margin-top:5px;
                     ">
-                        รหัสระดับผลการเรียน: {predicted_class}
+                        รหัสระดับผลสัมฤทธิ์: {predicted_class}
                     </div>
                 </div>
                 """,
@@ -8417,15 +8546,15 @@ elif menu == "การทำนายผลการเรียนของน
                 "Class": model.classes_,
                 "Probability": probabilities
             })
-            probability_df["ระดับผลการเรียน"] = (
+            probability_df["ระดับผลสัมฤทธิ์ทางการเรียน"] = (
                 probability_df["Class"]
                 .map(class_labels)
             )
             probability_df["ร้อยละ"] = (
                 probability_df["Probability"] * 100
             )
-            probability_df["ระดับผลการเรียน"] = pd.Categorical(
-                probability_df["ระดับผลการเรียน"],
+            probability_df["ระดับผลสัมฤทธิ์ทางการเรียน"] = pd.Categorical(
+                probability_df["ระดับผลสัมฤทธิ์ทางการเรียน"],
                 categories=[
                     "ระดับต่ำ",
                     "ระดับปานกลาง",
@@ -8445,7 +8574,7 @@ elif menu == "การทำนายผลการเรียนของน
             # กราฟความน่าจะเป็น
             # ====================================================
             st.markdown(
-                "### 📊 ความน่าจะเป็นของแต่ละระดับผลการเรียน"
+                "### 📊 ความน่าจะเป็นของแต่ละระดับผลสัมฤทธิ์ทางการเรียน"
             )
             class_colors = {
                 "ระดับต่ำ": "#C49A6C",    # น้ำตาลอ่อน 
@@ -8454,13 +8583,13 @@ elif menu == "การทำนายผลการเรียนของน
             }
             fig_probability = px.bar(
                 probability_df,
-                x="ระดับผลการเรียน",
+                x="ระดับผลสัมฤทธิ์ทางการเรียน",
                 y="ร้อยละ",
                 text="ร้อยละ",
-                color="ระดับผลการเรียน",
+                color="ระดับผลสัมฤทธิ์ทางการเรียน",
                 color_discrete_map=class_colors,
                 category_orders={
-                    "ระดับผลการเรียน": probability_df["ระดับผลการเรียน"].tolist()
+                    "ระดับผลสัมฤทธิ์ทางการเรียน": probability_df["ระดับผลสัมฤทธิ์ทางการเรียน"].tolist()
                 }
             )
             fig_probability.update_traces(
@@ -8516,7 +8645,7 @@ elif menu == "การทำนายผลการเรียนของน
                 ">
                     💡 <strong>คำอธิบาย:</strong><br>
                     กราฟแสดงความน่าจะเป็นที่โมเดล Random Forest
-                    คาดการณ์ว่าผู้เรียนจะอยู่ในแต่ละระดับผลการเรียน
+                    คาดการณ์ว่าผู้เรียนจะอยู่ในแต่ละระดับผลสัมฤทธิ์ทางการเรียน
                     โดยค่าร้อยละที่สูงกว่าแสดงถึงระดับที่โมเดลมีความมั่นใจมากกว่า
                     และระดับที่มีค่าความน่าจะเป็นสูงสุดจะเป็นผลการทำนายของโมเดล
                 </div>
