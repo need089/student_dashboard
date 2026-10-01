@@ -1846,53 +1846,109 @@ if menu == "ภาพรวม":
 elif menu == "ผลสัมฤทธิ์ทางการเรียน":
     # --- CSS ตกแต่งการ์ด KPI และปรับแต่งขอบ Container ของ Streamlit ---
     st.markdown("""
-        <style>
-            /* สไตล์การ์ด KPI ด้านบน */
-            .kpi-card-custom {
-                background-color: #FFFFFF;
-                border: 1.5px solid #1E3A5F;
-                border-radius: 30px;
-                padding: 12px 16px;
-                display: flex;
-                align-items: center;
+    <style>
+        /* ================================
+        KPI CONTAINER
+        ================================ */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+        /* ================================
+        KPI CARD
+        ================================ */
+        .kpi-card-custom {
+            background-color: #FFFFFF;
+            border: 1.5px solid #1E3A5F;
+            border-radius: 30px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+        }
+        .kpi-icon-bg {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .kpi-text-title {
+            font-size: 0.85rem;
+            color: #1E3A5F;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .kpi-text-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0A2540;
+            margin-top: 2px;
+        }
+        .kpi-text-sub {
+            font-size: 0.75rem;
+            color: #64748B;
+            font-weight: 500;
+        }
+        /* ================================
+        STREAMLIT CONTAINER
+        ================================ */
+        div[data-testid="stVerticalBlockBorderWrapper"] > div {
+            border: 1.5px solid #1E3A5F !important;
+            border-radius: 20px !important;
+            background-color: #FFFFFF !important;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.02) !important;
+        }
+        /* ================================
+        TABLET
+        ================================ */
+        @media (max-width: 1000px) {
+            .kpi-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 12px;
-                box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+            }
+        }
+        /* ================================
+        MOBILE
+        ================================ */
+        @media (max-width: 600px) {
+            .kpi-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .kpi-card-custom {
+                border-radius: 22px;
+                padding: 11px 13px;
             }
             .kpi-icon-bg {
-                width: 44px;
-                height: 44px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 20px;
-                flex-shrink: 0;
+                width: 42px;
+                height: 42px;
+                min-width: 42px;
+                font-size: 19px;
             }
             .kpi-text-title {
-                font-size: 0.85rem;
-                color: #1E3A5F;
-                font-weight: 600;
-                line-height: 1.2;
+                font-size: 0.80rem;
             }
             .kpi-text-value {
-                font-size: 1.1rem;
-                font-weight: bold;
-                color: #0A2540;
-                margin-top: 2px;
+                font-size: 1.05rem;
             }
             .kpi-text-sub {
-                font-size: 0.75rem;
-                color: #64748B;
-                font-weight: 500;
+                font-size: 0.70rem;
             }
-            /* บังคับขอบของ st.container ให้เป็นเส้นสีน้ำเงินเข้ม ขอบมน และมีเงา */
-            div[data-testid="stVerticalBlockBorderWrapper"] > div {
-                border: 1.5px solid #1E3A5F !important;
-                border-radius: 20px !important;
-                background-color: #FFFFFF !important;
-                box-shadow: 0px 2px 5px rgba(0,0,0,0.02) !important;
-            }
-        </style>
+        }
+    </style>
     """, unsafe_allow_html=True)
 
     # --- ส่วน Header ---
@@ -1920,57 +1976,78 @@ elif menu == "ผลสัมฤทธิ์ทางการเรียน":
     context_str = f"ระดับชั้น: {stage_disp} | ภาคเรียน: {sem_disp} | เพศ: {gen_disp}"
 
     # --- 1. KPI Cards ด้านบน (4 การ์ด) ---
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.markdown(f"""
-            <div class='kpi-card-custom'>
-                <div class='kpi-icon-bg' style='background-color: #DCFCE7;'>👨‍👩‍👧‍👦</div>
-                <div>
-                    <div class='kpi-text-title'>นักเรียนทั้งหมด</div>
-                    <div class='kpi-text-value'>{total_students:,} คน</div>
-                    <div class='kpi-text-sub'>กลุ่มเป้าหมายการวิเคราะห์</div>
+    st.markdown(f"""
+    <div class="kpi-container">
+        <!-- KPI 1 -->
+        <div class="kpi-card-custom">
+            <div class="kpi-icon-bg" style="background-color: #DCFCE7;">
+                👨‍👩‍👧‍👦
+            </div>
+            <div>
+                <div class="kpi-text-title">
+                    นักเรียนทั้งหมด
+                </div>
+                <div class="kpi-text-value">
+                    {total_students:,} คน
+                </div>
+                <div class="kpi-text-sub">
+                    กลุ่มเป้าหมายการวิเคราะห์
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f"""
-            <div class='kpi-card-custom'>
-                <div class='kpi-icon-bg' style='background-color: #E0F2FE;'>🏃</div>
-                <div>
-                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนระดับสูง (High)</div>
-                    <div class='kpi-text-value'>{high_count:,} คน</div>
-                    <div class='kpi-text-sub'>คิดเป็น <b>{high_pct:.1f}%</b> ของทั้งหมด</div>
+        </div>
+        <!-- KPI 2 -->
+        <div class="kpi-card-custom">
+            <div class="kpi-icon-bg" style="background-color: #E0F2FE;">
+                🏃
+            </div>
+            <div>
+                <div class="kpi-text-title">
+                    ผลสัมฤทธิ์ทางการเรียนระดับสูง (High)
+                </div>
+                <div class="kpi-text-value">
+                    {high_count:,} คน
+                </div>
+                <div class="kpi-text-sub">
+                    คิดเป็น <b>{high_pct:.1f}%</b> ของทั้งหมด
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown(f"""
-            <div class='kpi-card-custom'>
-                <div class='kpi-icon-bg' style='background-color: #FCE7F3;'>🙋‍♀️</div>
-                <div>
-                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนปานกลาง (Medium)</div>
-                    <div class='kpi-text-value'>{mid_count:,} คน</div>
-                    <div class='kpi-text-sub'>คิดเป็น <b>{mid_pct:.1f}%</b> ของทั้งหมด</div>
+        </div>
+        <!-- KPI 3 -->
+        <div class="kpi-card-custom">
+            <div class="kpi-icon-bg" style="background-color: #FCE7F3;">
+                🙋‍♀️
+            </div>
+            <div>
+                <div class="kpi-text-title">
+                    ผลสัมฤทธิ์ทางการเรียนปานกลาง (Medium)
+                </div>
+                <div class="kpi-text-value">
+                    {mid_count:,} คน
+                </div>
+                <div class="kpi-text-sub">
+                    คิดเป็น <b>{mid_pct:.1f}%</b> ของทั้งหมด
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-
-    with col4:
-        st.markdown(f"""
-            <div class='kpi-card-custom'>
-                <div class='kpi-icon-bg' style='background-color: #FEF3C7;'>🙋‍♂️</div>
-                <div>
-                    <div class='kpi-text-title'>ผลสัมฤทธิ์ทางการเรียนระดับต่ำ (Low)</div>
-                    <div class='kpi-text-value'>{low_count:,} คน</div>
-                    <div class='kpi-text-sub'>คิดเป็น <b>{low_pct:.1f}%</b> ของทั้งหมด</div>
+        </div>
+        <!-- KPI 4 -->
+        <div class="kpi-card-custom">
+            <div class="kpi-icon-bg" style="background-color: #FEF3C7;">
+                🙋‍♂️
+            </div>
+            <div>
+                <div class="kpi-text-title">
+                    ผลสัมฤทธิ์ทางการเรียนระดับต่ำ (Low)
+                </div>
+                <div class="kpi-text-value">
+                    {low_count:,} คน
+                </div>
+                <div class="kpi-text-sub">
+                    คิดเป็น <b>{low_pct:.1f}%</b> ของทั้งหมด
                 </div>
             </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # =====================================================
     # 2. โซนกลาง (Grouped Bar Chart ตามช่วงชั้น)
