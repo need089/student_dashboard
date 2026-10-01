@@ -4626,16 +4626,15 @@ elif menu == "พฤติกรรมการเรียนรู้":
             gap: 15px;
             width: 100%;
             margin-bottom: 20px;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
         }
 
         .kpi-card {
-            flex: 1;
-            min-width: 0;
-            max-width: 100%;
+            flex: 1 1 calc(25% - 15px);
+            min-width: 220px;
             background-color: #FFFFFF;
             border: 2px solid #03254C;
-            border-radius: 50px;
+            border-radius: 25px;
             padding: 12px 20px;
             display: flex;
             align-items: center;
@@ -4670,6 +4669,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
         .kpi-info {
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         .kpi-title {
@@ -4699,6 +4699,37 @@ elif menu == "พฤติกรรมการเรียนรู้":
             font-size: 11px;
             margin-top: 2px;
             line-height: 1.2;
+        }
+
+        /* 📱 มือถือ */
+        @media (max-width: 768px) {
+            .kpi-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .kpi-card {
+                width: 100%;
+                min-width: 0;
+                flex: none;
+                border-radius: 25px;
+                padding: 12px 16px;
+            }
+
+            .kpi-icon-circle {
+                width: 50px;
+                height: 50px;
+                min-width: 50px;
+                font-size: 24px;
+            }
+
+            .kpi-title {
+                font-size: 14px;
+            }
+
+            .kpi-value {
+                font-size: 22px;
+            }
         }
         </style>
         """,
