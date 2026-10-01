@@ -4614,10 +4614,96 @@ elif menu == "พฤติกรรมการเรียนรู้":
         unsafe_allow_html=True
     )
 
-   # ------------------------------------------------
+    # ------------------------------------------------
     # KPI
     # ------------------------------------------------
-    # ใช้รูปแบบการ์ดเดียวกับ KPI ด้านบน
+    st.markdown(
+        """
+        <style>
+        .kpi-container {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .kpi-card {
+            flex: 1;
+            min-width: 0;
+            max-width: 100%;
+            background-color: #FFFFFF;
+            border: 2px solid #03254C;
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .kpi-icon-circle {
+            width: 55px;
+            height: 55px;
+            min-width: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .kpi-blue {
+            background-color: #DBEAFE;
+        }
+
+        .kpi-green {
+            background-color: #D1FAE5;
+        }
+
+        .kpi-orange {
+            background-color: #FEF3C7;
+        }
+
+        .kpi-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kpi-title {
+            color: #2D3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .kpi-value {
+            color: #2B6CB0;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 3px;
+            line-height: 1.2;
+        }
+
+        .kpi-unit {
+            font-size: 16px;
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        .kpi-description {
+            color: #718096;
+            font-size: 11px;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     kpi_data = [
         (
             "🙋",
@@ -4640,66 +4726,72 @@ elif menu == "พฤติกรรมการเรียนรู้":
             "Discussion"
         )
     ]
+    raisedhands_avg = behavior_df["raisedhands"].mean()
+    visited_avg = behavior_df["VisITedResources"].mean()
+    announce_avg = behavior_df["AnnouncementsView"].mean()
+    discussion_avg = behavior_df["Discussion"].mean()
 
-    kpi_cols = st.columns(4)
-    for i, (icon, title, col_name) in enumerate(kpi_data):
-        value = behavior_df[col_name].mean()
-        with kpi_cols[i]:
-            st.markdown(
-                f"""
-                <div style="
-                    background-color:#FFFFFF;
-                    border:1.5px solid #1E3A5F;
-                    border-radius:30px;
-                    padding:12px 16px;
-                    display:flex;
-                    align-items:center;
-                    gap:12px;
-                    box-shadow:0px 2px 5px rgba(0,0,0,0.05);
-                    min-height:70px;
-                ">
-                    <div style="
-                        width:44px;
-                        height:44px;
-                        border-radius:50%;
-                        background-color:#E0F2FE;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        font-size:20px;
-                        flex-shrink:0;
-                    ">
-                        {icon}
+    st.markdown(
+        f"""
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-icon-circle kpi-blue">🙋</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">การยกมือตอบคำถาม</div>
+                    <div class="kpi-value">
+                        {raisedhands_avg:.2f}
+                        <span class="kpi-unit">ครั้ง</span>
                     </div>
-                    <div>
-                        <div style="
-                            font-size:0.85rem;
-                            color:#1E3A5F;
-                            font-weight:600;
-                            line-height:1.2;
-                        ">
-                            {title}
-                        </div>
-                        <div style="
-                            font-size:1.1rem;
-                            font-weight:bold;
-                            color:#0A2540;
-                            margin-top:2px;
-                        ">
-                            {value:.2f}
-                        </div>
-                        <div style="
-                            font-size:0.75rem;
-                            color:#64748B;
-                            font-weight:500;
-                        ">
-                            คะแนนเฉลี่ย (0–100)
-                        </div>
+                    <div class="kpi-description">
+                        ค่าเฉลี่ยการมีส่วนร่วมในชั้นเรียน
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-circle kpi-green">📖</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">การเข้าดูสื่อการเรียน</div>
+                    <div class="kpi-value">
+                        {visited_avg:.2f}
+                        <span class="kpi-unit">ครั้ง</span>
+                    </div>
+                    <div class="kpi-description">
+                        ค่าเฉลี่ยการเข้าถึงสื่อการเรียน
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-circle kpi-orange">📢</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">การดูประกาศ</div>
+                    <div class="kpi-value">
+                        {announce_avg:.2f}
+                        <span class="kpi-unit">ครั้ง</span>
+                    </div>
+                    <div class="kpi-description">
+                        ค่าเฉลี่ยการติดตามข่าวสาร
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-circle kpi-blue">💬</div>
+                <div class="kpi-info">
+                    <div class="kpi-title">การอภิปราย</div>
+                    <div class="kpi-value">
+                        {discussion_avg:.2f}
+                        <span class="kpi-unit">ครั้ง</span>
+                    </div>
+                    <div class="kpi-description">
+                        ค่าเฉลี่ยการแลกเปลี่ยนความคิดเห็น
+                    </div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
     # ================================================================
     # 📊 2. เปรียบเทียบพฤติกรรม 4 ด้าน
     # ================================================================
@@ -6702,16 +6794,25 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 height=360,
                 bargap=0.18,
                 bargroupgap=0.06,
-                margin=dict(t=40, b=60, l=10, r=10), # เพิ่ม margin b (ด้านล่าง) เป็น 60
+                margin=dict(t=40, b=90, l=10, r=10),
                 font=dict(family="Sarabun, sans-serif", size=11),
                 template="plotly_white",
-                xaxis=dict(title=""), # ลบชื่อแกน X ออกเพื่อไม่ให้ลอยมาซ้อนทับ Legend
-                yaxis=dict(title="ค่าเฉลี่ย (ครั้ง)", range=[0, max_act_y * 1.25]),
+
+                xaxis=dict(
+                    title="",
+                    tickangle=-25
+                ),
+
+                yaxis=dict(
+                    title="ค่าเฉลี่ย (ครั้ง)",
+                    range=[0, max_act_y * 1.25]
+                ),
+
                 legend=dict(
-                    title="", # ลบหัวข้อ Legend
+                    title="",
                     orientation="h",
                     yanchor="top",
-                    y=-0.18, # ดัน Legend ลงมาข้างล่าง
+                    y=-0.35,
                     xanchor="center",
                     x=0.5
                 )
@@ -6949,7 +7050,6 @@ elif menu == "การมีส่วนร่วมของผู้ปกค
                 unsafe_allow_html=True
             )
 
-
 # ================================================================
 # 🔗 การวิเคราะห์ความสัมพันธ์ของตัวแปร
 # ================================================================
@@ -7135,34 +7235,26 @@ elif menu == "การวิเคราะห์ความสัมพัน
         # ปรับรูปแบบ Heatmap
         # --------------------------------------------------------
         fig_corr.update_layout(
-            height=500,
+            height=700,
+
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
+
             margin=dict(
-                l=20,
-                r=20,
+                l=140,
+                r=40,
                 t=20,
-                b=20
+                b=140
             ),
-            coloraxis_colorbar=dict(
-                title=dict(
-                    text="ค่าความสัมพันธ์",
-                    font=dict(
-                        color="#1E3A5F",
-                        size=13
-                    )
-                ),
-                tickfont=dict(
-                    color="#64748B",
-                    size=15
-                )
-            ),
+
             xaxis=dict(
+                tickangle=-90,
                 tickfont=dict(
                     color="#64748B",
                     size=15
                 )
             ),
+
             yaxis=dict(
                 tickfont=dict(
                     color="#64748B",
@@ -7172,10 +7264,7 @@ elif menu == "การวิเคราะห์ความสัมพัน
         )
         st.plotly_chart(
             fig_corr,
-            use_container_width=True,
-            config={
-                "displayModeBar": False
-            }
+            use_container_width=True
         )
         # ========================================================
         # 🔍 คำอธิบายจากข้อมูลใน Heatmap
@@ -7935,7 +8024,7 @@ elif menu == "การทำนายผลสัมฤทธิ์ทางก
             gap: 15px;
             width: 100%;
             margin-bottom: 20px;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
         }
 
 
@@ -7943,9 +8032,9 @@ elif menu == "การทำนายผลสัมฤทธิ์ทางก
            KPI Card
            ========================================= */
         .kpi-card {
-            flex: 1 1 0;
-            width: 33.33%;
-            min-width: 0;
+            flex: 1 1 280px;
+            min-width: 280px;
+            max-width: 100%;
             background-color: #FFFFFF;
             border: 2px solid #03254C;
             border-radius: 50px;
@@ -8111,13 +8200,11 @@ elif menu == "การทำนายผลสัมฤทธิ์ทางก
             zmax=cm.max()
         )
         fig_cm.update_layout(
-            height=450,
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
+            height=600,
             margin=dict(
-                l=20,
-                r=20,
-                t=20,
+                l=20, 
+                r=20, 
+                t=50, 
                 b=20
             )
         )
