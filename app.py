@@ -4626,7 +4626,7 @@ elif menu == "พฤติกรรมการเรียนรู้":
             gap: 15px;
             width: 100%;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
 
         .kpi-card {
